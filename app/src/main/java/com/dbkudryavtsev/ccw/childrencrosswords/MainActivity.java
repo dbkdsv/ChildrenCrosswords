@@ -23,55 +23,58 @@ public class MainActivity extends Activity {
     private float width;
     private float height;
 
-    public class cwords{
+    public class cwords {
         String _question;
         String _word;
         int _posX;
         int _posY;
-        cwords(){
-            _question="";
-            _word="";
+
+        cwords() {
+            _question = "";
+            _word = "";
         }
     }
 
-    public class crossword{
+    public class crossword {
         cwords[] _cwords;
         int _hor_count;
-        crossword(){
-            _cwords=new cwords[word_count];
-            for(int i=0; i<word_count; i++)
-                _cwords[i]=new cwords();
-            _hor_count=hword_count;
-            System.out.println(_cwords[0]);
-            for (int i=0; i<word_count; i++){
-                System.out.print("Kyky na");System.out.println(i);
-                if (i==0) {
-                    _cwords[i]._word="aaaaa";
-                    _cwords[i]._question= "1111111111111111";
 
-                    _cwords[i]._posX=0;
-                    _cwords[i]._posY=0;
+        crossword() {
+            _cwords = new cwords[word_count];
+            for (int i = 0; i < word_count; i++)
+                _cwords[i] = new cwords();
+            _hor_count = hword_count;
+            System.out.println(_cwords[0]);
+            for (int i = 0; i < word_count; i++) {
+                System.out.print("Kyky na");
+                System.out.println(i);
+                if (i == 0) {
+                    _cwords[i]._word = "aaaaa";
+                    _cwords[i]._question = "1111111111111111";
+
+                    _cwords[i]._posX = 0;
+                    _cwords[i]._posY = 0;
                 }
-                if (i==1) {
-                    _cwords[i]._word="aaaa";
+                if (i == 1) {
+                    _cwords[i]._word = "aaaa";
                     _cwords[i]._question = "22222222222222222";
 
-                    _cwords[i]._posX=0;
-                    _cwords[i]._posY=3;
+                    _cwords[i]._posX = 0;
+                    _cwords[i]._posY = 3;
                 }
-                if (i==2) {
-                    _cwords[i]._word="aaaaaaa";
+                if (i == 2) {
+                    _cwords[i]._word = "aaaaaaa";
                     _cwords[i]._question = "33333333333333333333";
 
-                    _cwords[i]._posX=0;
-                    _cwords[i]._posY=0;
+                    _cwords[i]._posX = 0;
+                    _cwords[i]._posY = 0;
                 }
-                if (i==3) {
-                    _cwords[i]._word="aaaaaaaaa";
+                if (i == 3) {
+                    _cwords[i]._word = "aaaaaaaaa";
                     _cwords[i]._question = "33333333333333333333";
 
-                    _cwords[i]._posX=3;
-                    _cwords[i]._posY=0;
+                    _cwords[i]._posX = 3;
+                    _cwords[i]._posY = 0;
                 }
             }
         }
@@ -91,8 +94,8 @@ public class MainActivity extends Activity {
 
         protected void onDraw(Canvas canvas) {
             // Draw the background...
-            width=canvas.getWidth();
-            height=canvas.getHeight();
+            width = canvas.getWidth();
+            height = canvas.getHeight();
             Paint background = new Paint();
             background.setColor(getResources().getColor(
                     R.color.puzzle_background));
@@ -112,13 +115,14 @@ public class MainActivity extends Activity {
             light.setColor(getResources().getColor(R.color.puzzle_light));
 
             // Draw the minor grid lines
-            crossword myc=new crossword();
-            word_height=(int)height/10;
+            crossword myc = new crossword();
+            word_height = (int) height / 10;
+            Rect[] rects = new Rect[word_count];
             for (int i = 0; i < word_count; i++) {
-                if(i<hword_count)
-                    canvas.drawRect(myc._cwords[i]._posX*word_height, myc._cwords[i]._posY*word_height, word_height*(myc._cwords[i]._posX+myc._cwords[i]._word.length()), word_height*myc._cwords[i]._posY+word_height, dark);
+                if (i < hword_count)
+                    canvas.drawRect(myc._cwords[i]._posX * word_height, myc._cwords[i]._posY * word_height, word_height * (myc._cwords[i]._posX + myc._cwords[i]._word.length()), word_height * myc._cwords[i]._posY + word_height, dark);
                 else
-                    canvas.drawRect(word_height*myc._cwords[i]._posX, word_height*myc._cwords[i]._posY, word_height*myc._cwords[i]._posX+word_height, word_height*myc._cwords[i]._posY+word_height*myc._cwords[i]._word.length(), dark);
+                    canvas.drawRect(word_height * myc._cwords[i]._posX, word_height * myc._cwords[i]._posY, word_height * myc._cwords[i]._posX + word_height, word_height * myc._cwords[i]._posY + word_height * myc._cwords[i]._word.length(), dark);
 //                canvas.drawLine(0, i * height/8, getWidth(), i * height/8,
 //                        light);
 //                canvas.drawLine(0, i * height + 1, getWidth(), i * height
