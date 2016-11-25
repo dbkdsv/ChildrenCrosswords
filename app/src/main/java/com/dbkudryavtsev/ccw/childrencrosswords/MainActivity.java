@@ -6,12 +6,9 @@ import android.graphics.Paint;
 import android.graphics.Rect;
 import android.os.Bundle;
 import android.graphics.Canvas;
-import android.util.Log;
 import android.view.View;
 import android.graphics.Paint.FontMetrics;
 import android.graphics.Paint.Style;
-import android.widget.Button;
-import android.widget.TextView;
 
 public class MainActivity extends Activity {
 
@@ -102,11 +99,11 @@ public class MainActivity extends Activity {
             canvas.drawRect(0, 0, getWidth(), getHeight(), background);
 
 
-            // Draw the board...
-
             // Define colors for the grid lines
             Paint dark = new Paint();
             dark.setColor(getResources().getColor(R.color.puzzle_dark));
+            dark.setStyle(Style.STROKE);
+            dark.setStrokeWidth(5);
 
             Paint hilite = new Paint();
             hilite.setColor(getResources().getColor(R.color.puzzle_hilite));
@@ -119,62 +116,20 @@ public class MainActivity extends Activity {
             word_height = (int) height / 10;
             Rect[] rects = new Rect[word_count];
             for (int i = 0; i < word_count; i++) {
-                if (i < hword_count)
-                    canvas.drawRect(myc._cwords[i]._posX * word_height, myc._cwords[i]._posY * word_height, word_height * (myc._cwords[i]._posX + myc._cwords[i]._word.length()), word_height * myc._cwords[i]._posY + word_height, dark);
-                else
-                    canvas.drawRect(word_height * myc._cwords[i]._posX, word_height * myc._cwords[i]._posY, word_height * myc._cwords[i]._posX + word_height, word_height * myc._cwords[i]._posY + word_height * myc._cwords[i]._word.length(), dark);
-//                canvas.drawLine(0, i * height/8, getWidth(), i * height/8,
-//                        light);
-//                canvas.drawLine(0, i * height + 1, getWidth(), i * height
-//                        + 1, hilite);
-//                canvas.drawLine(i * width, 0, i * width, getHeight(),
-//                        light);
-//                canvas.drawLine(i * width + 1, 0, i * width + 1,
-//                        getHeight(), hilite);
+                if (i < hword_count) {
+                    rects[i] = new Rect(myc._cwords[i]._posX * word_height, myc._cwords[i]._posY * word_height, word_height * (myc._cwords[i]._posX + myc._cwords[i]._word.length()), word_height * myc._cwords[i]._posY + word_height);
+                    for (int j = 1; j < myc._cwords[i]._word.length(); j++) {
+                        canvas.drawLine((myc._cwords[i]._posX + j) * word_height , myc._cwords[i]._posY * word_height, (myc._cwords[i]._posX + j) * word_height, word_height * myc._cwords[i]._posY + word_height, dark);
+                    }
+                }
+                else {
+                    rects[i] = new Rect(word_height * myc._cwords[i]._posX, word_height * myc._cwords[i]._posY, word_height * myc._cwords[i]._posX + word_height, word_height * myc._cwords[i]._posY + word_height * myc._cwords[i]._word.length());
+                    for (int j = 1; j < myc._cwords[i]._word.length(); j++) {
+                        canvas.drawLine(myc._cwords[i]._posX * word_height , (myc._cwords[i]._posY + j) * word_height, (myc._cwords[i]._posX+1) * word_height, (myc._cwords[i]._posY + j) * word_height, dark);
+                    }
+                }
+                canvas.drawRect(rects[i], dark);
             }
-
-            // Draw the major grid lines
-//            for (int i = 0; i < 9; i++) {
-//                if (i % 3 != 0)
-//                    continue;
-//                canvas.drawLine(0, i * height/8, getWidth(), i * height,
-//                        dark);
-//                canvas.drawLine(0, i * height + 1, getWidth(), i * height
-//                        + 1, hilite);
-//                canvas.drawLine(i * width, 0, i * width, getHeight(), dark);
-//                canvas.drawLine(i * width + 1, 0, i * width + 1,
-//                        getHeight(), hilite);
-//            }
-//
-//            // Draw the numbers...
-//            // Define color and style for numbers
-//            Paint foreground = new Paint(Paint.ANTI_ALIAS_FLAG);
-//            foreground.setColor(getResources().getColor(
-//                    R.color.puzzle_foreground));
-//            foreground.setStyle(Style.FILL);
-//            foreground.setTextSize(height * 0.75f);
-//            foreground.setTextScaleX(width / height);
-//            foreground.setTextAlign(Paint.Align.CENTER);
-//
-//            // Draw the number in the center of the tile
-//            FontMetrics fm = foreground.getFontMetrics();
-//            // Centering in X: use alignment (and X at midpoint)
-//            float x = width / 2;
-//            // Centering in Y: measure ascent/descent first
-//            float y = height / 2 - (fm.ascent + fm.descent) / 2;
-////            for (int i = 0; i < 9; i++) {
-////                for (int j = 0; j < 9; j++) {
-////                    canvas.drawText(this.game.getTileString(i, j), i
-////                            * width + x, j * height + y, foreground);
-////                }
-////            }
-//
-//            // Draw the selection...
-//            Log.d(TAG, "selRect=" + selRect);
-//            Paint selected = new Paint();
-//            selected.setColor(getResources().getColor(
-//                    R.color.puzzle_selected));
-//            canvas.drawRect(selRect, selected);
         }
     }
 }
