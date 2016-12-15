@@ -1,18 +1,22 @@
 package com.dbkudryavtsev.ccw.childrencrosswords;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.os.Bundle;
+import android.text.InputType;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.EditText;
 
 public class AnswerActivity extends Activity {
 
-    String question;
+    String question, output;
     Integer word_length;
 
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,8 +52,6 @@ public class AnswerActivity extends Activity {
             black.setColor(getResources().getColor(R.color.puzzle_dark));
             black.setStrokeWidth(5);
 
-            Log.d("checked", question);
-
             canvas.drawText("Вопрос:", word_height, 3 * word_height, fontPaint);
 
             canvas.drawText(question, word_height, (float) 4*word_height, fontPaint);
@@ -61,10 +63,28 @@ public class AnswerActivity extends Activity {
         }
 
         public boolean onTouchEvent(MotionEvent event) {
-
-            Intent main = new Intent(AnswerActivity.this, MainActivity.class);
-            AnswerActivity.this.startActivity(main);
-
+            AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+            builder.setTitle("Введите ответ");
+            final EditText input = new EditText(getContext());
+            input.setInputType(InputType.TYPE_CLASS_TEXT);
+            builder.setView(input);
+            builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    output = input.getText().toString();
+                    Intent intent = new Intent(AnswerActivity.this, MainActivity.class);
+                    intent.putExtra("RESULT_STRING", output);
+                    setResult(1, intent);
+                    finish();
+                }
+            });
+            builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.cancel();
+                }
+            });
+            builder.show();
             return super.onTouchEvent(event);
         }
         }

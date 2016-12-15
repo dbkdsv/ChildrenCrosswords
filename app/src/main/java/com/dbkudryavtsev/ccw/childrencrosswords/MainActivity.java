@@ -13,20 +13,19 @@ import android.view.View;
 import android.graphics.Paint.Style;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class MainActivity extends Activity {
 
     private static final int word_count = 4;
     private static final int hword_count = 2;
     private static int word_height;
-    private static final String TAG = "Crossword";
-    private static final Rect selRect = new Rect();
-    private float width;
-    private float height;
     private Rect[] rects;
-
+    Paint background = new Paint();
+    Paint dark = new Paint();
+    Paint mblack =new Paint();
     private Canvas mycanvas=new Canvas();
+
+    private int currentRect;
 
     public class cwords {
         String _question;
@@ -83,12 +82,17 @@ public class MainActivity extends Activity {
     }
 
     crossword myc = new crossword();
+
     private String[] answers=new String[myc._cwords.length];
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(new PuzzleView(this));
+
+        for(int i=0; i<myc._cwords.length; i++){
+            answers[i]=new String();
+        }
     }
 
     public class PuzzleView extends View {
@@ -105,34 +109,33 @@ public class MainActivity extends Activity {
                     }
                 }
                 if (checked_rects.size()==1) {
+                    currentRect=checked_rects.get(0);
                     answer = new Intent(MainActivity.this, AnswerActivity.class);
-                    answer.putExtra("question", myc._cwords[checked_rects.get(0)]._question);
-                    answer.putExtra("length", myc._cwords[checked_rects.get(0)]._word.length());
-                    MainActivity.this.startActivity(answer);
-                    finish();
-                    //Log.d("checked", checked_rects.get(i).toString());
+                    answer.putExtra("question", myc._cwords[currentRect]._question);
+                    answer.putExtra("length", myc._cwords[currentRect]._word.length());
+                    startActivityForResult(answer, 1);
                 }
             }
             return super.onTouchEvent(event);
         }
 
-        protected void onDraw(Canvas mycanvas) {
-            width = mycanvas.getWidth();
-            height = mycanvas.getHeight();
-            Paint background = new Paint();
-            background.setColor(getResources().getColor(R.color.puzzle_background));
-            mycanvas.drawRect(0, 0, getWidth(), getHeight(), background);
 
-            Paint dark = new Paint();
+
+        protected void onDraw(Canvas mycanvas) {
+
+            background.setColor(getResources().getColor(R.color.puzzle_background));
+            background.setStyle(Style.FILL);
             dark.setColor(getResources().getColor(R.color.puzzle_dark));
             dark.setStyle(Style.STROKE);
             dark.setStrokeWidth(5);
-
-            Paint mblack =new Paint();
             mblack.setColor(getResources().getColor(R.color.puzzle_dark));
             mblack.setStrokeWidth(5);
-
-            word_height = (int) height / 10;
+            mycanvas.drawRect(0, 0, getWidth(), getHeight(), background);
+            Paint fontPaint = new Paint();
+            fontPaint.setColor(getResources().getColor(R.color.puzzle_dark));
+            fontPaint.setTextSize(100);
+            fontPaint.setStyle(Style.STROKE);
+            word_height = getHeight() / 10;
             rects = new Rect[word_count];
             for (int i = 0; i < word_count; i++) {
                 if (i < hword_count) {
@@ -140,14 +143,32 @@ public class MainActivity extends Activity {
                     for (int j = 1; j < myc._cwords[i]._word.length(); j++) {
                         mycanvas.drawLine((myc._cwords[i]._posX + j) * word_height , myc._cwords[i]._posY * word_height, (myc._cwords[i]._posX + j) * word_height, word_height * myc._cwords[i]._posY + word_height, mblack);
                     }
+                    for(int j=0; j<answers[i].length();j++){
+                        mycanvas.drawText(Character.toString(answers[i].charAt(j)),(myc._cwords[i]._posX +j)* word_height+word_height/3, myc._cwords[i]._posY * word_height+word_height*2/3,fontPaint);
+                    }
                 }
                 else {
                     rects[i] = new Rect(word_height * myc._cwords[i]._posX, word_height * myc._cwords[i]._posY, word_height * myc._cwords[i]._posX + word_height, word_height * myc._cwords[i]._posY + word_height * myc._cwords[i]._word.length());
                     for (int j = 1; j < myc._cwords[i]._word.length(); j++) {
                         mycanvas.drawLine(myc._cwords[i]._posX * word_height , (myc._cwords[i]._posY + j) * word_height, (myc._cwords[i]._posX+1) * word_height, (myc._cwords[i]._posY + j) * word_height, mblack);
                     }
+                    for(int j=0; j<answers[i].length();j++){
+                        mycanvas.drawRect(word_height * myc._cwords[i]._posX+5, word_height * (myc._cwords[i]._posY+j)+5, word_height * myc._cwords[i]._posX + word_height-5, word_height * (myc._cwords[i]._posY+j) + word_height-5 ,background);
+                        mycanvas.drawText(Character.toString(answers[i].charAt(j)),myc._cwords[i]._posX* word_height+word_height/3, (myc._cwords[i]._posY +j) * word_height+word_height*2/3,fontPaint);
+                    }
                 }
                 mycanvas.drawRect(rects[i], dark);
+            }
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 1) {
+            if (resultCode == 1) {
+                answers[currentRect]=data.getStringExtra("RESULT_STRING");
+                Log.d("checked", answers[currentRect]);
             }
         }
     }
