@@ -3,8 +3,6 @@ package com.dbkudryavtsev.ccw.childrencrosswords.main;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
@@ -22,16 +20,15 @@ import static com.dbkudryavtsev.ccw.childrencrosswords.main.R.*;
 
 public class MainActivity extends Activity {
 
-    private static int word_height;
-    private static int maxfill = 15;
+
+    private static final int MAX_FILL = 15;
     private int currentRect;
-    private static int barpercentage=15;
+    private static final int BAR_PERCENTAGE =15;
     private static int maxwordlength=-1;
 
-    crossword myc = new crossword();
+    Crossword myc = new Crossword();
 
-    private Drawable checkButton;
-    private Rect checkBounds;
+
     private Rect[] rects = new Rect[myc._cwords.length];
     private String[] answers = new String[myc._cwords.length];
 
@@ -50,6 +47,31 @@ public class MainActivity extends Activity {
     }
 
     public class PuzzleView extends View {
+
+        private int word_height;
+
+        private Drawable checkButton;
+        private Rect checkBounds;
+
+        private void RectsSet(){
+            int const_x, const_y;
+            for (int i = 0; i < myc._cwords.length; i++) {
+                //set constant margin
+                const_x = myc._cwords[i]._posX * word_height + (getWidth() - maxwordlength * word_height) / 2;
+                const_y = myc._cwords[i]._posY * word_height + getHeight() * BAR_PERCENTAGE / 100;
+                //horisontal words
+                if (i < myc._hor_count) {
+                    //set border
+                    rects[i] = new Rect(const_x, const_y, const_x + myc._cwords[i]._word.length() * word_height, const_y + word_height);
+                }
+                //vertical words
+                else {
+                    //set border
+                    rects[i] = new Rect(const_x, const_y, const_x + word_height, const_y + word_height * myc._cwords[i]._word.length());
+                }
+            }
+            checkBounds = new Rect(5,5, (int) (getWidth()*.2),(int) ( getWidth()*.2));
+        }
 
         public PuzzleView(Context context) {
             super(context);
@@ -73,6 +95,12 @@ public class MainActivity extends Activity {
             }
         }
 
+        @Override
+        protected void onLayout(boolean changed, int l, int t, int r, int b) {
+            super.onLayout(changed, l, t, r, b);
+            word_height=  getHeight() / MAX_FILL -10;
+            RectsSet(); //height is ready
+        }
         public boolean onTouchEvent(MotionEvent event) {
             Toast toast;
             Intent answer;
@@ -112,45 +140,43 @@ public class MainActivity extends Activity {
             mycanvas.drawRect(0, 0, mycanvas.getWidth(), mycanvas.getHeight(), backgroundPaint);
 
             /*<--------------------BUTTONS-------------------->*/
-            checkBounds = new Rect(5,5, (int) (getWidth()*.2),(int) ( getWidth()*.2));
             checkButton.setBounds(checkBounds);
             checkButton.draw(mycanvas);
 
             /*<--------------------CROSSWORD-------------------->*/
             //set box size
-            word_height = (int)(mycanvas.getHeight() / maxfill)-10;
+
             //constant margin values for words
             int const_x, const_y;
             //draw crossword
             for (int i = 0; i < myc._cwords.length; i++) {
                 //set constant margin
                 const_x=myc._cwords[i]._posX* word_height+(getWidth()-maxwordlength*word_height)/2;
-                const_y=myc._cwords[i]._posY * word_height + getHeight()*barpercentage/100;
+                const_y=myc._cwords[i]._posY * word_height + getHeight()* BAR_PERCENTAGE /100;
                 //horisontal words
                 if (i < myc._hor_count) {
-                    //set border
-                    rects[i] = new Rect(const_x, const_y, const_x + myc._cwords[i]._word.length()* word_height, const_y + word_height);
                     //draw lines
                     for (int j = 1; j < myc._cwords[i]._word.length(); j++) {
                         mycanvas.drawLine(const_x + j * word_height, const_y, const_x + j * word_height, const_y + word_height, linePaint);
                     }
                     //draw answers
                     for (int j = 0; j < answers[i].length(); j++) {
-                        mycanvas.drawText(Character.toString(answers[i].charAt(j)), const_x + j * word_height + word_height / 3,const_y + word_height * 2 / 3, fontPaint);
+                        mycanvas.drawText(Character.toString(answers[i].charAt(j)),
+                                const_x + j * word_height + word_height / 3,const_y + word_height * 2 / 3, fontPaint);
                     }
                 }
                 //vertical words
                 else {
-                    //set border
-                    rects[i] = new Rect(const_x, const_y, const_x + word_height, const_y + word_height * myc._cwords[i]._word.length());
                     //draw lines
                     for (int j = 1; j < myc._cwords[i]._word.length(); j++) {
                         mycanvas.drawLine(const_x, const_y + j * word_height, const_x+ word_height, const_y + j * word_height, linePaint);
                     }
                     //clean up and draw answers
                     for (int j = 0; j < answers[i].length(); j++) {
-                        mycanvas.drawRect(const_x + 5, word_height *j+ const_y + 5, const_x + word_height - 5, word_height *j+ const_y + word_height - 5, backgroundPaint);
-                        mycanvas.drawText(Character.toString(answers[i].charAt(j)), const_x + word_height / 3, const_y + j * word_height + word_height * 2 / 3, fontPaint);
+                        mycanvas.drawRect(const_x + 5, word_height *j+ const_y + 5,
+                                const_x + word_height - 5, word_height *j+ const_y + word_height - 5, backgroundPaint);
+                        mycanvas.drawText(Character.toString(answers[i].charAt(j)),
+                                const_x + word_height / 3, const_y + j * word_height + word_height * 2 / 3, fontPaint);
                     }
                 }
                 //draw border

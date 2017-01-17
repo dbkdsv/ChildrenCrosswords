@@ -14,7 +14,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name="AnswerActivity"></activity>
+        <activity android:name="AnswerActivity" />
     </application>
 
 </manifest>

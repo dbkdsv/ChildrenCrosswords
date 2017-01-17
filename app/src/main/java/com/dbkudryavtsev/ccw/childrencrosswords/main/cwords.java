@@ -1,12 +1,12 @@
 package com.dbkudryavtsev.ccw.childrencrosswords.main;
 
-public class cwords {
+class Cwords {
     String _question;
     String _word;
     int _posX;
     int _posY;
 
-    cwords() {
+    Cwords() {
         _question = "";
         _word = "";
     }

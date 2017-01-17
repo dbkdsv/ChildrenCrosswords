@@ -1,14 +1,14 @@
 package com.dbkudryavtsev.ccw.childrencrosswords.main;
 
-public class crossword {
-    cwords[] _cwords;
+class Crossword {
+    Cwords[] _cwords;
     int _hor_count;
 
-    crossword() {
+    Crossword() {
         /*-----------2 magic variables HERE-----------------*/
-        _cwords = new cwords[4];
+        _cwords = new Cwords[4];
         for (int i = 0; i < _cwords.length; i++)
-            _cwords[i] = new cwords();
+            _cwords[i] = new Cwords();
         _hor_count = 2;
         for (int i = 0; i < _cwords.length; i++) {
             if (i == 0) {
