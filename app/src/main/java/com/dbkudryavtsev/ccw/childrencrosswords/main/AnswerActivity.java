@@ -15,6 +15,8 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import static com.dbkudryavtsev.ccw.childrencrosswords.main.R.*;
+
 
 public class AnswerActivity extends Activity {
 
@@ -44,18 +46,18 @@ public class AnswerActivity extends Activity {
         protected void onDraw(Canvas canvas) {
             word_height = getWidth() / (word_length + 2);
 
-            background.setColor(ContextCompat.getColor(getContext(), R.color.puzzle_background));
+            background.setColor(ContextCompat.getColor(getContext(), color.puzzle_background));
             canvas.drawRect(0, 0, getWidth(), getHeight(), background);
 
-            dark.setColor(ContextCompat.getColor(getContext(), R.color.puzzle_dark));
+            dark.setColor(ContextCompat.getColor(getContext(), color.puzzle_dark));
             dark.setStyle(Paint.Style.STROKE);
             dark.setStrokeWidth(5);
 
-            fontPaint.setColor(ContextCompat.getColor(getContext(), R.color.puzzle_dark));
+            fontPaint.setColor(ContextCompat.getColor(getContext(), color.puzzle_dark));
             fontPaint.setTextSize(100);
             fontPaint.setStyle(Paint.Style.STROKE);
 
-            black.setColor(ContextCompat.getColor(getContext(), R.color.puzzle_dark));
+            black.setColor(ContextCompat.getColor(getContext(), color.puzzle_dark));
             black.setStrokeWidth(5);
 
             canvas.drawText("Вопрос:", word_height, 3 * word_height, fontPaint);

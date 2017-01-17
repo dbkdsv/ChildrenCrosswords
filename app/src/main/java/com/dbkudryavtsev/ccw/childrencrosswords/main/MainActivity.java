@@ -18,6 +18,8 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 
+import static com.dbkudryavtsev.ccw.childrencrosswords.main.R.*;
+
 public class MainActivity extends Activity {
 
     private static int word_height;
@@ -52,18 +54,18 @@ public class MainActivity extends Activity {
         public PuzzleView(Context context) {
             super(context);
 
-            backgroundPaint.setColor(ContextCompat.getColor(getContext(), R.color.puzzle_background));
+            backgroundPaint.setColor(ContextCompat.getColor(getContext(), color.puzzle_background));
             backgroundPaint.setStyle(Style.FILL);
-            rectPaint.setColor(ContextCompat.getColor(getContext(), R.color.puzzle_dark));
+            rectPaint.setColor(ContextCompat.getColor(getContext(), color.puzzle_dark));
             rectPaint.setStyle(Style.STROKE);
             rectPaint.setStrokeWidth(5);
-            linePaint.setColor(ContextCompat.getColor(getContext(), R.color.puzzle_dark));
+            linePaint.setColor(ContextCompat.getColor(getContext(), color.puzzle_dark));
             linePaint.setStrokeWidth(5);
-            fontPaint.setColor(ContextCompat.getColor(getContext(), R.color.puzzle_dark));
+            fontPaint.setColor(ContextCompat.getColor(getContext(), color.puzzle_dark));
             fontPaint.setTextSize(100);
             fontPaint.setStyle(Style.STROKE);
 
-            checkButton = ContextCompat.getDrawable(getContext(), R.drawable.ic_done);
+            checkButton = ContextCompat.getDrawable(getContext(), drawable.ic_done);
 
             for(int i=0; i<myc._hor_count; i++){
                 if(myc._cwords[i]._word.length()+myc._cwords[i]._posX>maxwordlength)
