@@ -21,10 +21,10 @@ import static com.dbkudryavtsev.ccw.childrencrosswords.main.R.*;
 public class MainActivity extends Activity {
 
 
-    private static final int MAX_FILL = 15;
+    private final int MAX_FILL = 15;
     private int currentRect;
-    private static final int BAR_PERCENTAGE =15;
-    private static int maxwordlength=-1;
+    private final int BAR_PERCENTAGE =15;
+    private int maxwordlength=-1;
 
     Crossword myc = new Crossword();
 
@@ -53,7 +53,7 @@ public class MainActivity extends Activity {
         private Drawable checkButton;
         private Rect checkBounds;
 
-        private void RectsSet(){
+        private void rectsSet(){
             int const_x, const_y;
             for (int i = 0; i < myc._cwords.length; i++) {
                 //set constant margin
@@ -62,12 +62,14 @@ public class MainActivity extends Activity {
                 //horisontal words
                 if (i < myc._hor_count) {
                     //set border
-                    rects[i] = new Rect(const_x, const_y, const_x + myc._cwords[i]._word.length() * word_height, const_y + word_height);
+                    rects[i] = new Rect(const_x, const_y,
+                            const_x + myc._cwords[i]._word.length() * word_height, const_y + word_height);
                 }
                 //vertical words
                 else {
                     //set border
-                    rects[i] = new Rect(const_x, const_y, const_x + word_height, const_y + word_height * myc._cwords[i]._word.length());
+                    rects[i] = new Rect(const_x, const_y,
+                            const_x + word_height, const_y + word_height * myc._cwords[i]._word.length());
                 }
             }
             checkBounds = new Rect(5,5, (int) (getWidth()*.2),(int) ( getWidth()*.2));
@@ -99,7 +101,7 @@ public class MainActivity extends Activity {
         protected void onLayout(boolean changed, int l, int t, int r, int b) {
             super.onLayout(changed, l, t, r, b);
             word_height=  getHeight() / MAX_FILL -10;
-            RectsSet(); //height is ready
+            rectsSet(); //height is ready
         }
         public boolean onTouchEvent(MotionEvent event) {
             Toast toast;
@@ -144,8 +146,6 @@ public class MainActivity extends Activity {
             checkButton.draw(mycanvas);
 
             /*<--------------------CROSSWORD-------------------->*/
-            //set box size
-
             //constant margin values for words
             int const_x, const_y;
             //draw crossword
@@ -157,7 +157,8 @@ public class MainActivity extends Activity {
                 if (i < myc._hor_count) {
                     //draw lines
                     for (int j = 1; j < myc._cwords[i]._word.length(); j++) {
-                        mycanvas.drawLine(const_x + j * word_height, const_y, const_x + j * word_height, const_y + word_height, linePaint);
+                        mycanvas.drawLine(const_x + j * word_height, const_y,
+                                const_x + j * word_height, const_y + word_height, linePaint);
                     }
                     //draw answers
                     for (int j = 0; j < answers[i].length(); j++) {
@@ -169,7 +170,8 @@ public class MainActivity extends Activity {
                 else {
                     //draw lines
                     for (int j = 1; j < myc._cwords[i]._word.length(); j++) {
-                        mycanvas.drawLine(const_x, const_y + j * word_height, const_x+ word_height, const_y + j * word_height, linePaint);
+                        mycanvas.drawLine(const_x, const_y + j * word_height,
+                                const_x+ word_height, const_y + j * word_height, linePaint);
                     }
                     //clean up and draw answers
                     for (int j = 0; j < answers[i].length(); j++) {
