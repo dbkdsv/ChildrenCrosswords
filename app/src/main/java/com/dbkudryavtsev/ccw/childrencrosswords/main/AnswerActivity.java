@@ -23,6 +23,7 @@ public class AnswerActivity extends Activity {
     String question, output;
     Integer word_length;
 
+
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Intent create_intent = getIntent();
