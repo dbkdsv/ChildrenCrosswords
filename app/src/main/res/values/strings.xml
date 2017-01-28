@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Детские кроссворды</string>
+    <string name="answer_title">Вопрос %1$d, %2$d букв:\n%3$s</string>
 </resources>

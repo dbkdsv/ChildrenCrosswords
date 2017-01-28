@@ -1,49 +1,50 @@
 package com.dbkudryavtsev.ccw.childrencrosswords.main;
 
+//TODO: Запоминать состояние заполнения последнего кроссворда и давать возможность продолжить заполнение
+
 class Crossword {
-    Cwords[] _cwords;
-    int _hor_count;
+    private Cwords[] cwords;
+    private int horCount;
 
     Crossword() {
         /*-----------2 magic variables HERE-----------------*/
-        _cwords = new Cwords[4];
-        for (int i = 0; i < _cwords.length; i++)
-            _cwords[i] = new Cwords();
-        _hor_count = 2;
-        for (int i = 0; i < _cwords.length; i++) {
+        cwords = new Cwords[4];
+        horCount = 2;
+
+        for (int i = 0; i < cwords.length; i++) {
             if (i == 0) {
-                _cwords[i]._word = "РАСЧЁСКА";
-                _cwords[i]._question = "Зубов много, а ничего не ест.";
-                _cwords[i]._posX = 1;
-                _cwords[i]._posY = 0;
+                cwords[i]= new Cwords("Зубов много, а ничего не ест.", "РАСЧЁСКА", 1, 0);
             }
             if (i == 1) {
-                _cwords[i]._word = "ВОРОБЕЙ";
-                _cwords[i]._question = "Маленький мальчишка в сером армячишке\nПо дворам шныряет, крохи подбирает,\nПо ночам кочует - коноплю ворует.";
-                _cwords[i]._posX = 0;
-                _cwords[i]._posY = 3;
+                cwords[i]= new Cwords("Маленький мальчишка в сером армячишке\nПо дворам шныряет, крохи подбирает,\n" +
+                        "По ночам кочует - коноплю ворует.", "ВОРОБЕЙ", 0, 3);
             }
             if (i == 2) {
-                _cwords[i]._word = "РОБОТ";
-                _cwords[i]._question = "Сам - металлический,\nМозг - электрический.";
-                _cwords[i]._posX = 1;
-                _cwords[i]._posY = 0;
+                cwords[i]= new Cwords("Сам - металлический,\nМозг - электрический.", "РОБОТ", 1, 0);
             }
             if (i == 3) {
-                _cwords[i]._word = "СОРОКА";
-                _cwords[i]._question = "Верещунья белобока,\nА зовут ее ...";
-                _cwords[i]._posX = 3;
-                _cwords[i]._posY = 0;
+                cwords[i]= new Cwords("Верещунья белобока,\nА зовут ее ...", "СОРОКА", 3, 0);
             }
         }
     }
+
+    int getHorCount(){
+        return horCount;
+    }
+
+    int getCwordsLength(){
+        return cwords.length;
+    }
+
+    Cwords getCword(int position){
+        return cwords[position];
+    }
+
     String[] getAllQuestions(){
-        String[] questions=new String[_cwords.length];
-        for(int i=0; i<_cwords.length;i++){
-            questions[i]=Integer.toString(i+1)+". "+_cwords[i]._question;
+        String[] questions=new String[cwords.length];
+        for(int i=0; i<cwords.length;i++){
+            questions[i]=Integer.toString(i+1)+". "+cwords[i].getQuestion();
         }
         return questions;
     }
 }
-
-
