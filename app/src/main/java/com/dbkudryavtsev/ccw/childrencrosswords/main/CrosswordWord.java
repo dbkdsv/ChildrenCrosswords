@@ -1,12 +1,12 @@
 package com.dbkudryavtsev.ccw.childrencrosswords.main;
 
-class Cwords {
+class CrosswordWord {
     private String question;
     private String word;
     private int posX;
     private int posY;
 
-    Cwords(String question, String word, int posX, int posY) {
+    CrosswordWord(String question, String word, int posX, int posY) {
         this.question = question;
         this.word = word;
         this.posX=posX;

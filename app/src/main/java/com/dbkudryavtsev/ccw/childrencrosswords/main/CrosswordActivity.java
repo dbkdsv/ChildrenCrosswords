@@ -8,6 +8,7 @@ public class CrosswordActivity extends Activity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(new CrosswordView(this));
+        Bundle extras = getIntent().getExtras();
+        setContentView(new CrosswordView(this, extras.getInt("chosenRect")));
     }
 }

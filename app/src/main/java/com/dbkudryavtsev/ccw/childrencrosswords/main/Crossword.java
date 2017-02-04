@@ -2,32 +2,39 @@ package com.dbkudryavtsev.ccw.childrencrosswords.main;
 
 //TODO: Запоминать состояние заполнения последнего кроссворда и давать возможность продолжить заполнение
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 class Crossword {
-    private Cwords[] cwords;
+    private CrosswordWord[] cwords;
     private int horCount;
 
-    Crossword() {
-        /*-----------2 magic variables HERE-----------------*/
-        cwords = new Cwords[4];
-        horCount = 2;
-
-        for (int i = 0; i < cwords.length; i++) {
-            if (i == 0) {
-                cwords[i]= new Cwords("Зубов много, а ничего не ест.", "РАСЧЁСКА", 1, 0);
-            }
-            if (i == 1) {
-                cwords[i]= new Cwords("Маленький мальчишка в сером армячишке\nПо дворам шныряет, крохи подбирает,\n" +
-                        "По ночам кочует - коноплю ворует.", "ВОРОБЕЙ", 0, 3);
-            }
-            if (i == 2) {
-                cwords[i]= new Cwords("Сам - металлический,\nМозг - электрический.", "РОБОТ", 1, 0);
-            }
-            if (i == 3) {
-                cwords[i]= new Cwords("Верещунья белобока,\nА зовут ее ...", "СОРОКА", 3, 0);
-            }
+    Crossword(String jsonString) {
+        JSONObject jsonObject;
+        JSONArray array = new JSONArray();
+        try {
+            jsonObject = new JSONObject(jsonString);
+            array = jsonObject.getJSONArray("crosswordWord");
+            cwords = new CrosswordWord[array.length()];
+            horCount = (Integer) jsonObject.get("horCount");
         }
-    }
+        catch (JSONException ex) {
+            ex.printStackTrace();
+        }
+        /*-----------2 magic variables HERE-----------------*/
 
+        for (int i = 0; i < cwords.length; i++)
+            try {
+                cwords[i] = new CrosswordWord(array.getJSONObject(i).getString("question"),
+                        array.getJSONObject(i).getString("word"),
+                        array.getJSONObject(i).getInt("posX"),
+                        array.getJSONObject(i).getInt("posY"));
+            }
+            catch (JSONException ex) {
+                ex.printStackTrace();
+            }
+    }
     int getHorCount(){
         return horCount;
     }
@@ -36,7 +43,7 @@ class Crossword {
         return cwords.length;
     }
 
-    Cwords getCword(int position){
+    CrosswordWord getCword(int position){
         return cwords[position];
     }
 

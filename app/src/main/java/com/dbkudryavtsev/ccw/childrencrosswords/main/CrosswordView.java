@@ -15,6 +15,8 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 
 public class CrosswordView extends View {
@@ -30,14 +32,39 @@ public class CrosswordView extends View {
     private Paint smallFontPaint = new Paint();
     private Paint whitePaint = new Paint();
 
-    private Crossword crossword = new Crossword();
-    private String[] answers = new String[crossword.getCwordsLength()];
+    public String loadJSONFromAsset(int chosenRectId) {
+        String json;
+        try {
+            InputStream inputStream = getResources().openRawResource(chosenRectId);
+            int size = inputStream.available();
+            byte[] buffer = new byte[size];
+            inputStream.read(buffer);
+            inputStream.close();
+            json = new String(buffer, "UTF-8");
+        }
+        catch (IOException ex) {
+            ex.printStackTrace();
+            return null;
+        }
+        return json;
+    }
 
-    private ArrayList<Integer> questionsRemaining = new ArrayList<>(crossword.getCwordsLength());
-    private ArrayList<Integer> questionsOrder = new ArrayList<>(crossword.getCwordsLength());
+    private Crossword crossword;
+    private String[] answers;
+
+    private ArrayList<Integer> questionsRemaining;
+    private ArrayList<Integer> questionsOrder;
 
     public CrosswordView(Context context) {
         super(context);
+    }
+
+    public CrosswordView(Context context, int chosenRectId) {
+        super(context);
+        crossword = new Crossword(loadJSONFromAsset(chosenRectId));
+        answers = new String[crossword.getCwordsLength()];
+        questionsRemaining = new ArrayList<>(crossword.getCwordsLength());
+        questionsOrder = new ArrayList<>(crossword.getCwordsLength());
 
         whitePaint.setColor(ContextCompat.getColor(getContext(), R.color.white));
         whitePaint.setStyle(Paint.Style.FILL);
@@ -73,9 +100,10 @@ public class CrosswordView extends View {
 
     private int wordHeight;
     private Rect checkBounds, listButtonBounds;
-    private Rect[] rects = new Rect[crossword.getCwordsLength()];
+    private Rect[] rects;
 
     private void rectsSet() {
+        rects = new Rect[crossword.getCwordsLength()];
         for (int i = 0; i < crossword.getCwordsLength(); i++) {
             //set constant margin
             int constX = crossword.getCword(i).getPosX() * wordHeight +
@@ -128,7 +156,7 @@ public class CrosswordView extends View {
     }
 
     //Форма вывода вопросов
-    //Реализлванные требования:
+    //Реализованные требования:
     //1. Выводить список всех вопросов
     //Пожелания:
     //1. ?
@@ -151,7 +179,7 @@ public class CrosswordView extends View {
     // ответ нельзя зафиксировать
     //3. Показывать номер вопроса
     //Пожелания:
-    //TODO: В поле ввода отображать уже введные буквы (на перекрестьях с другими словами)
+    //TODO: В поле ввода отображать уже введённые буквы (на перекрестьях с другими словами)
 
 
     private void inputAnswer(final int currentRect) {
