@@ -59,6 +59,8 @@ public class CrosswordView extends View {
         super(context);
     }
 
+    private Drawable checkButton, listButton;
+
     public CrosswordView(Context context, int chosenRectId) {
         super(context);
         crossword = new Crossword(loadJSONFromAsset(chosenRectId));
@@ -239,7 +241,6 @@ public class CrosswordView extends View {
     }
 
     private Rect letterBounds = new Rect();
-    private Drawable checkButton, listButton;
 
     protected void onDraw(Canvas myCanvas) {
         /*<--------------------BACKGROUND-------------------->*/

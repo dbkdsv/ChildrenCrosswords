@@ -13,8 +13,8 @@
             android:configChanges="orientation|keyboardHidden"
             android:screenOrientation="portrait">
         </activity>
-        <activity android:name=".LaunchActivity" />
-        <activity android:name=".ChoiceActivity"
+        <activity android:name=".ChoiceActivity" />
+        <activity android:name=".LaunchActivity"
             android:configChanges="orientation|keyboardHidden"
             android:screenOrientation="portrait">
             <intent-filter>

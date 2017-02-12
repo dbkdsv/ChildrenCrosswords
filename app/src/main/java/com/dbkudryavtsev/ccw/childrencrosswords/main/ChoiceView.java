@@ -5,30 +5,57 @@ import android.content.Intent;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Rect;
+import android.graphics.drawable.Drawable;
 import android.support.v4.content.ContextCompat;
 import android.view.MotionEvent;
 import android.view.View;
 
 public class ChoiceView extends View {
+
+    private Drawable levelRect;
+    private Paint white = new Paint();
+    private int MAX_FILL;
+    private  int margin;
+    private int wordHeight;
+    private Rect rects[];
+
     public ChoiceView(Context context) {
         super(context);
+
     }
 
-    Rect rects[] = new Rect[R.raw.class.getFields().length-2];
+    @Override
+    protected void onLayout(boolean changed, int l, int t, int r, int b) {
+        super.onLayout(changed, l, t, r, b);
+        MAX_FILL = 4;
+        margin = (int) (getWidth() * .015);
+        wordHeight =(int) (getWidth() / MAX_FILL -  1.2*margin);
+        white.setColor(ContextCompat.getColor(getContext(), R.color.white));
+        white.setStyle(Paint.Style.FILL);
+        white.setTextSize(wordHeight);
+        levelRect = ContextCompat.getDrawable(getContext(), R.drawable.square);
+        rects = new Rect[R.raw.class.getFields().length-2];
+        for (int i = 0; i < rects.length; i++) {
+            rects[i] = new Rect(margin * (i + 1) + i * wordHeight, margin, margin * (i + 1) + i * wordHeight + wordHeight, margin + wordHeight);
+        }
+
+    }
+
+    private Rect letterBounds = new Rect();
 
     @Override
     protected void onDraw(Canvas canvas) {
-        Paint black = new Paint();
-        black.setColor(ContextCompat.getColor(getContext(), R.color.puzzle_dark));
-        black.setStyle(Paint.Style.STROKE);
-        black.setStrokeWidth(5);
         super.onDraw(canvas);
-        int MAX_FILL = 4;
-        int margin = (int) (getWidth() * .1);
-        int wordHeight = getWidth() / MAX_FILL - (int) 1.25*margin;
+        int horizontal_step, vertical_step;
         for (int i = 0; i < rects.length; i++) {
-            rects[i] = new Rect(margin*i + i * wordHeight, margin, margin*i + i * wordHeight + wordHeight, margin+wordHeight);
-            canvas.drawRect(rects[i], black);
+            levelRect.setBounds(rects[i]);
+            levelRect.draw(canvas);
+            white.getTextBounds(Integer.toString(i+1), 0, 1, letterBounds);
+            horizontal_step = (int) (wordHeight -
+                    white.measureText(Integer.toString(i+1))) / 2;
+            vertical_step = wordHeight - (wordHeight - letterBounds.height()) / 2;
+            canvas.drawText(Integer.toString(i+1),
+                   rects[i].left + horizontal_step, rects[i].top + vertical_step, white);
         }
     }
 
@@ -41,13 +68,15 @@ public class ChoiceView extends View {
             }
         }
         chosenRect++;
-        Intent intent = new Intent(this.getContext(), CrosswordActivity.class);
-        try {
-            intent.putExtra("chosenRect", R.raw.class.getFields()[chosenRect].getInt(null));
-        } catch (Exception e) {
-            e.printStackTrace();
+        if(chosenRect>0) {
+            Intent intent = new Intent(this.getContext(), CrosswordActivity.class);
+            try {
+                intent.putExtra("chosenRect", R.raw.class.getFields()[chosenRect].getInt(null));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            getContext().startActivity(intent);
         }
-        getContext().startActivity(intent);
         return super.onTouchEvent(event);
     }
 }
