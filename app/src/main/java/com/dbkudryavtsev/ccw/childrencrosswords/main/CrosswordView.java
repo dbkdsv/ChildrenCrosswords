@@ -250,8 +250,8 @@ public class CrosswordView extends View {
         listButton.draw(myCanvas);
         /*<--------------------CROSSWORD-------------------->*/
         //draw crossword
-        for (int orderNumber = questionsOrder.size() - 1; orderNumber >= 0; orderNumber--) {
-            int i = questionsOrder.get(orderNumber);
+        for (int number = questionsOrder.size() - 1; number >= 0; number--) {
+            int i = questionsOrder.get(number);
             //draw white background
             myCanvas.drawRect(rects[i], whitePaint);
             //constant margin values for words

@@ -11,7 +11,7 @@ import android.view.MotionEvent;
 import android.view.View;
 
 public class ChoiceView extends View {
-
+    public final static String chosenRectString = "chosenRect";
     private Drawable levelRect;
     private Paint white = new Paint();
     private int MAX_FILL;
@@ -71,7 +71,8 @@ public class ChoiceView extends View {
         if(chosenRect>0) {
             Intent intent = new Intent(this.getContext(), CrosswordActivity.class);
             try {
-                intent.putExtra("chosenRect", R.raw.class.getFields()[chosenRect].getInt(null));
+                intent.putExtra(chosenRectString, getResources().getIdentifier("crossword"+chosenRect,
+                        "raw", getContext().getPackageName()));
             } catch (Exception e) {
                 e.printStackTrace();
             }
