@@ -21,7 +21,6 @@ public class ChoiceView extends View {
 
     public ChoiceView(Context context) {
         super(context);
-
     }
 
     @Override
