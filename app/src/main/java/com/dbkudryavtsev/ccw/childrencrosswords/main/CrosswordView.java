@@ -139,7 +139,7 @@ public class CrosswordView extends View {
         listButtonBounds.set((int) (getWidth() * .8), 5, getWidth(), (int) (getWidth() * .2));
         checkButton.setBounds(checkBounds);
         listButton.setBounds(listButtonBounds);
-        int inputBoundsWidth = (int) (getWidth() * .9), inputBoundsHeight = 600,
+        int inputBoundsWidth = (int) (getWidth() * .9), inputBoundsHeight = (int) (getHeight() * .3),
                 marginTop = getHeight() * BAR_PERCENTAGE / 100, innerMargin = 10;
         canvasBounds.set((getWidth() - inputBoundsWidth) / 2, marginTop,
                 (getWidth() + inputBoundsWidth) / 2, marginTop + inputBoundsHeight);
@@ -188,41 +188,6 @@ public class CrosswordView extends View {
     }
 
     private int currentRect;
-
-//    private void inputAnswer() {
-//        final int wordLength = crossword.getCword(currentRect).getWord().length();
-//        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-//        TextView textView = new TextView(getContext());
-//        textView.setText(String.format(getResources().getString(R.string.answer_title), currentRect+1,
-//                crossword.getCword(currentRect).getWord().length(), crossword.getCword(currentRect).getQuestion()));
-//        builder.setCustomTitle(textView);
-//        final EditText input = new EditText(getContext());
-//        input.setInputType(InputType.TYPE_CLASS_TEXT);
-//        builder.setView(input);
-//        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-//            @Override
-//            public void onClick(DialogInterface dialog, int which) {
-//                final String output = input.getText().toString();
-//                if (output.length() != wordLength) {
-//                    Toast toast = Toast.makeText(getContext(), "Неправильная длина ответа", Toast.LENGTH_LONG);
-//                    toast.show();
-//                } else {
-//                    questionsOrder.add(0, questionsOrder.remove(questionsOrder.indexOf(currentRect)));
-//                    answers[currentRect] = output.toUpperCase();
-//                    if (questionsRemaining.contains((currentRect))) {
-//                        questionsRemaining.remove(questionsRemaining.indexOf(currentRect));
-//                    }
-//                }
-//            }
-//        });
-//        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-//            @Override
-//            public void onClick(DialogInterface dialog, int which) {
-//                dialog.cancel();
-//            }
-//        });
-//        builder.show();
-//    }
 
     public boolean onTouchEvent(MotionEvent event) {
         if (event.getAction() == MotionEvent.ACTION_DOWN) {
@@ -349,9 +314,9 @@ public class CrosswordView extends View {
         return true;
     }
 
-    boolean previousTextInputIsActiveState =false;
-    Rect canvasBounds = new Rect(), textBounds = new Rect(), currentWordRect = new Rect();
-    String currentAnswer = "";
+    private boolean previousTextInputIsActiveState =false;
+    private Rect canvasBounds = new Rect(), textBounds = new Rect(), currentWordRect = new Rect();
+    private String currentAnswer = "";
 
     protected void onDraw(Canvas myCanvas) {
         /*<--------------------BACKGROUND-------------------->*/
