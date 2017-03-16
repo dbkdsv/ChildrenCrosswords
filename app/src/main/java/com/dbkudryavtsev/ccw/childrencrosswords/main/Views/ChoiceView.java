@@ -1,4 +1,4 @@
-package com.dbkudryavtsev.ccw.childrencrosswords.main;
+package com.dbkudryavtsev.ccw.childrencrosswords.main.Views;
 
 import android.content.Context;
 import android.content.Intent;
@@ -9,6 +9,9 @@ import android.graphics.drawable.Drawable;
 import android.support.v4.content.ContextCompat;
 import android.view.MotionEvent;
 import android.view.View;
+
+import com.dbkudryavtsev.ccw.childrencrosswords.main.Activities.CrosswordActivity;
+import com.dbkudryavtsev.ccw.childrencrosswords.main.R;
 
 public class ChoiceView extends View {
     public final static String chosenRectString = "chosenRect";
@@ -33,11 +36,10 @@ public class ChoiceView extends View {
         white.setStyle(Paint.Style.FILL);
         white.setTextSize(wordHeight);
         levelRect = ContextCompat.getDrawable(getContext(), R.drawable.square);
-        rects = new Rect[R.raw.class.getFields().length-2];
+        rects = new Rect[R.raw.class.getFields().length];
         for (int i = 0; i < rects.length; i++) {
             rects[i] = new Rect(margin * (i + 1) + i * wordHeight, margin, margin * (i + 1) + i * wordHeight + wordHeight, margin + wordHeight);
         }
-
     }
 
     private Rect letterBounds = new Rect();

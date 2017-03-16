@@ -1,7 +1,9 @@
-package com.dbkudryavtsev.ccw.childrencrosswords.main;
+package com.dbkudryavtsev.ccw.childrencrosswords.main.Activities;
 
 import android.app.Activity;
 import android.os.Bundle;
+
+import com.dbkudryavtsev.ccw.childrencrosswords.main.Views.ChoiceView;
 
 public class ChoiceActivity extends Activity{
 

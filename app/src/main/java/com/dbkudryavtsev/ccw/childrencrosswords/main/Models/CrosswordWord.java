@@ -1,29 +1,29 @@
-package com.dbkudryavtsev.ccw.childrencrosswords.main;
+package com.dbkudryavtsev.ccw.childrencrosswords.main.Models;
 
-class CrosswordWord {
+public class CrosswordWord {
     private String question;
     private String word;
     private int posX;
     private int posY;
 
-    CrosswordWord(String question, String word, int posX, int posY) {
+    public CrosswordWord(String question, String word, int posX, int posY) {
         this.question = question;
         this.word = word;
         this.posX=posX;
         this.posY=posY;
     }
 
-    String getQuestion() {
+    public String getQuestion() {
         return question;
     }
 
-    String getWord(){
+    public String getWord(){
         return word;
     }
 
-    int getPosX() {
+    public int getPosX() {
         return posX;
     }
 
-    int getPosY() { return posY; }
+    public int getPosY() { return posY; }
 }

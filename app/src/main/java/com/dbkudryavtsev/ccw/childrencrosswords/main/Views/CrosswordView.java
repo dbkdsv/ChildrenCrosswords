@@ -1,5 +1,6 @@
-package com.dbkudryavtsev.ccw.childrencrosswords.main;
+package com.dbkudryavtsev.ccw.childrencrosswords.main.Views;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -8,6 +9,9 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
+import android.support.annotation.RequiresApi;
+import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.text.Layout;
 import android.text.StaticLayout;
@@ -18,8 +22,12 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Toast;
 
+import com.dbkudryavtsev.ccw.childrencrosswords.main.Models.Crossword;
+import com.dbkudryavtsev.ccw.childrencrosswords.main.R;
+import com.dbkudryavtsev.ccw.childrencrosswords.main.Utilities.JSONInteraction;
+
 import java.io.IOException;
-import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 
 import static java.lang.Math.max;
@@ -39,22 +47,6 @@ public class CrosswordView extends View {
     private TextPaint questionFontPaint = new TextPaint();
     private Paint whitePaint = new Paint();
 
-    public String loadJSONFromAsset(int chosenRectId) {
-        String json;
-        try {
-            InputStream inputStream = getResources().openRawResource(chosenRectId);
-            int size = inputStream.available();
-            byte[] buffer = new byte[size];
-            inputStream.read(buffer);
-            inputStream.close();
-            json = new String(buffer, "UTF-8");
-        } catch (IOException ex) {
-            ex.printStackTrace();
-            return null;
-        }
-        return json;
-    }
-
     private Crossword crossword;
     private String[] answers;
 
@@ -67,10 +59,14 @@ public class CrosswordView extends View {
 
     private Drawable checkButton, listButton;
 
-    public CrosswordView(Context context, int chosenRectId) {
+    private int globalChosenRectId;
+
+    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
+    public CrosswordView(Context context, int chosenRectId) throws UnsupportedEncodingException {
         super(context);
         setFocusable(true);
-        crossword = new Crossword(loadJSONFromAsset(chosenRectId));
+        globalChosenRectId=chosenRectId;
+        crossword = new Crossword(chosenRectId, getContext());
         answers = new String[crossword.getCwordsLength()];
         questionsRemaining = new ArrayList<>(crossword.getCwordsLength());
         questionsOrder = new ArrayList<>(crossword.getCwordsLength());
@@ -100,11 +96,13 @@ public class CrosswordView extends View {
                         crossword.getCword(i).getPosX();
             }
         }
-
+        answers = JSONInteraction.getAnswers(chosenRectId, getContext());
         for (int i = 0; i < crossword.getCwordsLength(); i++) {
-            answers[i] = "";
-            questionsRemaining.add(i);
-            questionsOrder.add(i);
+            if(answers[i].isEmpty()) {
+                questionsRemaining.add(i);
+                questionsOrder.add(i);
+            }
+            else  questionsOrder.add(0,i);
         }
     }
 
@@ -274,8 +272,21 @@ public class CrosswordView extends View {
         return intersects;
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     @Override
     public boolean dispatchKeyEvent(KeyEvent event) {
+        if (event.getKeyCode() == KeyEvent.KEYCODE_BACK){
+            if(textInputIsActive) {
+                textInputIsActive=false;
+                invalidate();
+                ((InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE))
+                        .hideSoftInputFromWindow(this.getWindowToken(), 0);
+            }
+            else {
+                JSONInteraction.writeToJson(answers, globalChosenRectId, getContext());
+                ((Activity) getContext()).finish();
+            }
+        }
         ArrayList<Integer[]> intersects = findIntersect();
         int activeSize=0;
         for(int i=0; i<intersects.size();i++){
@@ -457,7 +468,7 @@ public class CrosswordView extends View {
                 String keySpace = "input keyevent " + KeyEvent.KEYCODE_SPACE;
                 Runtime runtime = Runtime.getRuntime();
                 try {
-                    Process proc = runtime.exec(keySpace);
+                    runtime.exec(keySpace);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
