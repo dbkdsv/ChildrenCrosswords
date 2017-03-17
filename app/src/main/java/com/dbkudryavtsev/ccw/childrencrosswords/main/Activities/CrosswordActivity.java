@@ -7,8 +7,6 @@ import android.support.annotation.RequiresApi;
 
 import com.dbkudryavtsev.ccw.childrencrosswords.main.Views.CrosswordView;
 
-import java.io.UnsupportedEncodingException;
-
 import static com.dbkudryavtsev.ccw.childrencrosswords.main.Views.ChoiceView.chosenRectString;
 
 public class CrosswordActivity extends Activity {
@@ -18,10 +16,6 @@ public class CrosswordActivity extends Activity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Bundle extras = getIntent().getExtras();
-        try {
-            setContentView(new CrosswordView(this, extras.getInt(chosenRectString)));
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
+        setContentView(new CrosswordView(this, extras.getInt(chosenRectString)));
     }
 }

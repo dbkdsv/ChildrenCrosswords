@@ -13,16 +13,9 @@ import org.json.JSONObject;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-import java.util.Objects;
 
 public final class JSONInteraction {
     private static final String answersFileName = "answers.json";
@@ -73,13 +66,11 @@ public final class JSONInteraction {
 
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     public static String[] getAnswers(int chosenRectId, Context context){
-        StringBuilder stringBuilder = new StringBuilder();
-        String jsonString="";
+        String jsonString;
         try {
-            File file = new File(context.getFilesDir(), answersFileName.substring(0,
+            InputStream inputStream = new FileInputStream(new File(context.getFilesDir(), answersFileName.substring(0,
                     answersFileName.length() - 5) + Integer.toString(chosenRectId)+
-                    answersFileName.substring(answersFileName.length()-5, answersFileName.length()));
-            InputStream inputStream = new FileInputStream(file);
+                    answersFileName.substring(answersFileName.length()-5, answersFileName.length())));
             int size = inputStream.available();
             byte[] buffer = new byte[size];
             inputStream.read(buffer);
@@ -122,9 +113,6 @@ public final class JSONInteraction {
         }
         answersString+="]\n}";
         try {
-            File file = new File(context.getFilesDir(),answersFileName.substring(0,answersFileName.length()-5)+
-                    Integer.toString(chosenRectId)+answersFileName.substring(answersFileName.length()-5,
-                    answersFileName.length()));
             outputStream = context.openFileOutput(answersFileName.substring(0, answersFileName.length()-5)+
                     Integer.toString(chosenRectId)+answersFileName.substring(answersFileName.length()-5,
                     answersFileName.length()), Context.MODE_PRIVATE);
@@ -135,7 +123,7 @@ public final class JSONInteraction {
         }
     }
 
-    public static void createResourceFiles(Context context){
-
-    }
+//    public static void createResourceFiles(Context context){
+//
+//    }
 }

@@ -11,7 +11,6 @@ import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.support.annotation.RequiresApi;
-import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.text.Layout;
 import android.text.StaticLayout;
@@ -27,7 +26,6 @@ import com.dbkudryavtsev.ccw.childrencrosswords.main.R;
 import com.dbkudryavtsev.ccw.childrencrosswords.main.Utilities.JSONInteraction;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 
 import static java.lang.Math.max;
@@ -62,7 +60,7 @@ public class CrosswordView extends View {
     private int globalChosenRectId;
 
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
-    public CrosswordView(Context context, int chosenRectId) throws UnsupportedEncodingException {
+    public CrosswordView(Context context, int chosenRectId){
         super(context);
         setFocusable(true);
         globalChosenRectId=chosenRectId;
