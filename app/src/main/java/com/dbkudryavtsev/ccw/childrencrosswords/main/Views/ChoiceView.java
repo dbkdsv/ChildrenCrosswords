@@ -12,6 +12,7 @@ import android.view.View;
 
 import com.dbkudryavtsev.ccw.childrencrosswords.main.Activities.CrosswordActivity;
 import com.dbkudryavtsev.ccw.childrencrosswords.main.R;
+import com.dbkudryavtsev.ccw.childrencrosswords.main.Utilities.JSONInteraction;
 
 public class ChoiceView extends View {
     public final static String chosenRectString = "chosenRect";
@@ -24,6 +25,7 @@ public class ChoiceView extends View {
 
     public ChoiceView(Context context) {
         super(context);
+        //JSONInteraction.createResourceFiles(context);
     }
 
     @Override
