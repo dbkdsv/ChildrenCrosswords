@@ -60,6 +60,7 @@ public class CrosswordView extends View {
     public CrosswordView(Context context, int chosenRectId){
         super(context);
         setFocusable(true);
+        setFocusableInTouchMode(true);
         globalChosenRectId=chosenRectId;
         crossword = new Crossword(chosenRectId, getContext());
             answers = new String[crossword.getCwordsLength()];
@@ -203,7 +204,9 @@ public class CrosswordView extends View {
                     currentRect = checked_rects.get(0);
                     if (questionsRemaining.contains(currentRect)) {
                         textInputIsActive = true;
-                        findIntersect();
+                        ((InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE)).
+                                toggleSoftInput(InputMethodManager.SHOW_FORCED, InputMethodManager.HIDE_IMPLICIT_ONLY);
+                        requestFocus();
                         invalidate();
                     }
                 } else if (checkBounds.contains((int) event.getX(), (int) event.getY())) {
@@ -317,7 +320,7 @@ public class CrosswordView extends View {
                 invalidate();
             }
         }
-        return true;
+        return super.dispatchKeyEvent(event);
     }
 
     private boolean previousTextInputIsActiveState =false;
@@ -404,8 +407,6 @@ public class CrosswordView extends View {
             checkAnswers();
         }
         if (textInputIsActive) {
-            ((InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE)).
-                    toggleSoftInput(InputMethodManager.SHOW_FORCED, InputMethodManager.HIDE_IMPLICIT_ONLY);
             final int wordLength = crossword.getCword(currentRect).getWord().length();
             String textOnCanvas = String.format(getResources().getString(R.string.answer_title), currentRect + 1,
                     crossword.getCword(currentRect).getWord().length(), crossword.getCword(currentRect).getQuestion());
@@ -459,15 +460,6 @@ public class CrosswordView extends View {
             myCanvas.translate(textXCoordinate, textYCoordinate);
             sl.draw(myCanvas);
             myCanvas.restore();
-            if(textInputIsActive!= previousTextInputIsActiveState) {
-                String keySpace = "input keyevent " + KeyEvent.KEYCODE_SPACE;
-                Runtime runtime = Runtime.getRuntime();
-                try {
-                    runtime.exec(keySpace);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
         }
     }
 }
