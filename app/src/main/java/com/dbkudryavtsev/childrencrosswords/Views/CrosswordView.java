@@ -23,7 +23,6 @@ import com.dbkudryavtsev.childrencrosswords.Models.Crossword;
 import com.dbkudryavtsev.childrencrosswords.Utilities.JSONInteraction;
 import com.dbkudryavtsev.childrencrosswords.R;
 
-import java.io.IOException;
 import java.util.ArrayList;
 
 import static java.lang.Math.max;
@@ -272,58 +271,55 @@ public class CrosswordView extends View {
 
     @Override
     public boolean dispatchKeyEvent(KeyEvent event) {
-        if(event.getKeyCode()!=KeyEvent.KEYCODE_SPACE) {
-            if (event.getKeyCode() == KeyEvent.KEYCODE_BACK) {
-                if (textInputIsActive) {
-                    textInputIsActive = false;
-                    invalidate();
-                    ((InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE))
-                            .hideSoftInputFromWindow(this.getWindowToken(), 0);
-                } else {
-                    JSONInteraction.writeToJson(answers, globalChosenRectId, getContext());
-                    ((Activity) getContext()).finish();
-                }
-            }
-            ArrayList<Integer[]> intersects = findIntersect();
-            int activeSize = 0;
-            for (int i = 0; i < intersects.size(); i++) {
-                if (answers[intersects.get(i)[0]].length() > 0) activeSize++;
-            }
+        if (event.getKeyCode() == KeyEvent.KEYCODE_BACK) {
             if (textInputIsActive) {
-                if (event.getAction() == 2) {
-                    if (currentAnswer.length() < crossword.getCword(currentRect).getWord().length() - activeSize)
-                        currentAnswer += event.getCharacters();
-                }
-                if (event.getAction() == KeyEvent.ACTION_DOWN)
-                    if (event.getKeyCode() == KeyEvent.KEYCODE_DEL && currentAnswer.length() > 0)
-                        currentAnswer = currentAnswer.substring(0, currentAnswer.length() - 1);
-                currentAnswer = currentAnswer.toUpperCase();
-                if (currentAnswer.length() + activeSize == crossword.getCword(currentRect).getWord().length()) {
-                    String answerString = currentAnswer;
-                    for (int i = 0; i < intersects.size(); i++) {
-                        if (answers[intersects.get(i)[0]].length() > 0) {
-                            answerString = answerString.substring(0, intersects.get(i)[2]) +
-                                    answers[intersects.get(i)[0]].charAt(intersects.get(i)[1]) +
-                                    answerString.substring(intersects.get(i)[2]);
-                        }
-                    }
-                    if (answerString.equals(crossword.getCword(currentRect).getWord())) {
-                        answers[currentRect] = answerString;
-                        currentAnswer = "";
-                        questionsOrder.add(0, questionsOrder.remove(questionsOrder.indexOf(currentRect)));
-                        if (questionsRemaining.contains(currentRect)) {
-                            questionsRemaining.remove(questionsRemaining.indexOf(currentRect));
-                        }
-                        textInputIsActive = false;
-                    }
-                }
+                textInputIsActive = false;
                 invalidate();
+                ((InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE))
+                        .hideSoftInputFromWindow(this.getWindowToken(), 0);
+            } else {
+                JSONInteraction.writeToJson(answers, globalChosenRectId, getContext());
+                ((Activity) getContext()).finish();
             }
+        }
+        ArrayList<Integer[]> intersects = findIntersect();
+        int activeSize = 0;
+        for (int i = 0; i < intersects.size(); i++) {
+            if (answers[intersects.get(i)[0]].length() > 0) activeSize++;
+        }
+        if (textInputIsActive) {
+            if (event.getAction() == 2) {
+                if (currentAnswer.length() < crossword.getCword(currentRect).getWord().length() - activeSize)
+                    currentAnswer += event.getCharacters();
+            }
+            if (event.getAction() == KeyEvent.ACTION_DOWN)
+                if (event.getKeyCode() == KeyEvent.KEYCODE_DEL && currentAnswer.length() > 0)
+                    currentAnswer = currentAnswer.substring(0, currentAnswer.length() - 1);
+            currentAnswer = currentAnswer.toUpperCase();
+            if (currentAnswer.length() + activeSize == crossword.getCword(currentRect).getWord().length()) {
+                String answerString = currentAnswer;
+                for (int i = 0; i < intersects.size(); i++) {
+                    if (answers[intersects.get(i)[0]].length() > 0) {
+                        answerString = answerString.substring(0, intersects.get(i)[2]) +
+                                answers[intersects.get(i)[0]].charAt(intersects.get(i)[1]) +
+                                answerString.substring(intersects.get(i)[2]);
+                    }
+                }
+                if (answerString.equals(crossword.getCword(currentRect).getWord())) {
+                    answers[currentRect] = answerString;
+                    currentAnswer = "";
+                    questionsOrder.add(0, questionsOrder.remove(questionsOrder.indexOf(currentRect)));
+                    if (questionsRemaining.contains(currentRect)) {
+                        questionsRemaining.remove(questionsRemaining.indexOf(currentRect));
+                    }
+                    textInputIsActive = false;
+                }
+            }
+            invalidate();
         }
         return super.dispatchKeyEvent(event);
     }
 
-    private boolean previousTextInputIsActiveState =false;
     private Rect canvasBounds = new Rect(), textBounds = new Rect(), currentWordRect = new Rect();
     private String currentAnswer = "";
 
