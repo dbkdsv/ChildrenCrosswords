@@ -12,6 +12,7 @@ import android.view.View;
 
 import com.dbkudryavtsev.childrencrosswords.Activities.CrosswordActivity;
 import com.dbkudryavtsev.childrencrosswords.R;
+import com.dbkudryavtsev.childrencrosswords.Utilities.JSONInteraction;
 
 public class ChoiceView extends View {
     public final static String chosenRectString = "chosenRect";
@@ -24,7 +25,7 @@ public class ChoiceView extends View {
 
     public ChoiceView(Context context) {
         super(context);
-        //JSONInteraction.createResourceFiles(context);
+        JSONInteraction.createResourceFiles(context);
     }
 
     @Override
@@ -69,12 +70,10 @@ public class ChoiceView extends View {
                 break;
             }
         }
-        chosenRect++;
-        if(chosenRect>0) {
+        if(chosenRect>=0) {
             Intent intent = new Intent(this.getContext(), CrosswordActivity.class);
             try {
-                intent.putExtra(chosenRectString, getResources().getIdentifier("crossword"+chosenRect,
-                        "raw", getContext().getPackageName()));
+                intent.putExtra(chosenRectString, chosenRect);
             } catch (Exception e) {
                 e.printStackTrace();
             }
