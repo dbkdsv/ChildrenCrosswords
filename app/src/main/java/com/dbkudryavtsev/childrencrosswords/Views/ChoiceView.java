@@ -12,7 +12,8 @@ import android.view.View;
 
 import com.dbkudryavtsev.childrencrosswords.Activities.CrosswordActivity;
 import com.dbkudryavtsev.childrencrosswords.R;
-import com.dbkudryavtsev.childrencrosswords.Utilities.JSONInteraction;
+
+import java.io.File;
 
 public class ChoiceView extends View {
     public final static String chosenRectString = "chosenRect";
@@ -25,7 +26,7 @@ public class ChoiceView extends View {
 
     public ChoiceView(Context context) {
         super(context);
-        JSONInteraction.createResourceFiles(context);
+        //JSONInteraction.createResourceFiles(context);
     }
 
     @Override
@@ -38,7 +39,13 @@ public class ChoiceView extends View {
         white.setStyle(Paint.Style.FILL);
         white.setTextSize(wordHeight);
         levelRect = ContextCompat.getDrawable(getContext(), R.drawable.square);
-        rects = new Rect[R.raw.class.getFields().length];
+        File filesDirectory = getContext().getFilesDir();
+        int crosswordsCount=0;
+        if(filesDirectory.length()!=0) {
+            for (File file : filesDirectory.listFiles())
+                if (file.getName().contains("crossword")) crosswordsCount++;
+        }
+        rects = new Rect[crosswordsCount];
         for (int i = 0; i < rects.length; i++) {
             rects[i] = new Rect(margin * (i + 1) + i * wordHeight, margin, margin * (i + 1) + i * wordHeight + wordHeight, margin + wordHeight);
         }
