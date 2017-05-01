@@ -1,7 +1,6 @@
 package com.dbkudryavtsev.childrencrosswords.Utilities;
 
 import android.content.Context;
-import android.os.StrictMode;
 import android.widget.Toast;
 
 import com.dbkudryavtsev.childrencrosswords.Models.Crossword;
@@ -10,18 +9,16 @@ import com.dbkudryavtsev.childrencrosswords.Models.CrosswordWord;
 import net.lingala.zip4j.core.ZipFile;
 import net.lingala.zip4j.exception.ZipException;
 
-import org.apache.commons.io.IOUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URL;
+import java.util.concurrent.ExecutionException;
 
 public final class JSONInteraction {
 
@@ -39,6 +36,8 @@ public final class JSONInteraction {
                 inputStream.close();
                 json = new String(buffer, "UTF-8");
             } catch (IOException ex) {
+                Toast toast = Toast.makeText(context, "Не могу загрузить кроссворды из файла.", Toast.LENGTH_LONG);
+                toast.show();
                 ex.printStackTrace();
                 return null;
             }
@@ -59,6 +58,9 @@ public final class JSONInteraction {
                 cwords = new CrosswordWord[array.length()];
                 horCount = (Integer) jsonObject.get("horCount");
             } catch (JSONException ex) {
+                Toast toast = Toast.makeText(context, "Не могу создать JSON-объект для получения кроссворда.",
+                        Toast.LENGTH_LONG);
+                toast.show();
                 ex.printStackTrace();
             }
             for (int i = 0; i < cwords.length; i++)
@@ -69,6 +71,9 @@ public final class JSONInteraction {
                             array.getJSONObject(i).getInt("posY"));
 
                 } catch (JSONException ex) {
+                    Toast toast = Toast.makeText(context, "Ошибка обращения к JSON-объекту с кроссвордами.",
+                            Toast.LENGTH_LONG);
+                    toast.show();
                     ex.printStackTrace();
                 }
         }
@@ -86,12 +91,18 @@ public final class JSONInteraction {
                 array = jsonObject.getJSONArray("answers");
                 answers = new String[array.length()];
             } catch (JSONException ex) {
+                Toast toast = Toast.makeText(context, "Не могу создать JSON-объект для получения ответов.",
+                        Toast.LENGTH_LONG);
+                toast.show();
                 ex.printStackTrace();
             }
             for (int i = 0; i < answers.length; i++)
                 try {
                     answers[i] = array.getJSONObject(i).getString("answer");
                 } catch (JSONException ex) {
+                    Toast toast = Toast.makeText(context, "Ошибка обращения к JSON-объекту с ответами.",
+                            Toast.LENGTH_LONG);
+                    toast.show();
                     ex.printStackTrace();
                 }
         } else {
@@ -101,6 +112,9 @@ public final class JSONInteraction {
                 array = jsonObject.getJSONArray("crosswordWord");
                 answers = new String[array.length()];
             } catch (JSONException ex) {
+                Toast toast = Toast.makeText(context, "Ошибка чтения длины кроссвордов.",
+                        Toast.LENGTH_LONG);
+                toast.show();
                 ex.printStackTrace();
             }
             for (int i = 0; i < answers.length; i++)
@@ -124,43 +138,47 @@ public final class JSONInteraction {
             outputStream.write(answersString.getBytes());
             outputStream.close();
         } catch (Exception e) {
+            Toast toast = Toast.makeText(context, "Ошибка записи ответов в JSON.",
+                    Toast.LENGTH_LONG);
+            toast.show();
             e.printStackTrace();
         }
     }
 
-    private static void downloadFile(String _url, String _name) {
+    private static void downloadFile(String _url, String _name, Context context) {
+        Boolean result = true;
         try {
-            URL u = new URL(_url);
-            DataInputStream stream = new DataInputStream(u.openStream());
-            byte[] buffer = IOUtils.toByteArray(stream);
-            FileOutputStream fos = new FileOutputStream (new File(_name), true);
-            fos.write(buffer);
-            fos.flush();
-            fos.close();
-        } catch (IOException e) {
+            result = new AsyncTasks.DownloadCrosswords().execute(new AsyncTasks.DownloadParams(_url, _name, context)).get();
+        } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
         }
+        Toast toast;
+        if(result) {
+            toast = Toast.makeText(context, "Ошибка скачивания кроссвордов.",
+                    Toast.LENGTH_SHORT);
+        }
+        else{
+            toast = Toast.makeText(context, "Скачивание завершено успешно.",
+                    Toast.LENGTH_SHORT);
+        }
+        toast.show();
     }
 
     public static void createResourceFiles(Context context) {
         Toast toast = Toast.makeText(context, "Дождитесь завершения скачивания.", Toast.LENGTH_LONG);
         toast.show();
-        //Очень-очень нехорошо
-        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
-        StrictMode.setThreadPolicy(policy);
-        //
         File resources = new File(context.getFilesDir(), "raw.zip");
         downloadFile("https://drive.google.com/uc?export=download&id=0B8tU6dTdHawETXk0NHVtUkp0VDg",
-                resources.getPath());
+                resources.getPath(), context);
         try {
             ZipFile zipFile = new ZipFile(resources.getPath());
             zipFile.extractAll(context.getFilesDir().getPath());
             zipFile.getFile().delete();
         } catch (ZipException e) {
+            toast = Toast.makeText(context, "Ошибка распаковки архива.",
+                    Toast.LENGTH_LONG);
+            toast.show();
             e.printStackTrace();
         }
-
-        toast = Toast.makeText(context, "Готово!", Toast.LENGTH_LONG);
-        toast.show();
     }
 }

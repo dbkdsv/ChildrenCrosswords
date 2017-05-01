@@ -9,6 +9,7 @@ import android.graphics.drawable.Drawable;
 import android.support.v4.content.ContextCompat;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.Toast;
 
 import com.dbkudryavtsev.childrencrosswords.Activities.CrosswordActivity;
 import com.dbkudryavtsev.childrencrosswords.R;
@@ -30,11 +31,10 @@ public class ChoiceView extends View {
     }
 
     @Override
-    protected void onLayout(boolean changed, int l, int t, int r, int b) {
-        super.onLayout(changed, l, t, r, b);
+    protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         MAX_FILL = 4;
-        margin = (int) (getWidth() * .015);
-        wordHeight =(int) (getWidth() / MAX_FILL -  1.2*margin);
+        margin = (int) (w * .015);
+        wordHeight =(int) (w / MAX_FILL -  1.2*margin);
         white.setColor(ContextCompat.getColor(getContext(), R.color.white));
         white.setStyle(Paint.Style.FILL);
         white.setTextSize(wordHeight);
@@ -79,11 +79,7 @@ public class ChoiceView extends View {
         }
         if(chosenRect>=0) {
             Intent intent = new Intent(this.getContext(), CrosswordActivity.class);
-            try {
-                intent.putExtra(chosenRectString, chosenRect);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+            intent.putExtra(chosenRectString, chosenRect);
             getContext().startActivity(intent);
         }
         return super.onTouchEvent(event);

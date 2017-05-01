@@ -7,6 +7,10 @@ buildscript {
     dependencies {
         classpath 'com.android.tools.build:gradle:2.3.1'
 
+        /*testCompile 'junit:junit:4.12'
+        androidTestCompile 'com.android.support.test:runner:0.5'
+        androidTestCompile 'com.android.support.test:rules:0.5'
+        androidTestCompile 'com.android.support.test.uiautomator:uiautomator-v18:2.1.2'*/
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
     }
