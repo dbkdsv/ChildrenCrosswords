@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">Детские кроссворды</string>
     <string name="answer_title">Вопрос %1$d, %2$d букв:\n%3$s</string>
+    <string name="zip_download_link"><![CDATA[https://drive.google.com/uc?export=download&id=0B8tU6dTdHawETXk0NHVtUkp0VDg]]></string>
 </resources>

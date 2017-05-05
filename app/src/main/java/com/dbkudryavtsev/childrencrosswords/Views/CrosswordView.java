@@ -9,10 +9,14 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
+import android.support.annotation.Nullable;
+import android.support.annotation.RequiresApi;
 import android.support.v4.content.ContextCompat;
 import android.text.Layout;
 import android.text.StaticLayout;
 import android.text.TextPaint;
+import android.util.AttributeSet;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
@@ -49,24 +53,58 @@ public class CrosswordView extends View {
     private ArrayList<Integer> questionsRemaining;
     private ArrayList<Integer> questionsOrder;
 
-    public CrosswordView(Context context) {
-        super(context);
-    }
-
     private Drawable checkButton, listButton;
 
     private int globalChosenRectId;
 
-    public CrosswordView(Context context, int chosenRectId){
+    public CrosswordView(Context context){
         super(context);
-        setFocusable(true);
-        setFocusableInTouchMode(true);
-        globalChosenRectId=chosenRectId;
-        crossword = new Crossword(chosenRectId, getContext());
-            answers = new String[crossword.getCwordsLength()];
+        init();
+    }
+
+    public CrosswordView(Context context, @Nullable AttributeSet attrs) {
+        super(context, attrs);
+        init();
+    }
+
+    public CrosswordView(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
+        super(context, attrs, defStyleAttr);
+        init();
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+    public CrosswordView(Context context, @Nullable AttributeSet attrs, int defStyleAttr, int defStyleRes) {
+        super(context, attrs, defStyleAttr, defStyleRes);
+        init();
+    }
+
+    public void setValues (int chosenRectId){
+        globalChosenRectId = chosenRectId;
+        crossword = new Crossword(globalChosenRectId, getContext());
+        answers = new String[crossword.getCwordsLength()];
         questionsRemaining = new ArrayList<>(crossword.getCwordsLength());
         questionsOrder = new ArrayList<>(crossword.getCwordsLength());
+        for (int i = 0; i < crossword.getHorCount(); i++) {
+            if (crossword.getCword(i).getWord().length() +
+                    crossword.getCword(i).getPosX() > maxWordLength) {
+                maxWordLength = crossword.getCword(i).getWord().length() +
+                        crossword.getCword(i).getPosX();
+            }
+        }
+        answers = JSONInteraction.getAnswers(globalChosenRectId, getContext());
+        for (int i = 0; i < crossword.getCwordsLength(); i++) {
+            if(answers[i].isEmpty()) {
+                questionsRemaining.add(i);
+                questionsOrder.add(i);
+            }
+            else  questionsOrder.add(0,i);
+        }
+        invalidate();
+    }
 
+    private void init(){
+        setFocusable(true);
+        setFocusableInTouchMode(true);
         whitePaint.setColor(ContextCompat.getColor(getContext(), R.color.white));
         whitePaint.setStyle(Paint.Style.FILL);
         backgroundPaint.setColor(ContextCompat.getColor(getContext(), R.color.puzzle_background));
@@ -81,25 +119,8 @@ public class CrosswordView extends View {
         smallFontPaint.setStyle(Paint.Style.STROKE);
         questionFontPaint.setColor(ContextCompat.getColor(getContext(), R.color.puzzle_dark));
         questionFontPaint.setStyle(Paint.Style.STROKE);
-
         checkButton = ContextCompat.getDrawable(getContext(), R.drawable.ic_done);
         listButton = ContextCompat.getDrawable(getContext(), R.drawable.ic_list);
-
-        for (int i = 0; i < crossword.getHorCount(); i++) {
-            if (crossword.getCword(i).getWord().length() +
-                    crossword.getCword(i).getPosX() > maxWordLength) {
-                maxWordLength = crossword.getCword(i).getWord().length() +
-                        crossword.getCword(i).getPosX();
-            }
-        }
-        answers = JSONInteraction.getAnswers(chosenRectId, getContext());
-        for (int i = 0; i < crossword.getCwordsLength(); i++) {
-            if(answers[i].isEmpty()) {
-                questionsRemaining.add(i);
-                questionsOrder.add(i);
-            }
-            else  questionsOrder.add(0,i);
-        }
     }
 
     private int wordHeight;
@@ -141,15 +162,18 @@ public class CrosswordView extends View {
                 canvasBounds.right - innerMargin, canvasBounds.bottom - canvasBounds.height() / 2);
     }
 
+    Bitmap inputBitmap;
+    Canvas inputCanvas;
     @Override
-    protected void onLayout(boolean changed, int l, int t, int r, int b) {
-        super.onLayout(changed, l, t, r, b);
+    protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         final int MAX_FILL = 15;//maximum slots count
         wordHeight = getHeight() / MAX_FILL - 10;
         rectsSet();
         fontPaint.setTextSize(wordHeight);
         smallFontPaint.setTextSize(wordHeight / 4);
         questionFontPaint.setTextSize(wordHeight / 3);
+        inputBitmap = Bitmap.createBitmap(getWidth(), getHeight(), Bitmap.Config.ARGB_8888);
+        inputCanvas = new Canvas(inputBitmap);
     }
 
     private void checkAnswers() {
@@ -324,6 +348,8 @@ public class CrosswordView extends View {
     private Rect canvasBounds = new Rect(), textBounds = new Rect(), currentWordRect = new Rect();
     private String currentAnswer = "";
 
+    ArrayList<Integer> intersectPositions=new ArrayList<>();
+
     protected void onDraw(Canvas myCanvas) {
         /*<--------------------BACKGROUND-------------------->*/
         myCanvas.drawRect(0, 0, myCanvas.getWidth(), myCanvas.getHeight(), backgroundPaint);
@@ -407,8 +433,7 @@ public class CrosswordView extends View {
             final int wordLength = crossword.getCword(currentRect).getWord().length();
             String textOnCanvas = String.format(getResources().getString(R.string.answer_title), currentRect + 1,
                     crossword.getCword(currentRect).getWord().length(), crossword.getCword(currentRect).getQuestion());
-            Bitmap inputBitmap = Bitmap.createBitmap(getWidth(), getHeight(), Bitmap.Config.ARGB_8888);
-            Canvas inputCanvas = new Canvas(inputBitmap);
+
             inputCanvas.drawRect(canvasBounds, rectPaint);
             inputCanvas.drawRect(canvasBounds, backgroundPaint);
             inputCanvas.drawRect(textBounds, rectPaint);
@@ -431,7 +456,7 @@ public class CrosswordView extends View {
             float textXCoordinate = textBounds.left;
             int horizontal_step, vertical_step;
             ArrayList<Integer[]> intersects = findIntersect();
-            ArrayList<Integer> intersectPositions=new ArrayList<>();
+            intersectPositions.clear();
             int step=0;
             for(int k=0; k<intersects.size();k++){
                 if (answers[intersects.get(k)[0]].length()!=0){

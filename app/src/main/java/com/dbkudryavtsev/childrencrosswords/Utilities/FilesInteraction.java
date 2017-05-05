@@ -3,6 +3,8 @@ package com.dbkudryavtsev.childrencrosswords.Utilities;
 import android.content.Context;
 import android.widget.Toast;
 
+import com.dbkudryavtsev.childrencrosswords.R;
+
 import net.lingala.zip4j.core.ZipFile;
 import net.lingala.zip4j.exception.ZipException;
 
@@ -59,7 +61,7 @@ public class FilesInteraction {
         Toast toast = Toast.makeText(context, "Дождитесь завершения скачивания.", Toast.LENGTH_LONG);
         toast.show();
         File resources = new File(context.getFilesDir(), "raw.zip");
-        downloadFile("https://drive.google.com/uc?export=download&id=0B8tU6dTdHawETXk0NHVtUkp0VDg",
+        downloadFile(context.getString(R.string.zip_download_link),
                 resources.getPath(), context);
         try {
             ZipFile zipFile = new ZipFile(resources.getPath());

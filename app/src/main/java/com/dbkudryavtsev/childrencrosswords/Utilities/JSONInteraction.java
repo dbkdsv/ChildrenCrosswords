@@ -6,19 +6,14 @@ import android.widget.Toast;
 import com.dbkudryavtsev.childrencrosswords.Models.Crossword;
 import com.dbkudryavtsev.childrencrosswords.Models.CrosswordWord;
 
-import net.lingala.zip4j.core.ZipFile;
-import net.lingala.zip4j.exception.ZipException;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.concurrent.ExecutionException;
 
 public final class JSONInteraction {
 

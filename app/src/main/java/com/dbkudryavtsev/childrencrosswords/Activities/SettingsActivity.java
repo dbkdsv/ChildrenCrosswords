@@ -1,7 +1,7 @@
 package com.dbkudryavtsev.childrencrosswords.Activities;
 
+import android.app.Activity;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -13,7 +13,7 @@ import java.io.File;
 
 import static com.dbkudryavtsev.childrencrosswords.Utilities.FilesInteraction.createResourceFiles;
 
-public class SettingsActivity extends AppCompatActivity {
+public class SettingsActivity extends Activity {
 
     private static final String[] menuStrings = {"Обновить кроссворды", "Сбросить прогресс", "Фон кроссвордов"};
 
