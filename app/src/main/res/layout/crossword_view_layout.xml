@@ -12,4 +12,16 @@
         android:id="@+id/crossword_view">
     </com.dbkudryavtsev.childrencrosswords.Views.CrosswordView>
 
+    <android.support.design.widget.FloatingActionButton
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/check_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:src="@drawable/ic_done"
+        app:backgroundTint="@color/colorPrimaryDark"
+        app:borderWidth="0dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"/>
+
 </RelativeLayout>

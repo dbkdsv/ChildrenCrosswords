@@ -176,7 +176,7 @@ public class CrosswordView extends View {
         inputCanvas = new Canvas(inputBitmap);
     }
 
-    private void checkAnswers() {
+    public void checkAnswers() {
         Toast toast;
         boolean allright = true;
         for (int i = 0; i < crossword.getCwordsLength(); i++) {
@@ -190,7 +190,7 @@ public class CrosswordView extends View {
         toast.show();
     }
 
-    private void listQuestions() {
+    public void listQuestions() {
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
         builder.setTitle("Список всех вопросов:")
                 .setItems(crossword.getAllQuestions(), new DialogInterface.OnClickListener() {
