@@ -22,8 +22,6 @@ import java.util.concurrent.ExecutionException;
 
 public final class JSONInteraction {
 
-    private static final String answersFileName = "answers.json";
-
     public static String loadJSONFromFile(int chosenRectId, String fileName, Context context) {
         String json = "";
         File inputFile = new File(context.getFilesDir(), fileName + chosenRectId + ".json");
