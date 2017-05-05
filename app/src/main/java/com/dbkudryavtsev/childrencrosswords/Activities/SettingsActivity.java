@@ -8,9 +8,10 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 import com.dbkudryavtsev.childrencrosswords.R;
-import com.dbkudryavtsev.childrencrosswords.Utilities.JSONInteraction;
 
 import java.io.File;
+
+import static com.dbkudryavtsev.childrencrosswords.Utilities.FilesInteraction.createResourceFiles;
 
 public class SettingsActivity extends AppCompatActivity {
 
@@ -29,7 +30,7 @@ public class SettingsActivity extends AppCompatActivity {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 switch ((int) id){
                     case 0: {
-                        JSONInteraction.createResourceFiles(getBaseContext());
+                        createResourceFiles(getBaseContext());
                     }
                     case 1: {
                         File contentsDirectory = new File(getBaseContext().getFilesDir().getAbsolutePath());

@@ -25,6 +25,7 @@ import com.dbkudryavtsev.childrencrosswords.R;
 
 import java.util.ArrayList;
 
+import static com.dbkudryavtsev.childrencrosswords.Utilities.FilesInteraction.writeToAnswerFile;
 import static java.lang.Math.max;
 import static java.lang.Math.min;
 
@@ -278,7 +279,7 @@ public class CrosswordView extends View {
                 ((InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE))
                         .hideSoftInputFromWindow(this.getWindowToken(), 0);
             } else {
-                JSONInteraction.writeToJson(answers, globalChosenRectId, getContext());
+                writeToAnswerFile(answers, globalChosenRectId, getContext());
                 ((Activity) getContext()).finish();
             }
         }

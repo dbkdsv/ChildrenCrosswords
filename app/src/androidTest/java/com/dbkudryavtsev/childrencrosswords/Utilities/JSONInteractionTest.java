@@ -11,9 +11,7 @@ import com.dbkudryavtsev.childrencrosswords.Models.CrosswordWord;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.junit.runners.JUnit4;
 
-import static com.dbkudryavtsev.childrencrosswords.Utilities.JSONInteraction.createResourceFiles;
 import static com.dbkudryavtsev.childrencrosswords.Utilities.JSONInteraction.getCrossword;
 import static junit.framework.Assert.assertTrue;
 
@@ -47,7 +45,6 @@ public class JSONInteractionTest{
 
     @Test
     public void getCrosswordTest() throws Exception {
-        //createResourceFiles(instrumentationCtx);
         assertTrue(
                 equalCrosswords(
                         getCrossword(0, instrumentationCtx),
