@@ -11,7 +11,7 @@ import com.dbkudryavtsev.childrencrosswords.R;
 
 import java.io.File;
 
-import static com.dbkudryavtsev.childrencrosswords.Utilities.FilesInteraction.createResourceFiles;
+import static com.dbkudryavtsev.childrencrosswords.Utilities.ResourcesBuilder.createResourceFiles;
 
 public class SettingsActivity extends Activity {
 

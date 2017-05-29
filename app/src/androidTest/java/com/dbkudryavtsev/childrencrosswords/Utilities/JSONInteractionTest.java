@@ -12,7 +12,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import static com.dbkudryavtsev.childrencrosswords.Utilities.JSONInteraction.getCrossword;
+import static com.dbkudryavtsev.childrencrosswords.Utilities.CrosswordBuilder.getCrossword;
 import static junit.framework.Assert.assertTrue;
 
 @RunWith(AndroidJUnit4.class)

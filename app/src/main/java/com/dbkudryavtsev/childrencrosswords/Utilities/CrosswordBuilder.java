@@ -15,7 +15,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-public final class JSONInteraction {
+public final class CrosswordBuilder {
 
     public static String loadJSONFromFile(int chosenRectId, String fileName, Context context) {
         String json = "";

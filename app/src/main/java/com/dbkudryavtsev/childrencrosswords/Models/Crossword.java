@@ -2,7 +2,7 @@ package com.dbkudryavtsev.childrencrosswords.Models;
 
 import android.content.Context;
 
-import com.dbkudryavtsev.childrencrosswords.Utilities.JSONInteraction;
+import com.dbkudryavtsev.childrencrosswords.Utilities.CrosswordBuilder;
 
 import java.util.Arrays;
 
@@ -19,7 +19,7 @@ public class Crossword {
         this(anotherCrossword.getAllCwords(), anotherCrossword.getHorCount());
     }
 
-    public Crossword(int chosenRectId, Context context) {this(JSONInteraction.getCrossword(chosenRectId, context));
+    public Crossword(int chosenRectId, Context context) {this(CrosswordBuilder.getCrossword(chosenRectId, context));
     }
 
     public int getHorCount(){

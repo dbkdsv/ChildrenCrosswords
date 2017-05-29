@@ -8,7 +8,6 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Rect;
-import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
@@ -24,18 +23,18 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.Toast;
 
 import com.dbkudryavtsev.childrencrosswords.Models.Crossword;
-import com.dbkudryavtsev.childrencrosswords.Utilities.JSONInteraction;
+import com.dbkudryavtsev.childrencrosswords.Utilities.CrosswordBuilder;
 import com.dbkudryavtsev.childrencrosswords.R;
 
 import java.util.ArrayList;
 
-import static com.dbkudryavtsev.childrencrosswords.Utilities.FilesInteraction.writeToAnswerFile;
+import static com.dbkudryavtsev.childrencrosswords.Utilities.ResourcesBuilder.writeToAnswerFile;
 import static java.lang.Math.max;
 import static java.lang.Math.min;
 
 public class CrosswordView extends View {
 
-    private final int BAR_PERCENTAGE = 15;
+    private final int BAR_PERCENTAGE = 5;
 
     private int maxWordLength = -1;
 
@@ -52,8 +51,6 @@ public class CrosswordView extends View {
 
     private ArrayList<Integer> questionsRemaining;
     private ArrayList<Integer> questionsOrder;
-
-    private Drawable checkButton, listButton;
 
     private int globalChosenRectId;
 
@@ -91,7 +88,7 @@ public class CrosswordView extends View {
                         crossword.getCword(i).getPosX();
             }
         }
-        answers = JSONInteraction.getAnswers(globalChosenRectId, getContext());
+        answers = CrosswordBuilder.getAnswers(globalChosenRectId, getContext());
         for (int i = 0; i < crossword.getCwordsLength(); i++) {
             if(answers[i].isEmpty()) {
                 questionsRemaining.add(i);
@@ -119,12 +116,9 @@ public class CrosswordView extends View {
         smallFontPaint.setStyle(Paint.Style.STROKE);
         questionFontPaint.setColor(ContextCompat.getColor(getContext(), R.color.puzzle_dark));
         questionFontPaint.setStyle(Paint.Style.STROKE);
-        checkButton = ContextCompat.getDrawable(getContext(), R.drawable.ic_done);
-        listButton = ContextCompat.getDrawable(getContext(), R.drawable.ic_list);
     }
 
     private int wordHeight;
-    private Rect checkBounds = new Rect(), listButtonBounds = new Rect();
     private Rect[] rects;
 
     private void rectsSet() {
@@ -150,10 +144,6 @@ public class CrosswordView extends View {
                         constY + wordHeight * crossword.getCword(i).getWord().length());
             }
         }
-        checkBounds.set(5, 5, (int) (getWidth() * .2), (int) (getWidth() * .2));
-        listButtonBounds.set((int) (getWidth() * .8), 5, getWidth(), (int) (getWidth() * .2));
-        checkButton.setBounds(checkBounds);
-        listButton.setBounds(listButtonBounds);
         int inputBoundsWidth = (int) (getWidth() * .9), inputBoundsHeight = (int) (getHeight() * .3),
                 marginTop = getHeight() * BAR_PERCENTAGE / 100, innerMargin = 10;
         canvasBounds.set((getWidth() - inputBoundsWidth) / 2, marginTop,
@@ -233,15 +223,8 @@ public class CrosswordView extends View {
                         requestFocus();
                         invalidate();
                     }
-                } else if (checkBounds.contains((int) event.getX(), (int) event.getY())) {
-                    /*Check all answers*/
-                    checkAnswers();
-                } else if (listButtonBounds.contains((int) event.getX(), (int) event.getY())) {
-                    /*List all questions*/
-                    listQuestions();
                 }
             }
-
         }
         return super.onTouchEvent(event);
     }
@@ -280,7 +263,8 @@ public class CrosswordView extends View {
                             comparableRectDots[0][0]-crossword.getCword(currentRect).getPosX()};
                     intersects.add(intersectDot);
                 }
-            } else {
+            }
+            else {
                 if (min(currentRectDots[0][1], currentRectDots[1][1]) <= comparableRectDots[0][1] &&
                         comparableRectDots[0][1] <= max(currentRectDots[0][1], currentRectDots[1][1]) &&
                         min(comparableRectDots[0][0], comparableRectDots[1][0]) <= currentRectDots[0][0] &&
@@ -353,9 +337,6 @@ public class CrosswordView extends View {
     protected void onDraw(Canvas myCanvas) {
         /*<--------------------BACKGROUND-------------------->*/
         myCanvas.drawRect(0, 0, myCanvas.getWidth(), myCanvas.getHeight(), backgroundPaint);
-        /*<--------------------BUTTONS-------------------->*/
-        checkButton.draw(myCanvas);
-        listButton.draw(myCanvas);
         /*<--------------------CROSSWORD-------------------->*/
         //draw crossword
         for (int number = questionsOrder.size() - 1; number >= 0; number--) {

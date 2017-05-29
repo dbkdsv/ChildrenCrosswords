@@ -12,7 +12,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.util.concurrent.ExecutionException;
 
-public class FilesInteraction {
+public class ResourcesBuilder {
 
     private static final String answersFileName = "answers.json";
 
