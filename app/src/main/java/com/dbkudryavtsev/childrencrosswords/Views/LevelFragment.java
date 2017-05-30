@@ -4,7 +4,6 @@ import android.app.Fragment;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,6 +12,8 @@ import android.widget.TextView;
 
 import com.dbkudryavtsev.childrencrosswords.Activities.CrosswordActivity;
 import com.dbkudryavtsev.childrencrosswords.R;
+
+import java.util.Locale;
 
 public class LevelFragment extends Fragment implements View.OnClickListener {
 
@@ -41,8 +42,10 @@ public class LevelFragment extends Fragment implements View.OnClickListener {
         final RelativeLayout layout = (RelativeLayout) inflater.inflate(R.layout.choice_element, container, false);
         TextView levelCompletionView = (TextView) layout.findViewById(R.id.level_completion);
         TextView levelCountView = (TextView) layout.findViewById(R.id.level_count);
-        levelCompletionView.setText(Integer.toString(getArguments().getInt(levelCompletionString)));
-        levelCountView.setText(Integer.toString(getArguments().getInt(levelCountString)+1));
+        levelCompletionView.setText(String.format(Locale.getDefault(),
+                "%d", getArguments().getInt(levelCompletionString)));
+        levelCountView.setText(String.format(Locale.getDefault(),
+                "%d", getArguments().getInt(levelCountString)+1));
         layout.setOnClickListener(this);
         return layout;
     }

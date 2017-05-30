@@ -6,6 +6,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.dbkudryavtsev.childrencrosswords.R;
 
@@ -31,18 +32,22 @@ public class SettingsActivity extends Activity {
                 switch ((int) id){
                     case 0: {
                         createResourceFiles(getBaseContext());
+                        return;
                     }
                     case 1: {
                         File contentsDirectory = new File(getBaseContext().getFilesDir().getAbsolutePath());
                         for (File file: contentsDirectory.listFiles()){
                             if(file.getName().contains("answers"))
-                                file.delete();
+                                if(!file.delete()) {
+                                    Toast.makeText(SettingsActivity.this,
+                                            "Проблема с удалением файлов.", Toast.LENGTH_LONG).show();
+                                    return;
+                                }
                         }
-                        break;
+                        return;
                     }
                     default:{
 
-                        break;
                     }
                 }
             }

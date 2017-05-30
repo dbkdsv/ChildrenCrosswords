@@ -66,7 +66,9 @@ public class ResourcesBuilder {
         try {
             ZipFile zipFile = new ZipFile(resources.getPath());
             zipFile.extractAll(context.getFilesDir().getPath());
-            zipFile.getFile().delete();
+            if(!zipFile.getFile().delete()){
+                throw new ZipException();
+            }
         } catch (ZipException e) {
             toast = Toast.makeText(context, "Ошибка распаковки архива.",
                     Toast.LENGTH_LONG);

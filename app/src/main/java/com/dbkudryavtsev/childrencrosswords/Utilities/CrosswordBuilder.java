@@ -17,7 +17,7 @@ import java.io.InputStream;
 
 public final class CrosswordBuilder {
 
-    public static String loadJSONFromFile(int chosenRectId, String fileName, Context context) {
+    private static String loadJSONFromFile(int chosenRectId, String fileName, Context context) {
         String json = "";
         File inputFile = new File(context.getFilesDir(), fileName + chosenRectId + ".json");
         if (inputFile.exists()) {
@@ -25,7 +25,7 @@ public final class CrosswordBuilder {
                 InputStream inputStream = new FileInputStream(inputFile);
                 int size = inputStream.available();
                 byte[] buffer = new byte[size];
-                inputStream.read(buffer);
+                if(inputStream.read(buffer)<1) throw new IOException();
                 inputStream.close();
                 json = new String(buffer, "UTF-8");
             } catch (IOException ex) {
@@ -44,7 +44,7 @@ public final class CrosswordBuilder {
         JSONArray array = new JSONArray();
         CrosswordWord[] cwords = new CrosswordWord[]{};
         int horCount = 0;
-        if (jsonString.length()>0) {
+        if (jsonString!=null && jsonString.length()>0) {
             try {
                 jsonObject = new JSONObject(jsonString);
                 array = jsonObject.getJSONArray("crosswordWord");
@@ -78,7 +78,7 @@ public final class CrosswordBuilder {
         String[] answers = new String[]{};
         JSONObject jsonObject;
         JSONArray array = new JSONArray();
-        if (jsonString.length()>0) {
+        if (jsonString!=null && jsonString.length()>0) {
             try {
                 jsonObject = new JSONObject(jsonString);
                 array = jsonObject.getJSONArray("answers");

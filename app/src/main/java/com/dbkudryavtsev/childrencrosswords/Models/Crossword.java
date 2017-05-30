@@ -15,7 +15,7 @@ public class Crossword {
         horCount = anotherHorCount;
     }
 
-    public Crossword(Crossword anotherCrossword){
+    private Crossword(Crossword anotherCrossword){
         this(anotherCrossword.getAllCwords(), anotherCrossword.getHorCount());
     }
 
@@ -34,7 +34,7 @@ public class Crossword {
         return cwords[position];
     }
 
-    public CrosswordWord[] getAllCwords(){ return Arrays.copyOf(cwords, cwords.length);}
+    private CrosswordWord[] getAllCwords(){ return Arrays.copyOf(cwords, cwords.length);}
 
     public String[] getAllQuestions(){
         String[] questions=new String[cwords.length];

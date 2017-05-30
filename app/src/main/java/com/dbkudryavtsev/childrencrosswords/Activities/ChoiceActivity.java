@@ -3,7 +3,6 @@ package com.dbkudryavtsev.childrencrosswords.Activities;
 import android.app.Activity;
 import android.os.Bundle;
 import android.app.FragmentManager;
-import android.widget.LinearLayout;
 
 import com.dbkudryavtsev.childrencrosswords.R;
 import com.dbkudryavtsev.childrencrosswords.Views.LevelFragment;
@@ -14,13 +13,10 @@ import static com.dbkudryavtsev.childrencrosswords.Utilities.CrosswordBuilder.ge
 
 public class ChoiceActivity extends Activity{
 
-    private LinearLayout choiceLayout;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_choice);
-        choiceLayout = (LinearLayout) findViewById(R.id.choice_layout);
     }
 
     @Override

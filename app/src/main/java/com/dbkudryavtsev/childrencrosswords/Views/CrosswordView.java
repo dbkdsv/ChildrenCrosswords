@@ -10,7 +10,6 @@ import android.graphics.Paint;
 import android.graphics.Rect;
 import android.os.Build;
 import android.support.annotation.Nullable;
-import android.support.annotation.RequiresApi;
 import android.support.v4.content.ContextCompat;
 import android.text.Layout;
 import android.text.StaticLayout;
@@ -66,12 +65,6 @@ public class CrosswordView extends View {
 
     public CrosswordView(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        init();
-    }
-
-    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-    public CrosswordView(Context context, @Nullable AttributeSet attrs, int defStyleAttr, int defStyleRes) {
-        super(context, attrs, defStyleAttr, defStyleRes);
         init();
     }
 
@@ -331,6 +324,8 @@ public class CrosswordView extends View {
 
     private Rect canvasBounds = new Rect(), textBounds = new Rect(), currentWordRect = new Rect();
     private String currentAnswer = "";
+    private StaticLayout sl = new StaticLayout("", questionFontPaint, 0,
+            Layout.Alignment.ALIGN_CENTER, 1, 1, true);
 
     ArrayList<Integer> intersectPositions=new ArrayList<>();
 
@@ -428,8 +423,18 @@ public class CrosswordView extends View {
                         canvasBounds.left + constX + j * wordHeight, constY + wordHeight, linePaint);
             }
             myCanvas.drawBitmap(inputBitmap, 0.0f, 0.0f, null);
-            StaticLayout sl = new StaticLayout(textOnCanvas, questionFontPaint, textBounds.width(),
-                    Layout.Alignment.ALIGN_CENTER, 1, 1, true);
+            if(Build.VERSION.SDK_INT>=23) {
+                StaticLayout.Builder layoutBuilder = StaticLayout.Builder.obtain(textOnCanvas,
+                        0, textOnCanvas.length(), questionFontPaint, textBounds.width())
+                        .setAlignment(Layout.Alignment.ALIGN_CENTER)
+                        .setLineSpacing(1,1)
+                        .setIncludePad(true);
+                sl = layoutBuilder.build();
+            }
+            else {
+                sl = new StaticLayout(textOnCanvas, questionFontPaint, textBounds.width(),
+                        Layout.Alignment.ALIGN_CENTER, 1, 1, true);
+            }
             myCanvas.save();
             float textHeight = getTextHeight(textOnCanvas, questionFontPaint);
             int numberOfTextLines = sl.getLineCount();

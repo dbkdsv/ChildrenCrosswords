@@ -2,7 +2,6 @@ package com.dbkudryavtsev.childrencrosswords.Utilities;
 
 import android.content.Context;
 import android.os.AsyncTask;
-import android.widget.Toast;
 
 import org.apache.commons.io.IOUtils;
 
@@ -12,20 +11,20 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URL;
 
-public class AsyncTasks {
+class AsyncTasks {
 
-    public static class DownloadParams{
+    static class DownloadParams{
         String url, name;
         Context context;
 
-        public DownloadParams(String url, String name, Context context) {
+        DownloadParams(String url, String name, Context context) {
             this.url = url;
             this.name = name;
             this.context = context;
         }
     }
 
-    public static class DownloadCrosswords extends AsyncTask<DownloadParams, Void, Boolean>{
+    static class DownloadCrosswords extends AsyncTask<DownloadParams, Void, Boolean>{
 
         @Override
         protected Boolean doInBackground(DownloadParams... params) {
