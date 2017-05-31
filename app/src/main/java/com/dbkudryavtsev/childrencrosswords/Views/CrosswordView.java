@@ -242,8 +242,8 @@ public class CrosswordView extends View {
                     } else {
                         ArrayList<Integer> checked_rects = new ArrayList<>();
                         for (int i = 0; i < crossword.getCwordsLength(); i++) {
-                            if (rects[i].contains((int) event.getX()/(int) scaleFactor,
-                                    (int) event.getY()/(int) scaleFactor)) {
+                            if (rects[i].contains((int)(event.getX()/scaleFactor+clipBounds.left),
+                                    (int)(event.getY()/scaleFactor+clipBounds.top))) {
                                 checked_rects.add(i);
                             }
                         }
