@@ -15,8 +15,10 @@ import android.text.Layout;
 import android.text.StaticLayout;
 import android.text.TextPaint;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
+import android.view.ScaleGestureDetector;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Toast;
@@ -52,6 +54,8 @@ public class CrosswordView extends View {
     private ArrayList<Integer> questionsOrder;
 
     private int globalChosenRectId;
+
+    private ScaleGestureDetector detector;
 
     public CrosswordView(Context context){
         super(context);
@@ -109,30 +113,53 @@ public class CrosswordView extends View {
         smallFontPaint.setStyle(Paint.Style.STROKE);
         questionFontPaint.setColor(ContextCompat.getColor(getContext(), R.color.puzzle_dark));
         questionFontPaint.setStyle(Paint.Style.STROKE);
+        detector = new ScaleGestureDetector(getContext(), new ScaleListener());
+    }
+
+    private float scaleFactor = 1.f;
+
+    private class ScaleListener extends ScaleGestureDetector.SimpleOnScaleGestureListener{
+        @Override
+        public boolean onScale(android.view.ScaleGestureDetector detector) {
+
+            scaleFactor *= detector.getScaleFactor();
+            scaleFactor = Math.max(1.f, Math.min(scaleFactor, 5.f));
+
+            invalidate();
+
+            return true;
+        }
     }
 
     private int wordHeight;
     private Rect[] rects;
 
-    private void rectsSet() {
+    private float stepX = 0.f;
+    private float stepY = 0.f;
+
+    private void allocateRects(){
         rects = new Rect[crossword.getCwordsLength()];
+        for(int i = 0; i<crossword.getCwordsLength(); i++)
+            rects[i] = new Rect();
+    }
+
+    private void rectsSet() {
+
         for (int i = 0; i < crossword.getCwordsLength(); i++) {
             //set constant margin
-            int constX = crossword.getCword(i).getPosX() * wordHeight +
-                    (getWidth() - maxWordLength * wordHeight) / 2;
-            int constY = crossword.getCword(i).getPosY() * wordHeight +
-                    getHeight() * BAR_PERCENTAGE / 100;
+            int constX = crossword.getCword(i).getPosX() * wordHeight + (int) stepX;
+            int constY = crossword.getCword(i).getPosY() * wordHeight + (int) stepY;
             //horisontal words
             if (i < crossword.getHorCount()) {
                 //set border
-                rects[i] = new Rect(constX, constY,
+                rects[i].set(constX, constY,
                         constX + crossword.getCword(i).getWord().length() * wordHeight,
                         constY + wordHeight);
             }
             //vertical words
             else {
                 //set border
-                rects[i] = new Rect(constX, constY,
+                rects[i].set(constX, constY,
                         constX + wordHeight,
                         constY + wordHeight * crossword.getCword(i).getWord().length());
             }
@@ -151,6 +178,9 @@ public class CrosswordView extends View {
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         final int MAX_FILL = 15;//maximum slots count
         wordHeight = getHeight() / MAX_FILL - 10;
+        stepX = (getWidth() - maxWordLength * wordHeight) / 2;
+        stepY = getHeight() * BAR_PERCENTAGE / 100;
+        allocateRects();
         rectsSet();
         fontPaint.setTextSize(wordHeight);
         smallFontPaint.setTextSize(wordHeight / 4);
@@ -190,36 +220,61 @@ public class CrosswordView extends View {
 
     private int currentRect;
 
+    private float previousX, previousY;
+    private boolean isMoving;
+
     public boolean onTouchEvent(MotionEvent event) {
-        if (event.getAction() == MotionEvent.ACTION_DOWN) {
-            if (textInputIsActive) {
-                if (!canvasBounds.contains((int) event.getX(), (int) event.getY())) {
-                    textInputIsActive = false;
-                    currentAnswer = "";
-                    invalidate();
-                    ((InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE))
-                            .hideSoftInputFromWindow(this.getWindowToken(), 0);
-                }
-            } else {
-                ArrayList<Integer> checked_rects = new ArrayList<>();
-                for (int i = 0; i < crossword.getCwordsLength(); i++) {
-                    if (rects[i].contains((int) event.getX(), (int) event.getY())) {
-                        checked_rects.add(i);
+        detector.onTouchEvent(event);
+        switch (event.getActionMasked()) {
+            case MotionEvent.ACTION_DOWN: {
+                previousX = event.getX();
+                previousY = event.getY();
+                break;
+            }
+            case MotionEvent.ACTION_UP: {
+                if (!isMoving) {
+                    if (textInputIsActive) {
+                        if (!canvasBounds.contains((int) event.getX(), (int) event.getY())) {
+                            textInputIsActive = false;
+                            currentAnswer = "";
+                            invalidate();
+                            ((InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE))
+                                    .hideSoftInputFromWindow(this.getWindowToken(), 0);
+                        }
+                    } else {
+                        ArrayList<Integer> checked_rects = new ArrayList<>();
+                        for (int i = 0; i < crossword.getCwordsLength(); i++) {
+                            if (rects[i].contains((int) event.getX(), (int) event.getY())) {
+                                checked_rects.add(i);
+                            }
+                        }
+                        if (checked_rects.size() == 1) {
+                            currentRect = checked_rects.get(0);
+                            if (questionsRemaining.contains(currentRect)) {
+                                textInputIsActive = true;
+                                ((InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE)).
+                                        toggleSoftInput(InputMethodManager.SHOW_FORCED, InputMethodManager.HIDE_IMPLICIT_ONLY);
+                                requestFocus();
+                                invalidate();
+                            }
+                        }
                     }
-                }
-                if (checked_rects.size() == 1) {
-                    currentRect = checked_rects.get(0);
-                    if (questionsRemaining.contains(currentRect)) {
-                        textInputIsActive = true;
-                        ((InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE)).
-                                toggleSoftInput(InputMethodManager.SHOW_FORCED, InputMethodManager.HIDE_IMPLICIT_ONLY);
-                        requestFocus();
-                        invalidate();
-                    }
-                }
+                } else isMoving = false;
+                break;
+            }
+            case MotionEvent.ACTION_MOVE: {
+                isMoving = true;
+                stepX += event.getX() - previousX;
+                stepY += event.getY() - previousY;
+                previousX = event.getX();
+                previousY = event.getY();
+                Log.e(Float.toString(stepX),Float.toString(stepY));
+                rectsSet();
+                invalidate();
+                break;
             }
         }
-        return super.onTouchEvent(event);
+        return true;
     }
 
     private Rect letterBounds = new Rect();
@@ -329,26 +384,26 @@ public class CrosswordView extends View {
 
     ArrayList<Integer> intersectPositions=new ArrayList<>();
 
-    protected void onDraw(Canvas myCanvas) {
+    protected void onDraw(Canvas canvas) {
+        canvas.save();
+        canvas.scale(scaleFactor, scaleFactor);
         /*<--------------------BACKGROUND-------------------->*/
-        myCanvas.drawRect(0, 0, myCanvas.getWidth(), myCanvas.getHeight(), backgroundPaint);
+        canvas.drawRect(0, 0, canvas.getWidth(), canvas.getHeight(), backgroundPaint);
         /*<--------------------CROSSWORD-------------------->*/
         //draw crossword
         for (int number = questionsOrder.size() - 1; number >= 0; number--) {
             int i = questionsOrder.get(number);
             //draw white background
-            myCanvas.drawRect(rects[i], whitePaint);
+            canvas.drawRect(rects[i], whitePaint);
             //constant margin values for words
-            int constX = crossword.getCword(i).getPosX() * wordHeight + (getWidth() -
-                    maxWordLength * wordHeight) / 2;
-            int constY = crossword.getCword(i).getPosY() * wordHeight +
-                    getHeight() * BAR_PERCENTAGE / 100;
+            int constX = crossword.getCword(i).getPosX() * wordHeight + (int) stepX;
+            int constY = crossword.getCword(i).getPosY() * wordHeight + (int) stepY;
             int horizontal_step, vertical_step;
             //horisontal words
             if (i < crossword.getHorCount()) {
                 //draw lines
                 for (int j = 1; j < crossword.getCword(i).getWord().length(); j++) {
-                    myCanvas.drawLine(constX + j * wordHeight, constY,
+                    canvas.drawLine(constX + j * wordHeight, constY,
                             constX + j * wordHeight, constY + wordHeight, linePaint);
                 }
                 //draw answers
@@ -357,7 +412,7 @@ public class CrosswordView extends View {
                     horizontal_step = (int) (wordHeight -
                             fontPaint.measureText(Character.toString(answers[i].charAt(j)))) / 2;
                     vertical_step = wordHeight - (wordHeight - letterBounds.height()) / 2;
-                    myCanvas.drawText(Character.toString(answers[i].charAt(j)),
+                    canvas.drawText(Character.toString(answers[i].charAt(j)),
                             constX + j * wordHeight + horizontal_step, constY + vertical_step, fontPaint);
                 }
             }
@@ -365,7 +420,7 @@ public class CrosswordView extends View {
             else {
                 //draw lines
                 for (int j = 1; j < crossword.getCword(i).getWord().length(); j++) {
-                    myCanvas.drawLine(constX, constY + j * wordHeight,
+                    canvas.drawLine(constX, constY + j * wordHeight,
                             constX + wordHeight, constY + j * wordHeight, linePaint);
                 }
                 //clean up and draw answers
@@ -374,12 +429,12 @@ public class CrosswordView extends View {
                     horizontal_step = (int) (wordHeight -
                             fontPaint.measureText(Character.toString(answers[i].charAt(j)))) / 2;
                     vertical_step = wordHeight - (wordHeight - letterBounds.height()) / 2;
-                    myCanvas.drawText(Character.toString(answers[i].charAt(j)),
+                    canvas.drawText(Character.toString(answers[i].charAt(j)),
                             constX + horizontal_step, constY + j * wordHeight + vertical_step, fontPaint);
                 }
             }
             //draw border
-            myCanvas.drawRect(rects[i], rectPaint);
+            canvas.drawRect(rects[i], rectPaint);
         }
         //draw word numbers
         for (int i = 0; i < crossword.getCwordsLength(); i++) {
@@ -387,7 +442,7 @@ public class CrosswordView extends View {
                 if (answers[i].length() == 0) {
                     String label = Integer.toString(i + 1);
                     fontPaint.getTextBounds(label, 0, label.length(), letterBounds);
-                    myCanvas.drawText(label,
+                    canvas.drawText(label,
                             rects[i].left + smallFontPaint.measureText(Integer.toString(i + 1)) / 2,
                             rects[i].top + letterBounds.height() / 3, smallFontPaint);
                 }
@@ -395,7 +450,7 @@ public class CrosswordView extends View {
                 if (answers[i].length() == 0) {
                     String label = Integer.toString(i + 1);
                     fontPaint.getTextBounds(label, 0, label.length(), letterBounds);
-                    myCanvas.drawText(label,
+                    canvas.drawText(label,
                             rects[i].right - smallFontPaint.measureText(Integer.toString(i + 1)) * 1.5f,
                             rects[i].top + letterBounds.height() / 3, smallFontPaint);
                 }
@@ -422,7 +477,7 @@ public class CrosswordView extends View {
                 inputCanvas.drawLine(canvasBounds.left + constX + j * wordHeight, constY,
                         canvasBounds.left + constX + j * wordHeight, constY + wordHeight, linePaint);
             }
-            myCanvas.drawBitmap(inputBitmap, 0.0f, 0.0f, null);
+            canvas.drawBitmap(inputBitmap, 0.0f, 0.0f, null);
             if(Build.VERSION.SDK_INT>=23) {
                 StaticLayout.Builder layoutBuilder = StaticLayout.Builder.obtain(textOnCanvas,
                         0, textOnCanvas.length(), questionFontPaint, textBounds.width())
@@ -435,7 +490,7 @@ public class CrosswordView extends View {
                 sl = new StaticLayout(textOnCanvas, questionFontPaint, textBounds.width(),
                         Layout.Alignment.ALIGN_CENTER, 1, 1, true);
             }
-            myCanvas.save();
+            canvas.save();
             float textHeight = getTextHeight(textOnCanvas, questionFontPaint);
             int numberOfTextLines = sl.getLineCount();
             float textYCoordinate = textBounds.exactCenterY() - ((numberOfTextLines * textHeight) / 2);
@@ -465,9 +520,10 @@ public class CrosswordView extends View {
                 inputCanvas.drawText(Character.toString(currentAnswer.charAt(j)),
                         canvasBounds.left + constX + (j+step) * wordHeight + horizontal_step, constY + vertical_step, fontPaint);
             }
-            myCanvas.translate(textXCoordinate, textYCoordinate);
-            sl.draw(myCanvas);
-            myCanvas.restore();
+            canvas.translate(textXCoordinate, textYCoordinate);
+            sl.draw(canvas);
+            canvas.restore();
         }
+        canvas.restore();
     }
 }
