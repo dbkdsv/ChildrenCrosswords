@@ -12,12 +12,12 @@
         android:theme="@style/AppTheme"
         >
         <activity
-            android:name=".Activities.CrosswordActivity"
+            android:name=".activities.CrosswordActivity"
             android:configChanges="orientation|keyboardHidden"
             android:screenOrientation="portrait" />
-        <activity android:name=".Activities.ChoiceActivity" />
+        <activity android:name=".activities.ChoiceActivity" />
         <activity
-            android:name=".Activities.LaunchActivity"
+            android:name=".activities.LaunchActivity"
             android:configChanges="orientation|keyboardHidden"
             android:screenOrientation="portrait">
             <intent-filter>
@@ -26,7 +26,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".Activities.SettingsActivity" />
+        <activity android:name=".activities.SettingsActivity" />
     </application>
 
 </manifest>
