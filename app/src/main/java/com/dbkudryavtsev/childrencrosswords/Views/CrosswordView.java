@@ -46,6 +46,7 @@ public class CrosswordView extends View {
     private TextPaint smallFontPaint = new TextPaint();
     private TextPaint questionFontPaint = new TextPaint();
     private Paint whitePaint = new Paint();
+    private Paint alphaPaint = new Paint();
 
     private Crossword crossword;
     private String[] answers;
@@ -113,6 +114,9 @@ public class CrosswordView extends View {
         smallFontPaint.setStyle(Paint.Style.STROKE);
         questionFontPaint.setColor(ContextCompat.getColor(getContext(), R.color.puzzle_dark));
         questionFontPaint.setStyle(Paint.Style.STROKE);
+        alphaPaint.setStyle(Paint.Style.FILL);
+        alphaPaint.setColor(ContextCompat.getColor(getContext(), R.color.puzzle_dark));
+        alphaPaint.setAlpha(150);
         detector = new ScaleGestureDetector(getContext(), new ScaleListener());
     }
 
@@ -465,7 +469,7 @@ public class CrosswordView extends View {
             final int wordLength = crossword.getCword(currentRect).getWord().length();
             String textOnCanvas = String.format(getResources().getString(R.string.answer_title), currentRect + 1,
                     crossword.getCword(currentRect).getWord().length(), crossword.getCword(currentRect).getQuestion());
-
+            canvas.drawRect(0,0,getWidth(), getHeight(), alphaPaint);
             inputCanvas.drawRect(canvasBounds, rectPaint);
             inputCanvas.drawRect(canvasBounds, backgroundPaint);
             inputCanvas.drawRect(textBounds, rectPaint);

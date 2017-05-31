@@ -105,6 +105,7 @@ public final class CrosswordBuilder {
                 array = jsonObject.getJSONArray("crosswordWord");
                 answers = new String[array.length()];
             } catch (JSONException ex) {
+
                 Toast toast = Toast.makeText(context, "Ошибка чтения длины кроссвордов.",
                         Toast.LENGTH_LONG);
                 toast.show();
