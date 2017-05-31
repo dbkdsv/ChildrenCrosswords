@@ -101,21 +101,23 @@ public final class CrosswordBuilder {
                 }
         }
         else {
-            jsonString = loadJSONFromFile(chosenRectId,"crossword", context);
-            try {
-                jsonObject = new JSONObject(jsonString);
-                array = jsonObject.getJSONArray("crosswordWord");
-                answers = new String[array.length()];
-            } catch (JSONException ex) {
-                Log.e("Received JSON string", jsonString);
-                Log.e("Caused with Id of", Integer.toString(chosenRectId));
-                Toast toast = Toast.makeText(context, "Ошибка чтения длины кроссвордов.",
-                        Toast.LENGTH_LONG);
-                toast.show();
-                ex.printStackTrace();
+            jsonString = loadJSONFromFile(chosenRectId, "crossword", context);
+            if (jsonString != null && jsonString.length() > 0) {
+                try {
+                    jsonObject = new JSONObject(jsonString);
+                    array = jsonObject.getJSONArray("crosswordWord");
+                    answers = new String[array.length()];
+                } catch (JSONException ex) {
+                    Log.e("Received JSON string", jsonString);
+                    Log.e("Caused with Id of", Integer.toString(chosenRectId));
+                    Toast toast = Toast.makeText(context, "Ошибка чтения длины кроссвордов.",
+                            Toast.LENGTH_LONG);
+                    toast.show();
+                    ex.printStackTrace();
+                }
+                for (int i = 0; i < answers.length; i++)
+                    answers[i] = "";
             }
-            for (int i = 0; i < answers.length; i++)
-                answers[i] = "";
         }
         return answers;
     }
