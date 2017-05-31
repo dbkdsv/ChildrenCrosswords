@@ -121,12 +121,10 @@ public class CrosswordView extends View {
     private class ScaleListener extends ScaleGestureDetector.SimpleOnScaleGestureListener{
         @Override
         public boolean onScale(android.view.ScaleGestureDetector detector) {
-
             scaleFactor *= detector.getScaleFactor();
-            scaleFactor = Math.max(1.f, Math.min(scaleFactor, 5.f));
+            scaleFactor = Math.max(1.f, Math.min(scaleFactor, 3.f));
 
             invalidate();
-
             return true;
         }
     }
@@ -144,7 +142,9 @@ public class CrosswordView extends View {
     }
 
     private void rectsSet() {
-
+        fontPaint.setTextSize(wordHeight);
+        smallFontPaint.setTextSize(wordHeight / 4);
+        questionFontPaint.setTextSize(wordHeight / 3);
         for (int i = 0; i < crossword.getCwordsLength(); i++) {
             //set constant margin
             int constX = crossword.getCword(i).getPosX() * wordHeight + (int) stepX;
@@ -182,9 +182,6 @@ public class CrosswordView extends View {
         stepY = getHeight() * BAR_PERCENTAGE / 100;
         allocateRects();
         rectsSet();
-        fontPaint.setTextSize(wordHeight);
-        smallFontPaint.setTextSize(wordHeight / 4);
-        questionFontPaint.setTextSize(wordHeight / 3);
         inputBitmap = Bitmap.createBitmap(getWidth(), getHeight(), Bitmap.Config.ARGB_8888);
         inputCanvas = new Canvas(inputBitmap);
     }
@@ -222,6 +219,7 @@ public class CrosswordView extends View {
 
     private float previousX, previousY;
     private boolean isMoving;
+    private Rect clipBounds = new Rect();
 
     public boolean onTouchEvent(MotionEvent event) {
         detector.onTouchEvent(event);
@@ -244,7 +242,8 @@ public class CrosswordView extends View {
                     } else {
                         ArrayList<Integer> checked_rects = new ArrayList<>();
                         for (int i = 0; i < crossword.getCwordsLength(); i++) {
-                            if (rects[i].contains((int) event.getX(), (int) event.getY())) {
+                            if (rects[i].contains((int) event.getX()/(int) scaleFactor,
+                                    (int) event.getY()/(int) scaleFactor)) {
                                 checked_rects.add(i);
                             }
                         }
@@ -387,6 +386,7 @@ public class CrosswordView extends View {
     protected void onDraw(Canvas canvas) {
         canvas.save();
         canvas.scale(scaleFactor, scaleFactor);
+        canvas.getClipBounds(clipBounds);
         /*<--------------------BACKGROUND-------------------->*/
         canvas.drawRect(0, 0, canvas.getWidth(), canvas.getHeight(), backgroundPaint);
         /*<--------------------CROSSWORD-------------------->*/
@@ -460,6 +460,7 @@ public class CrosswordView extends View {
         if (questionsRemaining.isEmpty()) {
             checkAnswers();
         }
+        canvas.restore();
         if (textInputIsActive) {
             final int wordLength = crossword.getCword(currentRect).getWord().length();
             String textOnCanvas = String.format(getResources().getString(R.string.answer_title), currentRect + 1,
@@ -524,6 +525,6 @@ public class CrosswordView extends View {
             sl.draw(canvas);
             canvas.restore();
         }
-        canvas.restore();
+
     }
 }
