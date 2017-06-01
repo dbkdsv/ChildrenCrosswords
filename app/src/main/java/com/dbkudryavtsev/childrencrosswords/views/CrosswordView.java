@@ -128,7 +128,6 @@ public class CrosswordView extends View {
         public boolean onScale(android.view.ScaleGestureDetector detector) {
             scaleFactor *= detector.getScaleFactor();
             scaleFactor = Math.max(1.f, Math.min(scaleFactor, 3.f));
-
             invalidate();
             return true;
         }
@@ -374,6 +373,8 @@ public class CrosswordView extends View {
                         questionsRemaining.remove(questionsRemaining.indexOf(currentRect));
                     }
                     textInputIsActive = false;
+                    ((InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE))
+                            .hideSoftInputFromWindow(this.getWindowToken(), 0);
                 }
             }
             invalidate();

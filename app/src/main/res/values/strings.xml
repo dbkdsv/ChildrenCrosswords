@@ -4,4 +4,7 @@
     <string name="zip_download_link"><![CDATA[https://drive.google.com/uc?export=download&id=0B8tU6dTdHawETXk0NHVtUkp0VDg]]></string>
     <string name="level_string">Уровень</string>
     <string name="percent_string">%</string>
+    <string name="app_name_formatted">Детские\nкроссворды</string>
+    <string name="start_button">НАЧАТЬ!</string>
+    <string name="no_crosswords_string">Кроссвордов нет&#8230;\nСкачайте через меню настроек.</string>
 </resources>

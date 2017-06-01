@@ -3,6 +3,8 @@ package com.dbkudryavtsev.childrencrosswords.activities;
 import android.app.Activity;
 import android.os.Bundle;
 import android.app.FragmentManager;
+import android.view.View;
+import android.widget.TextView;
 
 import com.dbkudryavtsev.childrencrosswords.R;
 import com.dbkudryavtsev.childrencrosswords.views.LevelFragment;
@@ -13,10 +15,13 @@ import static com.dbkudryavtsev.childrencrosswords.utilities.CrosswordBuilder.ge
 
 public class ChoiceActivity extends Activity{
 
+    TextView noCrosswordsView;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_choice);
+        noCrosswordsView  = (TextView) findViewById(R.id.no_crosswords);
     }
 
     @Override
@@ -33,6 +38,9 @@ public class ChoiceActivity extends Activity{
                 if (file.getName().contains("crossword")) crosswordsCount++;
         }
         FragmentManager fm = getFragmentManager();
+        if(crosswordsCount>0)
+            noCrosswordsView.setVisibility(View.GONE);
+        else noCrosswordsView.setVisibility(View.VISIBLE);
         for(int i=0; i<crosswordsCount; i++) {
             LevelFragment fragment = (LevelFragment) fm.findFragmentByTag(Integer.toString(i));
             if (fragment != null)

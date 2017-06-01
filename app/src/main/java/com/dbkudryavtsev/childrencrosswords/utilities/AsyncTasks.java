@@ -12,7 +12,6 @@ import java.io.IOException;
 import java.net.URL;
 
 class AsyncTasks {
-
     static class DownloadParams{
         String url, name;
         Context context;
@@ -44,5 +43,4 @@ class AsyncTasks {
             return false;
         }
     }
-
 }

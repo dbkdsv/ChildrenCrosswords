@@ -17,7 +17,6 @@ import java.io.IOException;
 import java.io.InputStream;
 
 public final class CrosswordBuilder {
-
     private static String loadJSONFromFile(int chosenRectId, String fileName, Context context) {
         String json = "";
         File inputFile = new File(context.getFilesDir(), fileName + chosenRectId + ".json");
