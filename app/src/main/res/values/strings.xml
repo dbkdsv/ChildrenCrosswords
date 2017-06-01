@@ -7,4 +7,6 @@
     <string name="app_name_formatted">Детские\nкроссворды</string>
     <string name="start_button">НАЧАТЬ!</string>
     <string name="no_crosswords_string">Кроссвордов нет&#8230;\nСкачайте через меню настроек.</string>
+    <string name="settings_string">Настройки</string>
+    <string name="questions_string">Вопросы</string>
 </resources>

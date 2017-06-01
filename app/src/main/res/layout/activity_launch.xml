@@ -31,15 +31,4 @@
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="118dp" />
 
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/settings"
-        android:textAppearance="@style/TextAppearance.AppCompat.Large"
-        android:textSize="30sp"
-        android:textAlignment="center"
-        style="@android:style/Widget.Button"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="0dp" />
 </RelativeLayout>

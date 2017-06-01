@@ -3,9 +3,9 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
-        android:id="@+id/get_all_questions"
-        android:icon="@drawable/ic_list"
-        android:title="@string/questions_string"
+        android:id="@+id/settings"
+        android:icon="@drawable/ic_settings"
+        android:title="@string/settings_string"
         android:showAsAction="always"
         />
 
