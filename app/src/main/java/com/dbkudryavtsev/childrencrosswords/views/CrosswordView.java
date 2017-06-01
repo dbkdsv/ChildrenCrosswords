@@ -331,12 +331,13 @@ public class CrosswordView extends View {
 
     @Override
     public boolean dispatchKeyEvent(KeyEvent event) {
-        if (event.getKeyCode() == KeyEvent.KEYCODE_BACK) {
+        if (event.getKeyCode() == KeyEvent.KEYCODE_BACK && event.getAction() == KeyEvent.ACTION_DOWN) {
             if (textInputIsActive) {
                 textInputIsActive = false;
                 invalidate();
                 ((InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE))
                         .hideSoftInputFromWindow(this.getWindowToken(), 0);
+                return true;
             } else {
                 writeToAnswerFile(answers, globalChosenRectId, getContext());
                 ((Activity) getContext()).finish();
