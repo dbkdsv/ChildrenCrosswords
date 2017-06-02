@@ -1,5 +1,9 @@
 [
     {
+        "merged": "D:\\Projects\\ChildrenCrossword\\app\\build\\intermediates\\res\\merged\\debug\\mipmap-xhdpi\\ic_launcher.png",
+        "source": "D:\\Projects\\ChildrenCrossword\\app\\src\\main\\res\\mipmap-xhdpi\\ic_launcher.png"
+    },
+    {
         "merged": "D:\\Projects\\ChildrenCrosswords\\app\\build\\intermediates\\res\\merged\\debug\\mipmap-xhdpi\\ic_launcher.png",
         "source": "D:\\Projects\\ChildrenCrosswords\\app\\src\\main\\res\\mipmap-xhdpi\\ic_launcher.png"
     }

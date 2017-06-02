@@ -2689,7 +2689,7 @@ containing a value of this type.
         public static final int actions=0x7f0d009e;
         public static final int activity_chooser_view_content=0x7f0d0044;
         public static final int activity_launch=0x7f0d0075;
-        public static final int activity_settings=0x7f0d0079;
+        public static final int activity_settings=0x7f0d0078;
         public static final int add=0x7f0d001e;
         public static final int alertTitle=0x7f0d0058;
         public static final int all=0x7f0d0036;
@@ -2743,6 +2743,7 @@ containing a value of this type.
         public static final int ifRoom=0x7f0d003c;
         public static final int image=0x7f0d0046;
         public static final int info=0x7f0d009b;
+        public static final int input=0x7f0d007a;
         public static final int item_touch_helper_previous_elevation=0x7f0d0005;
         public static final int largeLabel=0x7f0d0083;
         public static final int left=0x7f0d002c;
@@ -2793,8 +2794,8 @@ containing a value of this type.
         public static final int search_src_text=0x7f0d006d;
         public static final int search_voice_btn=0x7f0d0071;
         public static final int select_dialog_listview=0x7f0d0072;
-        public static final int settings=0x7f0d0078;
-        public static final int settings_list=0x7f0d007a;
+        public static final int settings=0x7f0d00a8;
+        public static final int settings_list=0x7f0d0079;
         public static final int shortcut=0x7f0d005c;
         public static final int showCustom=0x7f0d0015;
         public static final int showHome=0x7f0d0016;
@@ -2917,6 +2918,7 @@ containing a value of this type.
     }
     public static final class menu {
         public static final int crossword_view_menu=0x7f0e0000;
+        public static final int menu_settings=0x7f0e0001;
     }
     public static final class mipmap {
         public static final int ic_launcher=0x7f030000;
@@ -2967,10 +2969,12 @@ containing a value of this type.
         public static final int path_password_eye_mask_visible=0x7f07002c;
         public static final int path_password_strike_through=0x7f07002d;
         public static final int percent_string=0x7f07002e;
+        public static final int questions_string=0x7f07002f;
         public static final int search_menu_title=0x7f070013;
-        public static final int start_button=0x7f07002f;
+        public static final int settings_string=0x7f070030;
+        public static final int start_button=0x7f070031;
         public static final int status_bar_notification_info_overflow=0x7f070014;
-        public static final int zip_download_link=0x7f070030;
+        public static final int zip_download_link=0x7f070032;
     }
     public static final class style {
         public static final int AlertDialog_AppCompat=0x7f0900a1;

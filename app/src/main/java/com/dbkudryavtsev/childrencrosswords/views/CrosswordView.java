@@ -11,9 +11,11 @@ import android.graphics.Rect;
 import android.os.Build;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
+import android.text.Editable;
 import android.text.Layout;
 import android.text.StaticLayout;
 import android.text.TextPaint;
+import android.text.TextWatcher;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -21,8 +23,10 @@ import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.EditText;
 import android.widget.Toast;
 
+import com.dbkudryavtsev.childrencrosswords.activities.CrosswordActivity;
 import com.dbkudryavtsev.childrencrosswords.models.Crossword;
 import com.dbkudryavtsev.childrencrosswords.utilities.CrosswordBuilder;
 import com.dbkudryavtsev.childrencrosswords.R;
@@ -119,6 +123,50 @@ public class CrosswordView extends View {
         alphaPaint.setColor(ContextCompat.getColor(getContext(), R.color.puzzle_dark));
         alphaPaint.setAlpha(150);
         detector = new ScaleGestureDetector(getContext(), new ScaleListener());
+    }
+
+    public int onTextChange(String inputString){
+        ArrayList<Integer[]> intersects = findIntersect();
+        int activeSize = 0;
+        for (int i = 0; i < intersects.size(); i++) {
+            if (answers[intersects.get(i)[0]].length() > 0) activeSize++;
+        }
+        if (textInputIsActive) {
+            inputString = inputString.toUpperCase(Locale.getDefault());
+            currentAnswer = inputString;
+            if (currentAnswer.length() < crossword.getCword(currentRect).getWord().length() - activeSize)
+                currentAnswer = inputString;
+            else if (currentAnswer.length() == crossword.getCword(currentRect).getWord().length()- activeSize) {
+                String answerString = currentAnswer;
+                for (int i = 0; i < intersects.size(); i++) {
+                    if (answers[intersects.get(i)[0]].length() > 0) {
+                        answerString = answerString.substring(0, intersects.get(i)[2]) +
+                                answers[intersects.get(i)[0]].charAt(intersects.get(i)[1]) +
+                                answerString.substring(intersects.get(i)[2]);
+                    }
+                }
+                if (answerString.equals(crossword.getCword(currentRect).getWord())) {
+                    answers[currentRect] = answerString;
+                    currentAnswer = "";
+                    questionsOrder.add(0, questionsOrder.remove(questionsOrder.indexOf(currentRect)));
+                    if (questionsRemaining.contains(currentRect)) {
+                        questionsRemaining.remove(questionsRemaining.indexOf(currentRect));
+                    }
+                    textInputIsActive = false;
+                    ((InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE))
+                            .hideSoftInputFromWindow(this.getWindowToken(), 0);
+                    CrosswordActivity.hideInput();
+                    invalidate();
+                    return 0;
+                }
+            }
+            else {
+                invalidate();
+                return 1;
+            }
+            invalidate();
+        }
+        return 2;
     }
 
     private float scaleFactor = 1.f;
@@ -257,7 +305,7 @@ public class CrosswordView extends View {
                                 textInputIsActive = true;
                                 ((InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE)).
                                         toggleSoftInput(InputMethodManager.SHOW_FORCED, InputMethodManager.HIDE_IMPLICIT_ONLY);
-                                requestFocus();
+                                CrosswordActivity.showInput();
                                 invalidate();
                             }
                         }
@@ -329,8 +377,7 @@ public class CrosswordView extends View {
         return intersects;
     }
 
-    @Override
-    public boolean dispatchKeyEvent(KeyEvent event) {
+    public boolean keyIsDown(KeyEvent event){
         if (event.getKeyCode() == KeyEvent.KEYCODE_BACK && event.getAction() == KeyEvent.ACTION_DOWN) {
             if (textInputIsActive) {
                 textInputIsActive = false;
@@ -342,43 +389,6 @@ public class CrosswordView extends View {
                 writeToAnswerFile(answers, globalChosenRectId, getContext());
                 ((Activity) getContext()).finish();
             }
-        }
-        ArrayList<Integer[]> intersects = findIntersect();
-        int activeSize = 0;
-        for (int i = 0; i < intersects.size(); i++) {
-            if (answers[intersects.get(i)[0]].length() > 0) activeSize++;
-        }
-        if (textInputIsActive) {
-            if (event.getAction() == 2) {
-                if (currentAnswer.length() < crossword.getCword(currentRect).getWord().length() - activeSize)
-                    currentAnswer += event.getCharacters();
-            }
-            if (event.getAction() == KeyEvent.ACTION_DOWN)
-                if (event.getKeyCode() == KeyEvent.KEYCODE_DEL && currentAnswer.length() > 0)
-                    currentAnswer = currentAnswer.substring(0, currentAnswer.length() - 1);
-            currentAnswer = currentAnswer.toUpperCase(Locale.getDefault());
-            if (currentAnswer.length() + activeSize == crossword.getCword(currentRect).getWord().length()) {
-                String answerString = currentAnswer;
-                for (int i = 0; i < intersects.size(); i++) {
-                    if (answers[intersects.get(i)[0]].length() > 0) {
-                        answerString = answerString.substring(0, intersects.get(i)[2]) +
-                                answers[intersects.get(i)[0]].charAt(intersects.get(i)[1]) +
-                                answerString.substring(intersects.get(i)[2]);
-                    }
-                }
-                if (answerString.equals(crossword.getCword(currentRect).getWord())) {
-                    answers[currentRect] = answerString;
-                    currentAnswer = "";
-                    questionsOrder.add(0, questionsOrder.remove(questionsOrder.indexOf(currentRect)));
-                    if (questionsRemaining.contains(currentRect)) {
-                        questionsRemaining.remove(questionsRemaining.indexOf(currentRect));
-                    }
-                    textInputIsActive = false;
-                    ((InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE))
-                            .hideSoftInputFromWindow(this.getWindowToken(), 0);
-                }
-            }
-            invalidate();
         }
         return super.dispatchKeyEvent(event);
     }
