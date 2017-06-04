@@ -9,11 +9,10 @@ import android.widget.TextView;
 import com.dbkudryavtsev.childrencrosswords.R;
 import com.dbkudryavtsev.childrencrosswords.views.LevelFragment;
 
-import java.io.File;
+import static com.dbkudryavtsev.childrencrosswords.utilities.LocalCrosswordsRepository.getAnswers;
+import static com.dbkudryavtsev.childrencrosswords.utilities.LocalCrosswordsRepository.getCrosswordsCount;
 
-import static com.dbkudryavtsev.childrencrosswords.utilities.CrosswordBuilder.getAnswers;
-
-public class ChoiceActivity extends Activity{
+public final class ChoiceActivity extends Activity{
 
     TextView noCrosswordsView;
 
@@ -31,25 +30,27 @@ public class ChoiceActivity extends Activity{
     }
 
     private void drawLevels(){
-        File filesDirectory = ChoiceActivity.this.getFilesDir();
-        int crosswordsCount=0;
-        if(filesDirectory.length()!=0) {
-            for (File file : filesDirectory.listFiles())
-                if (file.getName().contains("crossword")) crosswordsCount++;
-        }
-        FragmentManager fm = getFragmentManager();
-        if(crosswordsCount>0)
+        int crosswordsCount=getCrosswordsCount(ChoiceActivity.this);
+        if(crosswordsCount>0) {
             noCrosswordsView.setVisibility(View.GONE);
-        else noCrosswordsView.setVisibility(View.VISIBLE);
-        for(int i=0; i<crosswordsCount; i++) {
-            LevelFragment fragment = (LevelFragment) fm.findFragmentByTag(Integer.toString(i));
-            if (fragment != null)
-                fm.beginTransaction().remove(fragment).commit();
+            FragmentManager fm = getFragmentManager();
+            for(int i=0; i<crosswordsCount; i++) {
+                LevelFragment fragment = (LevelFragment) fm.findFragmentByTag(Integer.toString(i));
+                if (fragment != null)
+                    fm.beginTransaction()
+                            .remove(fragment)
+                            .commit();
+            }
+            for(int crosswordNumber=0; crosswordNumber<crosswordsCount; crosswordNumber++) {
+                fm.beginTransaction()
+                        .add(R.id.choice_layout,
+                                LevelFragment.newInstance(crosswordNumber, checkCompleteness(crosswordNumber)),
+                                Integer.toString(crosswordNumber))
+                        .commit();
+            }
         }
-        for(int i=0; i<crosswordsCount; i++) {
-            fm.beginTransaction().add(R.id.choice_layout, LevelFragment.newInstance(i, checkCompleteness(i)),
-                    Integer.toString(i)).commit();
-        }
+        else
+            noCrosswordsView.setVisibility(View.VISIBLE);
     }
 
     private int checkCompleteness(int fileId) {

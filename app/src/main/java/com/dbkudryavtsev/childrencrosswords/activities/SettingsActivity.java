@@ -10,11 +10,10 @@ import android.widget.Toast;
 
 import com.dbkudryavtsev.childrencrosswords.R;
 
-import java.io.File;
+import static com.dbkudryavtsev.childrencrosswords.utilities.LocalCrosswordsRepository.deleteAnswers;
+import static com.dbkudryavtsev.childrencrosswords.utilities.ResourcesBuilder.downloadCrosswords;
 
-import static com.dbkudryavtsev.childrencrosswords.utilities.ResourcesBuilder.createResourceFiles;
-
-public class SettingsActivity extends Activity {
+public final class SettingsActivity extends Activity {
 
     private static final String[] menuStrings = {"Обновить кроссворды", "Сбросить прогресс", "Фон кроссвордов"};
 
@@ -31,19 +30,13 @@ public class SettingsActivity extends Activity {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 switch ((int) id){
                     case 0: {
-                        createResourceFiles(getBaseContext());
+                        downloadCrosswords(getBaseContext());
                         return;
                     }
                     case 1: {
-                        File contentsDirectory = new File(getBaseContext().getFilesDir().getAbsolutePath());
-                        for (File file: contentsDirectory.listFiles()){
-                            if(file.getName().contains("answers"))
-                                if(!file.delete()) {
-                                    Toast.makeText(SettingsActivity.this,
-                                            "Проблема с удалением файлов.", Toast.LENGTH_LONG).show();
-                                    return;
-                                }
-                        }
+                        if(!deleteAnswers(SettingsActivity.this))
+                        Toast.makeText(SettingsActivity.this,
+                                "Проблема с удалением файлов.", Toast.LENGTH_LONG).show();
                         return;
                     }
                     default:{

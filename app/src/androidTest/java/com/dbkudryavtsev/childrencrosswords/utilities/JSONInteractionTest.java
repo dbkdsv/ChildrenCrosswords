@@ -12,7 +12,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import static com.dbkudryavtsev.childrencrosswords.utilities.CrosswordBuilder.getCrossword;
+import static com.dbkudryavtsev.childrencrosswords.utilities.LocalCrosswordsRepository.getCrossword;
 import static junit.framework.Assert.assertTrue;
 
 @RunWith(AndroidJUnit4.class)
@@ -31,23 +31,25 @@ public class JSONInteractionTest{
             if (crossword1.getCword(i).getPosX() != crossword2.getCword(i).getPosX() ||
                     crossword1.getCword(i).getPosY() != crossword2.getCword(i).getPosY() ||
                     !crossword1.getCword(i).getQuestion().equals(crossword2.getCword(i).getQuestion()) ||
-                    !crossword1.getCword(i).getWord().equals(crossword2.getCword(i).getWord()))
+                    !crossword1.getCword(i).getAnswer().equals(crossword2.getCword(i).getAnswer()))
                 return false;
         }
         return crossword1.getHorCount() == crossword2.getHorCount();
     }
 
 
-    @Test
-    public void loadJSONFromFileTest() throws Exception {
-
-    }
+    // TODO тест не должен зависсеть от состояния приложения на устройстве
+    // TODO неправильное название теста
 
     @Test
     public void getCrosswordTest() throws Exception {
+        // Act
+        Crossword crossword = getCrossword(0, instrumentationCtx);
+
+        // Assert
         assertTrue(
                 equalCrosswords(
-                        getCrossword(0, instrumentationCtx),
+                        crossword,
                         new Crossword(new CrosswordWord[]{
                                 new CrosswordWord("Дерево с красными плодами.", "РЯБИНА", 0, 0),
                                 new CrosswordWord("Сосновый лес.", "БОР", 1, 1),

@@ -12,25 +12,30 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.util.concurrent.ExecutionException;
 
-public class ResourcesBuilder {
+// TODO: это тоже не билдер
+public final class ResourcesBuilder {
 
     private static final String answersFileName = "answers.json";
 
     public static void writeToAnswerFile(String[] answers, int chosenRectId, Context context) {
         FileOutputStream outputStream;
-        String answersString = "{\n\"answers\": [";
+        String answersString = context.getString(R.string.json_start_string);
         for (int i = 0; i < answers.length; i++) {
             answersString += "{\n\"answer\": \"" + answers[i] + "\"" + "}";
             if (i != answers.length - 1) answersString += ",\n";
         }
         answersString += "]\n}";
         try {
+            // TODO: В репозиторий (этот класс должен принимать экземляр репозитория и использовать его)
+
             outputStream = context.openFileOutput(answersFileName.substring(0, answersFileName.length() - 5) +
                     Integer.toString(chosenRectId) + answersFileName.substring(answersFileName.length() - 5,
                     answersFileName.length()), Context.MODE_PRIVATE);
             outputStream.write(answersString.getBytes());
             outputStream.close();
+            // TODO try with resources
         } catch (Exception e) {
+            // TODO убрать работу с UI
             Toast toast = Toast.makeText(context, "Ошибка записи ответов в файл.",
                     Toast.LENGTH_LONG);
             toast.show();
@@ -38,10 +43,12 @@ public class ResourcesBuilder {
         }
     }
 
-    private static void downloadFile(String _url, String _name, Context context) {
+    private static void downloadFile(String url, String name, Context context) {
         Boolean result = true;
         try {
-            result = new AsyncTasks.DownloadCrosswords().execute(new AsyncTasks.DownloadParams(_url, _name, context)).get();
+            result = new FileDownload.FileDownloadTask()
+                    .execute(new FileDownload.DownloadParams(url, name))
+                    .get();
         } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
         }
@@ -57,12 +64,16 @@ public class ResourcesBuilder {
         toast.show();
     }
 
-    public static void createResourceFiles(Context context) {
-        Toast toast = Toast.makeText(context, "Дождитесь завершения скачивания.", Toast.LENGTH_LONG);
-        toast.show();
-        File resources = new File(context.getFilesDir(), "raw.zip");
+    public static void downloadCrosswords(Context context) {
+        Toast.makeText(context, "Дождитесь завершения скачивания.", Toast.LENGTH_LONG).show();
+
+        File resources = new File(context.getFilesDir(), context.getString(R.string.zip_file_name));
         downloadFile(context.getString(R.string.zip_download_link),
                 resources.getPath(), context);
+        unpackFile(context, resources);
+    }
+
+    private static void unpackFile(Context context, File resources) {
         try {
             ZipFile zipFile = new ZipFile(resources.getPath());
             zipFile.extractAll(context.getFilesDir().getPath());
@@ -70,9 +81,8 @@ public class ResourcesBuilder {
                 throw new ZipException();
             }
         } catch (ZipException e) {
-            toast = Toast.makeText(context, "Ошибка распаковки архива.",
-                    Toast.LENGTH_LONG);
-            toast.show();
+            Toast.makeText(context, "Ошибка распаковки архива.",
+                    Toast.LENGTH_LONG).show();
             e.printStackTrace();
         }
     }

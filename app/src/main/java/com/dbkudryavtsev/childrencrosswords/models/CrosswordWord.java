@@ -1,14 +1,22 @@
 package com.dbkudryavtsev.childrencrosswords.models;
 
-public class CrosswordWord {
-    private String question;
-    private String word;
-    private int posX;
-    private int posY;
+import java.util.Objects;
 
-    public CrosswordWord(String question, String word, int posX, int posY) {
+public final class CrosswordWord {
+    private final String question;
+    private final String answer;
+    private final int posX;
+    private final int posY;
+
+    public CrosswordWord(String question, String answer, int posX, int posY) {
+        Objects.requireNonNull(question);
+        Objects.requireNonNull(answer);
+
+        if(posX<0||posY<0)
+            throw new NullPointerException();
+
         this.question = question;
-        this.word = word;
+        this.answer = answer;
         this.posX=posX;
         this.posY=posY;
     }
@@ -17,8 +25,8 @@ public class CrosswordWord {
         return question;
     }
 
-    public String getWord(){
-        return word;
+    public String getAnswer(){
+        return answer;
     }
 
     public int getPosX() {

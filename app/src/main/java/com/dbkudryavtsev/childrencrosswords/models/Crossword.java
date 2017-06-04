@@ -1,25 +1,22 @@
 package com.dbkudryavtsev.childrencrosswords.models;
 
-import android.content.Context;
-
-import com.dbkudryavtsev.childrencrosswords.utilities.CrosswordBuilder;
-
 import java.util.Arrays;
+import java.util.Objects;
 
-public class Crossword {
+public final class Crossword {
     private CrosswordWord[] cwords;
     private int horCount;
 
-    public Crossword(CrosswordWord[] anotherCwords, int anotherHorCount) {
-        cwords = anotherCwords;
-        horCount = anotherHorCount;
+    public Crossword(CrosswordWord[] cwords, int horCount) {
+        Objects.requireNonNull(cwords);
+        if(horCount<=0)
+            throw new NullPointerException();
+        this.cwords = cwords;
+        this.horCount = horCount;
     }
 
-    private Crossword(Crossword anotherCrossword){
-        this(anotherCrossword.getAllCwords(), anotherCrossword.getHorCount());
-    }
-
-    public Crossword(int chosenRectId, Context context) {this(CrosswordBuilder.getCrossword(chosenRectId, context));
+    public Crossword(Crossword crossword){
+        this(crossword.getAllCwords(), crossword.getHorCount());
     }
 
     public int getHorCount(){

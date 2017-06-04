@@ -9,4 +9,6 @@
     <string name="no_crosswords_string">Кроссвордов нет&#8230;\nСкачайте через меню настроек.</string>
     <string name="settings_string">Настройки</string>
     <string name="questions_string">Вопросы</string>
+    <string name="zip_file_name">raw.zip</string>
+    <string name="json_start_string">{ \"answers\": [</string>
 </resources>

@@ -15,25 +15,23 @@ import android.widget.EditText;
 import com.dbkudryavtsev.childrencrosswords.R;
 import com.dbkudryavtsev.childrencrosswords.views.CrosswordView;
 
-import static com.dbkudryavtsev.childrencrosswords.views.LevelFragment.chosenRectString;
+import static com.dbkudryavtsev.childrencrosswords.views.LevelFragment.chosenCrosswordString;
 
-public class CrosswordActivity extends AppCompatActivity {
+public final class CrosswordActivity extends AppCompatActivity {
 
     private CrosswordView crosswordView;
-    private int chosenRectId;
-    private FloatingActionButton checkButton;
-    private static EditText input;
+    public EditText input;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Bundle extras = getIntent().getExtras();
-        chosenRectId = extras.getInt(chosenRectString);
+        int chosenCrosswordId = extras.getInt(chosenCrosswordString);
         setContentView(R.layout.activity_view);
         crosswordView = (CrosswordView) findViewById(R.id.crossword_view);
-        crosswordView.setValues(chosenRectId);
-        setTitle("Уровень "+ Integer.toString(chosenRectId+1));
-        checkButton = (FloatingActionButton) findViewById(R.id.check_button);
+        crosswordView.setValues(chosenCrosswordId);
+        setTitle("Уровень "+ Integer.toString(chosenCrosswordId +1));
+        FloatingActionButton checkButton = (FloatingActionButton) findViewById(R.id.check_button);
         checkButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -72,11 +70,7 @@ public class CrosswordActivity extends AppCompatActivity {
         return super.onCreateOptionsMenu(menu);
     }
 
-    public static void showInput(){
-        input.requestFocus();
-    }
-
-    public static void hideInput(){input.clearFocus();}
+    public void some(){}
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {

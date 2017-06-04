@@ -15,11 +15,11 @@ import com.dbkudryavtsev.childrencrosswords.R;
 
 import java.util.Locale;
 
-public class LevelFragment extends Fragment implements View.OnClickListener {
+public final class LevelFragment extends Fragment implements View.OnClickListener {
 
     private static final String levelCompletionString = "levelCompletion";
     private static final String levelCountString = "levelCount";
-    public static final String chosenRectString = "chosenRect";
+    public static final String chosenCrosswordString = "chosenRect";
 
     public static LevelFragment newInstance(int levelCount, int levelCompletion){
         LevelFragment levelFragment = new LevelFragment();
@@ -29,7 +29,7 @@ public class LevelFragment extends Fragment implements View.OnClickListener {
         levelFragment.setArguments(args);
         return levelFragment;
     }
-    
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -53,7 +53,7 @@ public class LevelFragment extends Fragment implements View.OnClickListener {
     @Override
     public void onClick(View v) {
         Intent intent = new Intent(v.getContext(), CrosswordActivity.class);
-        intent.putExtra(chosenRectString, getArguments().getInt(levelCountString));
+        intent.putExtra(chosenCrosswordString, getArguments().getInt(levelCountString));
         v.getContext().startActivity(intent);
     }
 }
