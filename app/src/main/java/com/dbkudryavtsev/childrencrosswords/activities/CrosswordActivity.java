@@ -13,23 +13,35 @@ import android.view.View;
 import android.widget.EditText;
 
 import com.dbkudryavtsev.childrencrosswords.R;
+import com.dbkudryavtsev.childrencrosswords.models.Crossword;
+import com.dbkudryavtsev.childrencrosswords.utilities.LocalCrosswordsRepository;
+import com.dbkudryavtsev.childrencrosswords.utilities.LocalCrosswordsRepositoryProvider;
 import com.dbkudryavtsev.childrencrosswords.views.CrosswordView;
 
+import static com.dbkudryavtsev.childrencrosswords.utilities.ResourcesBuilder.writeToAnswerFile;
 import static com.dbkudryavtsev.childrencrosswords.views.LevelFragment.chosenCrosswordString;
 
 public final class CrosswordActivity extends AppCompatActivity {
 
     private CrosswordView crosswordView;
+    private int chosenCrosswordId;
+    private LocalCrosswordsRepository repository;
     public EditText input;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Bundle extras = getIntent().getExtras();
-        int chosenCrosswordId = extras.getInt(chosenCrosswordString);
         setContentView(R.layout.activity_view);
+
+        LocalCrosswordsRepositoryProvider provider = (LocalCrosswordsRepositoryProvider) getApplication();
+        repository = provider.getLocalCrosswordsRepository();
+
+        Bundle extras = getIntent().getExtras();
+        chosenCrosswordId = extras.getInt(chosenCrosswordString);
+        Crossword chosenCrossword = repository.getCrossword(chosenCrosswordId, CrosswordActivity.this);
+        String[] answers = repository.getAnswers(chosenCrosswordId, CrosswordActivity.this);
         crosswordView = (CrosswordView) findViewById(R.id.crossword_view);
-        crosswordView.setValues(chosenCrosswordId);
+        crosswordView.setValues(chosenCrossword, answers);
         setTitle("Уровень "+ Integer.toString(chosenCrosswordId +1));
         FloatingActionButton checkButton = (FloatingActionButton) findViewById(R.id.check_button);
         checkButton.setOnClickListener(new View.OnClickListener() {
@@ -64,13 +76,18 @@ public final class CrosswordActivity extends AppCompatActivity {
     }
 
     @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        String[] finalAnswers = crosswordView.getCurrentAnswers();
+        writeToAnswerFile(finalAnswers, chosenCrosswordId, CrosswordActivity.this);
+    }
+
+    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = new MenuInflater(this);
         inflater.inflate(R.menu.crossword_view_menu, menu);
         return super.onCreateOptionsMenu(menu);
     }
-
-    public void some(){}
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {

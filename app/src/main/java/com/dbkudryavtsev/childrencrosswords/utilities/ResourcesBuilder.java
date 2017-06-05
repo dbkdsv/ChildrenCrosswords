@@ -9,7 +9,10 @@ import net.lingala.zip4j.core.ZipFile;
 import net.lingala.zip4j.exception.ZipException;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.concurrent.ExecutionException;
 
 // TODO: это тоже не билдер
@@ -35,45 +38,31 @@ public final class ResourcesBuilder {
             outputStream.close();
             // TODO try with resources
         } catch (Exception e) {
-            // TODO убрать работу с UI
-            Toast toast = Toast.makeText(context, "Ошибка записи ответов в файл.",
-                    Toast.LENGTH_LONG);
-            toast.show();
             e.printStackTrace();
         }
     }
 
-    private static void downloadFile(String url, String name, Context context) {
-        Boolean result = true;
-        try {
-            result = new FileDownload.FileDownloadTask()
-                    .execute(new FileDownload.DownloadParams(url, name))
-                    .get();
-        } catch (InterruptedException | ExecutionException e) {
-            e.printStackTrace();
+    //TODO переписать логику формирования имени файла на более явную
+    static String loadJSONFromFile(String fileName, Context context) {
+        String json = "";
+        File inputFile = new File(context.getFilesDir(), fileName + context.getString(R.string.json_extension));
+        if (inputFile.exists()) {
+            try {
+                InputStream inputStream = new FileInputStream(inputFile);
+                int size = inputStream.available();
+                byte[] buffer = new byte[size];
+                if(inputStream.read(buffer)<1) throw new IOException();
+                inputStream.close();
+                json = new String(buffer, "UTF-8");
+            } catch (IOException ex) {
+                ex.printStackTrace();
+                return null;
+            }
         }
-        Toast toast;
-        if(result) {
-            toast = Toast.makeText(context, "Ошибка скачивания кроссвордов.",
-                    Toast.LENGTH_SHORT);
-        }
-        else{
-            toast = Toast.makeText(context, "Скачивание завершено успешно.",
-                    Toast.LENGTH_SHORT);
-        }
-        toast.show();
+        return json;
     }
 
-    public static void downloadCrosswords(Context context) {
-        Toast.makeText(context, "Дождитесь завершения скачивания.", Toast.LENGTH_LONG).show();
-
-        File resources = new File(context.getFilesDir(), context.getString(R.string.zip_file_name));
-        downloadFile(context.getString(R.string.zip_download_link),
-                resources.getPath(), context);
-        unpackFile(context, resources);
-    }
-
-    private static void unpackFile(Context context, File resources) {
+    static boolean unpackFile(Context context, File resources) {
         try {
             ZipFile zipFile = new ZipFile(resources.getPath());
             zipFile.extractAll(context.getFilesDir().getPath());
@@ -81,9 +70,9 @@ public final class ResourcesBuilder {
                 throw new ZipException();
             }
         } catch (ZipException e) {
-            Toast.makeText(context, "Ошибка распаковки архива.",
-                    Toast.LENGTH_LONG).show();
             e.printStackTrace();
+            return false;
         }
+        return true;
     }
 }

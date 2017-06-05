@@ -7,20 +7,24 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.dbkudryavtsev.childrencrosswords.R;
+import com.dbkudryavtsev.childrencrosswords.utilities.LocalCrosswordsRepository;
+import com.dbkudryavtsev.childrencrosswords.utilities.LocalCrosswordsRepositoryProvider;
 import com.dbkudryavtsev.childrencrosswords.views.LevelFragment;
-
-import static com.dbkudryavtsev.childrencrosswords.utilities.LocalCrosswordsRepository.getAnswers;
-import static com.dbkudryavtsev.childrencrosswords.utilities.LocalCrosswordsRepository.getCrosswordsCount;
 
 public final class ChoiceActivity extends Activity{
 
-    TextView noCrosswordsView;
+    private TextView noCrosswordsView;
+    private LocalCrosswordsRepository repository;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_choice);
         noCrosswordsView  = (TextView) findViewById(R.id.no_crosswords);
+
+        LocalCrosswordsRepositoryProvider provider = (LocalCrosswordsRepositoryProvider) getApplication();
+        repository = provider.getLocalCrosswordsRepository();
     }
 
     @Override
@@ -30,7 +34,7 @@ public final class ChoiceActivity extends Activity{
     }
 
     private void drawLevels(){
-        int crosswordsCount=getCrosswordsCount(ChoiceActivity.this);
+        int crosswordsCount=repository.getCrosswordsCount();
         if(crosswordsCount>0) {
             noCrosswordsView.setVisibility(View.GONE);
             FragmentManager fm = getFragmentManager();
@@ -55,9 +59,10 @@ public final class ChoiceActivity extends Activity{
 
     private int checkCompleteness(int fileId) {
         float completeness = 0;
-        String[] answers = getAnswers(fileId, ChoiceActivity.this);
+        String[] answers = repository.getAnswers(fileId, ChoiceActivity.this);
         for (String answer : answers)
             completeness += (answer.equals("")) ? 0 : 1 / ((float) answers.length) * 100.;
         return (int) completeness;
     }
+
 }

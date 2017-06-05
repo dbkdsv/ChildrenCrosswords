@@ -9,10 +9,11 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URL;
+import java.util.concurrent.ExecutionException;
 
-final class FileDownload {
+public final class FileDownload {
 
-    static final class DownloadParams{
+    private static final class DownloadParams{
         final String url;
         final String name;
 
@@ -22,7 +23,7 @@ final class FileDownload {
         }
     }
 
-    static class FileDownloadTask extends AsyncTask<DownloadParams, Void, Boolean>{
+    private class FileDownloadTask extends AsyncTask<DownloadParams, Void, Boolean>{
 
         @Override
         protected Boolean doInBackground(DownloadParams... params) {
@@ -34,7 +35,7 @@ final class FileDownload {
                 byte[] buffer = IOUtils.toByteArray(stream);
                 FileOutputStream fos = new FileOutputStream (new File(param.name), true);
                 fos.write(buffer);
-                fos.flush();
+                //fos.flush();
                 fos.close();
                 stream.close();
             } catch (IOException e) {
@@ -43,5 +44,18 @@ final class FileDownload {
             }
             return false;
         }
+    }
+
+    boolean download(String url, String name) {
+        boolean result;
+        try {
+            result = new FileDownload.FileDownloadTask()
+                    .execute(new FileDownload.DownloadParams(url, name))
+                    .get();
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+            return true;
+        }
+        return result;
     }
 }

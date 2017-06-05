@@ -12,6 +12,7 @@ import android.widget.Button;
 import com.dbkudryavtsev.childrencrosswords.R;
 
 public final  class LaunchActivity extends AppCompatActivity {
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -34,7 +35,6 @@ public final  class LaunchActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-
         switch (item.getItemId()){
             case R.id.settings:
                 startActivity(new Intent(this, SettingsActivity.class));
@@ -42,4 +42,5 @@ public final  class LaunchActivity extends AppCompatActivity {
         }
         return super.onOptionsItemSelected(item);
     }
+
 }

@@ -24,14 +24,11 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.Toast;
 
 import com.dbkudryavtsev.childrencrosswords.models.Crossword;
-import com.dbkudryavtsev.childrencrosswords.utilities.LocalCrosswordsRepository;
 import com.dbkudryavtsev.childrencrosswords.R;
 
 import java.util.ArrayList;
 import java.util.Locale;
 
-import static com.dbkudryavtsev.childrencrosswords.utilities.LocalCrosswordsRepository.getCrossword;
-import static com.dbkudryavtsev.childrencrosswords.utilities.ResourcesBuilder.writeToAnswerFile;
 import static java.lang.Math.max;
 import static java.lang.Math.min;
 
@@ -75,11 +72,42 @@ public final class CrosswordView extends View {
         init();
     }
 
-    public void setValues (int chosenCrosswordId){
-        globalChosenCrosswordId = chosenCrosswordId;
+    private void init(){
+        setFocusable(true);
+        setFocusableInTouchMode(true);
+
+        whitePaint.setColor(ContextCompat.getColor(getContext(), R.color.white));
+        whitePaint.setStyle(Paint.Style.FILL);
+
+        backgroundPaint.setColor(ContextCompat.getColor(getContext(), R.color.puzzle_background));
+        backgroundPaint.setStyle(Paint.Style.FILL);
+
+        rectPaint.setColor(ContextCompat.getColor(getContext(), R.color.puzzle_dark));
+        rectPaint.setStyle(Paint.Style.STROKE);
+        rectPaint.setStrokeWidth(5);
+
+        linePaint.setColor(ContextCompat.getColor(getContext(), R.color.puzzle_dark));
+        linePaint.setStrokeWidth(5);
+
+        fontPaint.setColor(ContextCompat.getColor(getContext(), R.color.puzzle_dark));
+
+        smallFontPaint.setColor(ContextCompat.getColor(getContext(), R.color.puzzle_dark));
+        smallFontPaint.setStyle(Paint.Style.STROKE);
+
+        questionFontPaint.setColor(ContextCompat.getColor(getContext(), R.color.puzzle_dark));
+        questionFontPaint.setStyle(Paint.Style.STROKE);
+
+        alphaPaint.setStyle(Paint.Style.FILL);
+        alphaPaint.setColor(ContextCompat.getColor(getContext(), R.color.puzzle_dark));
+        alphaPaint.setAlpha(150);
+
+        detector = new ScaleGestureDetector(getContext(), new ScaleListener());
+    }
+
+    public void setValues (Crossword crossword, String[] answers){
         // TODO: переписать
-        crossword = new Crossword(getCrossword(globalChosenCrosswordId, getContext()));
-        answers = new String[crossword.getCwordsLength()];
+        this.crossword = crossword;
+        this.answers = new String[crossword.getCwordsLength()];
         questionsRemaining = new ArrayList<>(crossword.getCwordsLength());
         questionsOrder = new ArrayList<>(crossword.getCwordsLength());
         for (int i = 0; i < crossword.getHorCount(); i++) {
@@ -89,7 +117,7 @@ public final class CrosswordView extends View {
                         crossword.getCword(i).getPosX();
             }
         }
-        answers = LocalCrosswordsRepository.getAnswers(globalChosenCrosswordId, getContext());
+        this.answers = answers;
         for (int i = 0; i < crossword.getCwordsLength(); i++) {
             if(answers[i].isEmpty()) {
                 questionsRemaining.add(i);
@@ -98,29 +126,6 @@ public final class CrosswordView extends View {
             else  questionsOrder.add(0,i);
         }
         invalidate();
-    }
-
-    private void init(){
-        setFocusable(true);
-        setFocusableInTouchMode(true);
-        whitePaint.setColor(ContextCompat.getColor(getContext(), R.color.white));
-        whitePaint.setStyle(Paint.Style.FILL);
-        backgroundPaint.setColor(ContextCompat.getColor(getContext(), R.color.puzzle_background));
-        backgroundPaint.setStyle(Paint.Style.FILL);
-        rectPaint.setColor(ContextCompat.getColor(getContext(), R.color.puzzle_dark));
-        rectPaint.setStyle(Paint.Style.STROKE);
-        rectPaint.setStrokeWidth(5);
-        linePaint.setColor(ContextCompat.getColor(getContext(), R.color.puzzle_dark));
-        linePaint.setStrokeWidth(5);
-        fontPaint.setColor(ContextCompat.getColor(getContext(), R.color.puzzle_dark));
-        smallFontPaint.setColor(ContextCompat.getColor(getContext(), R.color.puzzle_dark));
-        smallFontPaint.setStyle(Paint.Style.STROKE);
-        questionFontPaint.setColor(ContextCompat.getColor(getContext(), R.color.puzzle_dark));
-        questionFontPaint.setStyle(Paint.Style.STROKE);
-        alphaPaint.setStyle(Paint.Style.FILL);
-        alphaPaint.setColor(ContextCompat.getColor(getContext(), R.color.puzzle_dark));
-        alphaPaint.setAlpha(150);
-        detector = new ScaleGestureDetector(getContext(), new ScaleListener());
     }
 
     public int onTextChange(String inputString){
@@ -390,11 +395,14 @@ public final class CrosswordView extends View {
                         .hideSoftInputFromWindow(this.getWindowToken(), 0);
                 return true;
             } else {
-                writeToAnswerFile(answers, globalChosenCrosswordId, getContext());
                 ((Activity) getContext()).finish();
             }
         }
         return super.dispatchKeyEvent(event);
+    }
+
+    public String[] getCurrentAnswers() {
+        return answers;
     }
 
     private Rect canvasBounds = new Rect(), textBounds = new Rect(), currentWordRect = new Rect();
