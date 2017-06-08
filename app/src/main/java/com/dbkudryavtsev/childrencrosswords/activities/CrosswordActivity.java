@@ -108,8 +108,11 @@ public final class CrosswordActivity extends AppCompatActivity {
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        if(crosswordView.viewTouched(event))
+        if(crosswordView.viewTouched(event)) {
+            input.setText("");
             input.requestFocus();
+            crosswordView.invalidate();
+        }
         return super.onTouchEvent(event);
     }
 }

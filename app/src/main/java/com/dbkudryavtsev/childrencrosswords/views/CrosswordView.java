@@ -20,7 +20,6 @@ import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.EditText;
 import android.widget.Toast;
 
 import com.dbkudryavtsev.childrencrosswords.models.Crossword;
@@ -198,10 +197,10 @@ public final class CrosswordView extends View {
         }
         int inputBoundsWidth = (int) (getWidth() * .9), inputBoundsHeight = (int) (getHeight() * .3),
                 marginTop = getHeight() * BAR_PERCENTAGE / 100, innerMargin = 10;
-        canvasBounds.set((getWidth() - inputBoundsWidth) / 2, marginTop,
+        inputWindowBounds.set((getWidth() - inputBoundsWidth) / 2, marginTop,
                 (getWidth() + inputBoundsWidth) / 2, marginTop + inputBoundsHeight);
-        textBounds.set(canvasBounds.left + innerMargin, canvasBounds.top + innerMargin,
-                canvasBounds.right - innerMargin, canvasBounds.bottom - canvasBounds.height() / 2);
+        textBounds.set(inputWindowBounds.left + innerMargin, inputWindowBounds.top + innerMargin,
+                inputWindowBounds.right - innerMargin, inputWindowBounds.bottom - inputWindowBounds.height() / 2);
     }
 
     Bitmap inputBitmap;
@@ -252,8 +251,11 @@ public final class CrosswordView extends View {
 
     private float previousX, previousY;
     private boolean isMoving;
+    int location[] = new int[2];
 
     public boolean viewTouched(MotionEvent event) {
+        this.getLocationOnScreen(location);
+        event.setLocation(event.getX()-location[0], event.getY()-location[1]);
         boolean result = false;
         switch (event.getActionMasked()) {
             case MotionEvent.ACTION_DOWN: {
@@ -264,7 +266,7 @@ public final class CrosswordView extends View {
             case MotionEvent.ACTION_UP: {
                 if (!isMoving) {
                     if (textInputIsActive) {
-                        if (!canvasBounds.contains((int) event.getX(), (int) event.getY())) {
+                        if (!inputWindowBounds.contains((int) event.getX(), (int) event.getY())) {
                             textInputIsActive = false;
                             currentAnswer = "";
                             invalidate();
@@ -384,7 +386,7 @@ public final class CrosswordView extends View {
         return answers;
     }
 
-    private Rect canvasBounds = new Rect();
+    private Rect inputWindowBounds = new Rect();
     private Rect  textBounds = new Rect();
     private Rect  currentWordRect = new Rect();
     private String currentAnswer = "";
@@ -479,17 +481,17 @@ public final class CrosswordView extends View {
         String textOnCanvas = String.format(getResources().getString(R.string.answer_title), currentRect + 1,
                 crossword.getCword(currentRect).getAnswer().length(), crossword.getCword(currentRect).getQuestion());
         canvas.drawRect(0,0,getWidth(), getHeight(), alphaPaint);
-        inputCanvas.drawRect(canvasBounds, rectPaint);
-        inputCanvas.drawRect(canvasBounds, backgroundPaint);
+        inputCanvas.drawRect(inputWindowBounds, rectPaint);
+        inputCanvas.drawRect(inputWindowBounds, backgroundPaint);
         inputCanvas.drawRect(textBounds, rectPaint);
-        int constX = (canvasBounds.width() - wordLength * wordHeight) / 2,
-                constY = textBounds.bottom + (canvasBounds.height() - textBounds.height() - wordHeight) / 2;
-        currentWordRect.set(canvasBounds.left + constX, constY, canvasBounds.right - constX,
+        int constX = (inputWindowBounds.width() - wordLength * wordHeight) / 2,
+                constY = textBounds.bottom + (inputWindowBounds.height() - textBounds.height() - wordHeight) / 2;
+        currentWordRect.set(inputWindowBounds.left + constX, constY, inputWindowBounds.right - constX,
                 constY + wordHeight);
         inputCanvas.drawRect(currentWordRect, rectPaint);
         for (int j = 1; j < crossword.getCword(currentRect).getAnswer().length(); j++) {
-            inputCanvas.drawLine(canvasBounds.left + constX + j * wordHeight, constY,
-                    canvasBounds.left + constX + j * wordHeight, constY + wordHeight, linePaint);
+            inputCanvas.drawLine(inputWindowBounds.left + constX + j * wordHeight, constY,
+                    inputWindowBounds.left + constX + j * wordHeight, constY + wordHeight, linePaint);
         }
         canvas.drawBitmap(inputBitmap, 0.0f, 0.0f, null);
         StaticLayout sl;
@@ -524,7 +526,7 @@ public final class CrosswordView extends View {
                         fontPaint.measureText(Character.toString(answers[intersects.get(k)[0]].charAt(intersects.get(k)[1])))) / 2;
                 vertical_step = wordHeight - (wordHeight - letterBounds.height()) / 2;
                 inputCanvas.drawText(Character.toString(answers[intersects.get(k)[0]].charAt(intersects.get(k)[1])),
-                        canvasBounds.left + constX + (intersects.get(k)[2]) * wordHeight + horizontal_step, constY + vertical_step, fontPaint);
+                        inputWindowBounds.left + constX + (intersects.get(k)[2]) * wordHeight + horizontal_step, constY + vertical_step, fontPaint);
             }
         }
         for (int j = 0; j < currentAnswer.length(); j++) {
@@ -534,7 +536,7 @@ public final class CrosswordView extends View {
                     fontPaint.measureText(Character.toString(currentAnswer.charAt(j)))) / 2;
             vertical_step = wordHeight - (wordHeight - letterBounds.height()) / 2;
             inputCanvas.drawText(Character.toString(currentAnswer.charAt(j)),
-                    canvasBounds.left + constX + (j+step) * wordHeight + horizontal_step, constY + vertical_step, fontPaint);
+                    inputWindowBounds.left + constX + (j+step) * wordHeight + horizontal_step, constY + vertical_step, fontPaint);
         }
         canvas.translate(textXCoordinate, textYCoordinate);
         sl.draw(canvas);
