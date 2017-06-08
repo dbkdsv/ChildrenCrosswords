@@ -9,8 +9,10 @@ public class CrosswordApplication extends Application implements LocalCrosswords
 
     LocalCrosswordsRepository crosswordsRepository;
 
-    public CrosswordApplication() {
-        crosswordsRepository = new LocalCrosswordsRepository();
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        crosswordsRepository = new LocalCrosswordsRepository(CrosswordApplication.this);
     }
 
     @Override

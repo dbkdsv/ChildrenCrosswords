@@ -1,7 +1,6 @@
 package com.dbkudryavtsev.childrencrosswords.utilities;
 
 import android.content.Context;
-import android.widget.Toast;
 
 import com.dbkudryavtsev.childrencrosswords.R;
 
@@ -13,21 +12,20 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.concurrent.ExecutionException;
 
 // TODO: это тоже не билдер
 public final class ResourcesBuilder {
 
     private static final String answersFileName = "answers.json";
 
-    public static void writeToAnswerFile(String[] answers, int chosenRectId, Context context) {
+    public static boolean writeToAnswerFile(String[] answers, int chosenRectId, Context context) {
         FileOutputStream outputStream;
-        String answersString = context.getString(R.string.json_start_string);
+        String answersString = context.getString(R.string.answers_json_start_string);
         for (int i = 0; i < answers.length; i++) {
             answersString += "{\n\"answer\": \"" + answers[i] + "\"" + "}";
             if (i != answers.length - 1) answersString += ",\n";
         }
-        answersString += "]\n}";
+        answersString += context.getString(R.string.answers_json_finish_string);
         try {
             // TODO: В репозиторий (этот класс должен принимать экземляр репозитория и использовать его)
 
@@ -39,7 +37,9 @@ public final class ResourcesBuilder {
             // TODO try with resources
         } catch (Exception e) {
             e.printStackTrace();
+            return true;
         }
+        return false;
     }
 
     //TODO переписать логику формирования имени файла на более явную

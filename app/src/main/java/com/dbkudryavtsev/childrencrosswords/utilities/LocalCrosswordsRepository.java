@@ -21,6 +21,9 @@ public final class LocalCrosswordsRepository {
     private int crosswordsCount;
     private int[] answers;
 
+    public LocalCrosswordsRepository(Context context) {
+        updateCrosswordsCount(context);
+    }
 
     public Crossword getCrossword(int chosenCrosswordId, Context context) {
         String filename = context.getString(R.string.resource_file_name_template,
@@ -30,7 +33,6 @@ public final class LocalCrosswordsRepository {
     }
 
     //TODO: вынести в отдельный класс, написать на него unit-теста
-    //TODO Убрать работу с UI из бизнес-логики
     @NonNull
     private static Crossword parseCrosswordFromJson(String jsonString) {
         JSONObject jsonObject;
