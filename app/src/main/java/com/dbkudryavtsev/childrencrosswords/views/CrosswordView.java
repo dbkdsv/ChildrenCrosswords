@@ -337,33 +337,26 @@ public final class CrosswordView extends View {
     private ArrayList<Integer[]> findIntersect() {
         ArrayList<Integer[]> intersects = new ArrayList<>();
         Integer[] intersectDot;
-        int rectPosX = crossword.getCword(currentRect).getPosX();
-        int rectPosY = crossword.getCword(currentRect).getPosY();
-        int horCount = crossword.getHorCount();
-        int currentWordLength = crossword.getCword(currentRect).getAnswer().length();
-        int[][] currentRectDots = {{rectPosX, rectPosY},
-                {currentRect < horCount ? rectPosX +
-                        currentWordLength : rectPosX,
-                        currentRect < horCount ? rectPosY :
-                                (rectPosY + currentWordLength-1)}};
-        int i = currentRect < horCount ? horCount : 0,
-                maxI = currentRect < horCount ? crossword.getCwordsLength() : horCount;
+        int[][] currentRectDots = {{crossword.getCword(currentRect).getPosX(), crossword.getCword(currentRect).getPosY()},
+                {currentRect < crossword.getHorCount() ? crossword.getCword(currentRect).getPosX() +
+                        crossword.getCword(currentRect).getAnswer().length() : crossword.getCword(currentRect).getPosX(),
+                        currentRect < crossword.getHorCount() ? crossword.getCword(currentRect).getPosY() :
+                                (crossword.getCword(currentRect).getPosY() + crossword.getCword(currentRect).getAnswer().length()-1)}};
+        int i = currentRect < crossword.getHorCount() ? crossword.getHorCount() : 0,
+                maxI = currentRect < crossword.getHorCount() ? crossword.getCwordsLength() : crossword.getHorCount();
         for (; i < maxI; i++) {
-            int comparableRectPosX = crossword.getCword(i).getPosX();
-            int comparableRectPosY = crossword.getCword(i).getPosY();
-            int comparableWordLength = crossword.getCword(i).getAnswer().length();
-            int[][] comparableRectDots = {{comparableRectPosX, comparableRectPosY},
-                    {i < horCount ? comparableRectPosX +
-                            comparableWordLength : comparableRectPosX,
-                            i < horCount ? comparableRectPosY :
-                                    (comparableRectPosY + comparableWordLength-1)}};
-            if (currentRect < horCount) {
+            int[][] comparableRectDots = {{crossword.getCword(i).getPosX(), crossword.getCword(i).getPosY()},
+                    {i < crossword.getHorCount() ? crossword.getCword(i).getPosX() +
+                            crossword.getCword(i).getAnswer().length() : crossword.getCword(i).getPosX(),
+                            i < crossword.getHorCount() ? crossword.getCword(i).getPosY() :
+                                    (crossword.getCword(i).getPosY() + crossword.getCword(i).getAnswer().length()-1)}};
+            if (currentRect < crossword.getHorCount()) {
                 if (min(comparableRectDots[0][1], comparableRectDots[1][1]) <= currentRectDots[0][1] &&
                         currentRectDots[0][1] <= max(comparableRectDots[0][1], comparableRectDots[1][1]) &&
                         min(currentRectDots[0][0], currentRectDots[1][0]) <= comparableRectDots[0][0] &&
                         comparableRectDots[0][0] <= max(currentRectDots[0][0], currentRectDots[1][0])) {
-                    intersectDot = new Integer[]{i, currentRectDots[0][1]-rectPosY,
-                            comparableRectDots[0][0]-rectPosX};
+                    intersectDot = new Integer[]{i, currentRectDots[0][1]-crossword.getCword(i).getPosY(),
+                            comparableRectDots[0][0]-crossword.getCword(currentRect).getPosX()};
                     intersects.add(intersectDot);
                 }
             }
@@ -372,8 +365,8 @@ public final class CrosswordView extends View {
                         comparableRectDots[0][1] <= max(currentRectDots[0][1], currentRectDots[1][1]) &&
                         min(comparableRectDots[0][0], comparableRectDots[1][0]) <= currentRectDots[0][0] &&
                         currentRectDots[0][0] <= max(comparableRectDots[0][0], comparableRectDots[1][0])) {
-                    intersectDot = new Integer[]{i, currentRectDots[0][0]-rectPosX,
-                            comparableRectDots[0][1]-rectPosY};
+                    intersectDot = new Integer[]{i, currentRectDots[0][0]-crossword.getCword(i).getPosX(),
+                            comparableRectDots[0][1]-crossword.getCword(currentRect).getPosY()};
                     intersects.add(intersectDot);
                 }
             }
@@ -381,7 +374,8 @@ public final class CrosswordView extends View {
         return intersects;
     }
 
-    public boolean keyIsDown(KeyEvent event){
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (event.getKeyCode() == KeyEvent.KEYCODE_BACK && event.getAction() == KeyEvent.ACTION_DOWN) {
             if (textInputIsActive) {
                 textInputIsActive = false;
@@ -394,7 +388,7 @@ public final class CrosswordView extends View {
                 ((Activity) getContext()).finish();
             }
         }
-        return super.dispatchKeyEvent(event);
+        return super.onKeyDown(keyCode, event);
     }
 
     public String[] getCurrentAnswers() {

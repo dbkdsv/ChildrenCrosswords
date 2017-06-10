@@ -88,13 +88,7 @@ public final class CrosswordActivity extends AppCompatActivity {
     }
 
     @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
-        return crosswordView.keyIsDown(event);
-    }
-
-    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-
         switch (item.getItemId()){
             case R.id.get_all_questions:
                 crosswordView.listQuestions();

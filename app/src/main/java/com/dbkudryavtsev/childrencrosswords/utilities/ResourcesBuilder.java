@@ -21,7 +21,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 // TODO: это тоже не билдер
-public final class ResourcesBuilder {
+final class ResourcesBuilder {
 
     //TODO: вынести в отдельный класс, написать на него unit-теста
     @NonNull
