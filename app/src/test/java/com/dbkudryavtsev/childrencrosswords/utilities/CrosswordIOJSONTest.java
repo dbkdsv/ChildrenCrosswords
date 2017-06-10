@@ -6,7 +6,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 import static org.junit.Assert.*;
 
-@RunWith(MockitoJUnitRunner.class) //TODO VK а зачем тут MockitoRuner?
+@RunWith(MockitoJUnitRunner.class)
 public class CrosswordIOJSONTest { //TODO VK  // не хватает тестов на краевые случаи. Что будет если подать пустой массив? null? некорректный json?
     @Test
     public void parseAnswersFromJson() throws Exception {
@@ -19,10 +19,10 @@ public class CrosswordIOJSONTest { //TODO VK  // не хватает тесто�
                 "        {\n" +
                 "        \"answer\": \"СОРОКА\"}] }";
 
-        String[] rightAnswers = new String[]{"РАСЧЁСКА", "ВОРОБЕЙq", "РОБОТ", "СОРОКА"}; //TODO VK: опечатка и тест не проходи
+        String[] rightAnswers = new String[]{"РАСЧЁСКА", "ВОРОБЕЙ", "РОБОТ", "СОРОКА"};
 
         String[] result = CrosswordIOJSON.parseAnswersFromJson(jsonString);
 
-        assertEquals(rightAnswers, result);//TODO VK: опечатка и тест не проходи
+        assertEquals(rightAnswers, result);
     }
 }

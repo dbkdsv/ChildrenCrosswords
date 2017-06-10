@@ -6,14 +6,13 @@ import com.dbkudryavtsev.childrencrosswords.R;
 import com.dbkudryavtsev.childrencrosswords.models.Crossword;
 
 import java.io.File;
-import java.io.FileOutputStream;
 
 import static com.dbkudryavtsev.childrencrosswords.utilities.CrosswordIOJSON.parseAnswersFromJson;
 import static com.dbkudryavtsev.childrencrosswords.utilities.CrosswordIOJSON.parseCrosswordFromJson;
 
 import static com.dbkudryavtsev.childrencrosswords.utilities.CrosswordIOJSON.convertAnswersToJSON;
+import static com.dbkudryavtsev.childrencrosswords.utilities.CrosswordFromNet.downloadCrosswords;
 import static com.dbkudryavtsev.childrencrosswords.utilities.LocalRepository.loadJSONFromFile;
-import static com.dbkudryavtsev.childrencrosswords.utilities.LocalRepository.unpackFile;
 import static com.dbkudryavtsev.childrencrosswords.utilities.LocalRepository.writeStringToJSONFile;
 
 public final class LocalCrosswordsRepository {
@@ -34,14 +33,6 @@ public final class LocalCrosswordsRepository {
                 }
         }
         updateCompletenesses(context);
-    }
-//TODO  VK: метод скачивания с интернета явно не "локальному хранилищу" относится
-    public void downloadCrosswords(Context context) {
-        File resources = new File(context.getFilesDir(), context.getString(R.string.zip_file_name));
-        FileDownload downloader = new FileDownload();
-        downloader.download(context.getString(R.string.zip_download_link), resources.getPath());
-        unpackFile(context, resources);
-        updateCrosswordsCount(context);
     }
 
     public String[] getAnswers(int chosenCrosswordId, Context context) {
@@ -106,5 +97,10 @@ public final class LocalCrosswordsRepository {
             for (String answer : answers)
                 completenesses[i] += (answer.equals("")) ? 0 : 1 / ((float) answers.length) * 100.;
         }
+    }
+
+    public void updateCrosswords(Context context){
+        downloadCrosswords(context);
+        updateCompletenesses(context);
     }
 }

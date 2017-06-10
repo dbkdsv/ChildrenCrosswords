@@ -1,6 +1,9 @@
 package com.dbkudryavtsev.childrencrosswords.utilities;
 
+import android.content.Context;
 import android.os.AsyncTask;
+
+import com.dbkudryavtsev.childrencrosswords.R;
 
 import org.apache.commons.io.IOUtils;
 
@@ -11,8 +14,10 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.concurrent.ExecutionException;
-//TODO VK плохое название класса
-final class FileDownload {
+
+import static com.dbkudryavtsev.childrencrosswords.utilities.LocalRepository.unpackFile;
+
+final class CrosswordFromNet {
 
     private static final class DownloadParams{
         final String url;
@@ -36,8 +41,8 @@ final class FileDownload {
                 e.printStackTrace();
                 throw new RuntimeException("URL assignment unsuccessful.");
             }
-            try(FileOutputStream fos = new FileOutputStream (new File(param.name), true)) {
-                DataInputStream stream = new DataInputStream(url.openStream()); //TODO VK пльлк не закрываеся
+            try(FileOutputStream fos = new FileOutputStream (new File(param.name), true);
+                DataInputStream stream = new DataInputStream(url.openStream())) {
                 byte[] buffer = IOUtils.toByteArray(stream);
                 fos.write(buffer);
             } catch (IOException e) {
@@ -48,15 +53,22 @@ final class FileDownload {
         }
     }
 
-    boolean download(String url, String name) {
+    private boolean download(String url, String name) {
         try {
-            new FileDownload.FileDownloadTask()
-                    .execute(new FileDownload.DownloadParams(url, name))
+            new CrosswordFromNet.FileDownloadTask()
+                    .execute(new CrosswordFromNet.DownloadParams(url, name))
                     .get();
         } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
             throw new RuntimeException("Failed while downloading.");
         }
         return true;
+    }
+
+    static void downloadCrosswords(Context context) {
+        File resources = new File(context.getFilesDir(), context.getString(R.string.zip_file_name));
+        CrosswordFromNet downloader = new CrosswordFromNet();
+        downloader.download(context.getString(R.string.zip_download_link), resources.getPath());
+        unpackFile(context, resources);
     }
 }

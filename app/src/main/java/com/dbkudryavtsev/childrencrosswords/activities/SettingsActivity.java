@@ -32,7 +32,7 @@ public final class SettingsActivity extends Activity {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 switch ((int) id){
                     case 0: {
-                        repository.downloadCrosswords(getBaseContext());
+                        repository.updateCrosswords(SettingsActivity.this);
                         return;
                     }
                     case 1: {

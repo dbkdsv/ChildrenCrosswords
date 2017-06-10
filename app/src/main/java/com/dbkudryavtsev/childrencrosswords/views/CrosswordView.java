@@ -101,9 +101,9 @@ public final class CrosswordView extends View {
         questionsRemaining = new ArrayList<>(this.crossword.getCwordsLength());
         questionsOrder = new ArrayList<>(crossword.getCwordsLength());
         for (int i = 0; i < crossword.getHorCount(); i++) {
-            if (this.crossword.getCword(i).getAnswer().length() + //TODO VK: this.crossword.getCword(i) стоит выделить в переменную. И в других местах похожий код поправить
-                    this.crossword.getCword(i).getPosX() > maxWordLength) {
-                maxWordLength = this.crossword.getCword(i).getAnswer().length() +
+            final CrosswordWord cword = this.crossword.getCword(i);
+            if (cword.getAnswer().length() + cword.getPosX() > maxWordLength) {
+                maxWordLength = cword.getAnswer().length() +
                         crossword.getCword(i).getPosX();
             }
         }
@@ -247,19 +247,22 @@ public final class CrosswordView extends View {
             crosswordBotY = crosswordTopY;
             for (int i = 0; i < crossword.getCwordsLength(); i++) {
                 final CrosswordWord cword = crossword.getCword(i);
-                if (cword.getPosX() <crosswordTopX) crosswordTopX = cword.getPosX();
-                if (cword.getPosY() <crosswordTopY) crosswordTopY = cword.getPosY();
+                final int posX = cword.getPosX();
+                if (posX <crosswordTopX) crosswordTopX = posX;
+                final int posY = cword.getPosY();
+                if (posY <crosswordTopY) crosswordTopY = posY;
+                final int length = cword.getAnswer().length();
                 if(i<crossword.getHorCount()) {
-                    if (cword.getPosX() + cword.getAnswer().length() > crosswordBotX)
-                        crosswordBotX = cword.getPosX() + cword.getAnswer().length();
-                    if (cword.getPosY() + 1 > crosswordBotY)
-                        crosswordBotY = cword.getPosY() + 1;
+                    if (posX + length > crosswordBotX)
+                        crosswordBotX = posX + length;
+                    if (posY + 1 > crosswordBotY)
+                        crosswordBotY = posY + 1;
                 }
                 else {
-                    if (cword.getPosX() + 1 > crosswordBotX)
-                        crosswordBotX = cword.getPosX() + 1;
-                    if (cword.getPosY() + cword.getAnswer().length() > crosswordBotY)
-                        crosswordBotY = cword.getPosY() + cword.getAnswer().length();
+                    if (posX + 1 > crosswordBotX)
+                        crosswordBotX = posX + 1;
+                    if (posY + length > crosswordBotY)
+                        crosswordBotY = posY + length;
                 }
             }
         }
@@ -337,26 +340,28 @@ public final class CrosswordView extends View {
     private ArrayList<Integer[]> findIntersect() {
         ArrayList<Integer[]> intersects = new ArrayList<>();
         Integer[] intersectDot;
-        int[][] currentRectDots = {{crossword.getCword(currentRect).getPosX(), crossword.getCword(currentRect).getPosY()},
-                {currentRect < crossword.getHorCount() ? crossword.getCword(currentRect).getPosX() +
-                        crossword.getCword(currentRect).getAnswer().length() : crossword.getCword(currentRect).getPosX(),
-                        currentRect < crossword.getHorCount() ? crossword.getCword(currentRect).getPosY() :
-                                (crossword.getCword(currentRect).getPosY() + crossword.getCword(currentRect).getAnswer().length()-1)}};
+        final CrosswordWord currentCword = crossword.getCword(currentRect);
+        int[][] currentRectDots = {{currentCword.getPosX(), currentCword.getPosY()},
+                {currentRect < crossword.getHorCount() ? currentCword.getPosX() +
+                        currentCword.getAnswer().length() : currentCword.getPosX(),
+                        currentRect < crossword.getHorCount() ? currentCword.getPosY() :
+                                (currentCword.getPosY() + currentCword.getAnswer().length()-1)}};
         int i = currentRect < crossword.getHorCount() ? crossword.getHorCount() : 0,
                 maxI = currentRect < crossword.getHorCount() ? crossword.getCwordsLength() : crossword.getHorCount();
         for (; i < maxI; i++) {
-            int[][] comparableRectDots = {{crossword.getCword(i).getPosX(), crossword.getCword(i).getPosY()},
-                    {i < crossword.getHorCount() ? crossword.getCword(i).getPosX() +
-                            crossword.getCword(i).getAnswer().length() : crossword.getCword(i).getPosX(),
-                            i < crossword.getHorCount() ? crossword.getCword(i).getPosY() :
-                                    (crossword.getCword(i).getPosY() + crossword.getCword(i).getAnswer().length()-1)}};
+            final CrosswordWord cwordI = crossword.getCword(i);
+            int[][] comparableRectDots = {{cwordI.getPosX(), cwordI.getPosY()},
+                    {i < crossword.getHorCount() ? cwordI.getPosX() +
+                            cwordI.getAnswer().length() : cwordI.getPosX(),
+                            i < crossword.getHorCount() ? cwordI.getPosY() :
+                                    (cwordI.getPosY() + cwordI.getAnswer().length()-1)}};
             if (currentRect < crossword.getHorCount()) {
                 if (min(comparableRectDots[0][1], comparableRectDots[1][1]) <= currentRectDots[0][1] &&
                         currentRectDots[0][1] <= max(comparableRectDots[0][1], comparableRectDots[1][1]) &&
                         min(currentRectDots[0][0], currentRectDots[1][0]) <= comparableRectDots[0][0] &&
                         comparableRectDots[0][0] <= max(currentRectDots[0][0], currentRectDots[1][0])) {
-                    intersectDot = new Integer[]{i, currentRectDots[0][1]-crossword.getCword(i).getPosY(),
-                            comparableRectDots[0][0]-crossword.getCword(currentRect).getPosX()};
+                    intersectDot = new Integer[]{i, currentRectDots[0][1]- cwordI.getPosY(),
+                            comparableRectDots[0][0]- currentCword.getPosX()};
                     intersects.add(intersectDot);
                 }
             }
@@ -365,8 +370,8 @@ public final class CrosswordView extends View {
                         comparableRectDots[0][1] <= max(currentRectDots[0][1], currentRectDots[1][1]) &&
                         min(comparableRectDots[0][0], comparableRectDots[1][0]) <= currentRectDots[0][0] &&
                         currentRectDots[0][0] <= max(comparableRectDots[0][0], comparableRectDots[1][0])) {
-                    intersectDot = new Integer[]{i, currentRectDots[0][0]-crossword.getCword(i).getPosX(),
-                            comparableRectDots[0][1]-crossword.getCword(currentRect).getPosY()};
+                    intersectDot = new Integer[]{i, currentRectDots[0][0]- cwordI.getPosX(),
+                            comparableRectDots[0][1]- currentCword.getPosY()};
                     intersects.add(intersectDot);
                 }
             }
@@ -488,7 +493,7 @@ public final class CrosswordView extends View {
         final CrosswordWord cword = crossword.getCword(currentRect);
         final int wordLength = cword.getAnswer().length();
         String textOnCanvas = String.format(getResources().getString(R.string.answer_title), currentRect + 1,
-                cword.getAnswer().length(), cword.getQuestion());
+                wordLength, cword.getQuestion());
         canvas.drawRect(0,0,getWidth(), getHeight(), alphaPaint);
         inputCanvas.drawRect(inputWindowBounds, rectPaint);
         inputCanvas.drawRect(inputWindowBounds, backgroundPaint);
@@ -498,7 +503,7 @@ public final class CrosswordView extends View {
         currentWordRect.set(inputWindowBounds.left + constX, constY, inputWindowBounds.right - constX,
                 constY + wordHeight);
         inputCanvas.drawRect(currentWordRect, rectPaint);
-        for (int j = 1; j < cword.getAnswer().length(); j++) {
+        for (int j = 1; j < wordLength; j++) {
             inputCanvas.drawLine(inputWindowBounds.left + constX + j * wordHeight, constY,
                     inputWindowBounds.left + constX + j * wordHeight, constY + wordHeight, linePaint);
         }
