@@ -19,12 +19,11 @@ class LocalRepository {
        String json = "";
        File inputFile = new File(context.getFilesDir(), filename + context.getString(R.string.json_extension));
        if (inputFile.exists()) {
-           try {
-               InputStream inputStream = new FileInputStream(inputFile);
+           try(InputStream inputStream = new FileInputStream(inputFile)) {
                int size = inputStream.available();
                byte[] buffer = new byte[size];
-               if(inputStream.read(buffer)<1) throw new IOException();
-               inputStream.close();
+               if(inputStream.read(buffer)<1)
+                   throw new IOException();
                json = new String(buffer, "UTF-8");
            } catch (IOException ex) {
                ex.printStackTrace();
@@ -48,14 +47,10 @@ class LocalRepository {
    }
 
     static void writeStringToJSONFile(String JSONString, String filename, Context context) {
-        FileOutputStream outputStream;
-        try {
-            outputStream = context.openFileOutput(
-                    filename + context.getString(R.string.json_extension),
-                    Context.MODE_PRIVATE);
+        try(FileOutputStream outputStream = context.openFileOutput(
+                filename + context.getString(R.string.json_extension),
+                Context.MODE_PRIVATE)) {
             outputStream.write(JSONString.getBytes());
-            outputStream.close();
-            // TODO try with resources
         } catch (Exception e) {
             e.printStackTrace();
             throw new RuntimeException("JSON output unsuccessful");

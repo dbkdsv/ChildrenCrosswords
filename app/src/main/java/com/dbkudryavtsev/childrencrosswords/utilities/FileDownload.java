@@ -8,6 +8,7 @@ import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.concurrent.ExecutionException;
 
@@ -27,16 +28,18 @@ final class FileDownload {
 
         @Override
         protected Void doInBackground(DownloadParams... params) {
+            DownloadParams param = params[0];
+            URL url;
             try {
-                DownloadParams param = params[0];
-                URL url = new URL(param.url);
-                // TODO: использвать try with resources!!!
+                url = new URL(param.url);
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+                throw new RuntimeException("URL assignment unsuccessful.");
+            }
+            try(FileOutputStream fos = new FileOutputStream (new File(param.name), true)) {
                 DataInputStream stream = new DataInputStream(url.openStream());
                 byte[] buffer = IOUtils.toByteArray(stream);
-                FileOutputStream fos = new FileOutputStream (new File(param.name), true);
                 fos.write(buffer);
-                fos.close();
-                stream.close();
             } catch (IOException e) {
                 e.printStackTrace();
                 throw new RuntimeException("Failed in background.");
