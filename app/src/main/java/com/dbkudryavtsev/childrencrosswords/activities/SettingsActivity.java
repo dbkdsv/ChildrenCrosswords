@@ -36,9 +36,13 @@ public final class SettingsActivity extends Activity {
                         return;
                     }
                     case 1: {
-                        if(!repository.deleteAnswers(SettingsActivity.this))
-                        Toast.makeText(SettingsActivity.this,
-                                "Проблема с удалением файлов.", Toast.LENGTH_LONG).show();
+                        try {
+                            repository.deleteAnswers(SettingsActivity.this);
+                        }
+                        catch (RuntimeException ex) {
+                            Toast.makeText(SettingsActivity.this,
+                                    "Проблема с удалением файлов.", Toast.LENGTH_LONG).show();
+                        }
                         return;
                     }
                     default:{

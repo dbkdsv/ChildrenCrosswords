@@ -9,7 +9,7 @@ public final class Crossword {
     public Crossword(CrosswordWord[] cwords, int horCount) {
         Objects.requireNonNull(cwords);
         if(horCount<=0)
-            throw new NullPointerException();
+            throw new NumberFormatException("Horizontal count below zero.");
         this.cwords = cwords;
         this.horCount = horCount;
     }

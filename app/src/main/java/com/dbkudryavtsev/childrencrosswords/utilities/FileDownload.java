@@ -39,7 +39,7 @@ final class FileDownload {
                 stream.close();
             } catch (IOException e) {
                 e.printStackTrace();
-                throw new NumberFormatException();
+                throw new RuntimeException("Failed in background.");
             }
             return null;
         }
@@ -52,8 +52,8 @@ final class FileDownload {
                     .get();
         } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
-            return true;
+            throw new RuntimeException("Failed while downloading.");
         }
-        return false;
+        return true;
     }
 }

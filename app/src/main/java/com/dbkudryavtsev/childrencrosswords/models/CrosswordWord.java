@@ -13,7 +13,7 @@ public final class CrosswordWord {
         Objects.requireNonNull(answer);
 
         if(posX<0||posY<0)
-            throw new NullPointerException();
+            throw new NumberFormatException("Argument below zero.");
 
         this.question = question;
         this.answer = answer;
