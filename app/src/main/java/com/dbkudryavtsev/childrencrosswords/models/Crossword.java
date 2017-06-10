@@ -1,6 +1,5 @@
 package com.dbkudryavtsev.childrencrosswords.models;
 
-import java.util.Arrays;
 import java.util.Objects;
 
 public final class Crossword {
@@ -15,10 +14,6 @@ public final class Crossword {
         this.horCount = horCount;
     }
 
-    public Crossword(Crossword crossword){
-        this(crossword.getAllCwords(), crossword.getHorCount());
-    }
-
     public int getHorCount(){
         return horCount;
     }
@@ -30,8 +25,6 @@ public final class Crossword {
     public CrosswordWord getCword(int position){
         return cwords[position];
     }
-
-    private CrosswordWord[] getAllCwords(){ return Arrays.copyOf(cwords, cwords.length);}
 
     public String[] getAllQuestions(){
         String[] questions=new String[cwords.length];

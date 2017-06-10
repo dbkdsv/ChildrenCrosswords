@@ -11,7 +11,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.concurrent.ExecutionException;
 
-public final class FileDownload {
+final class FileDownload {
 
     private static final class DownloadParams{
         final String url;
@@ -23,10 +23,10 @@ public final class FileDownload {
         }
     }
 
-    private class FileDownloadTask extends AsyncTask<DownloadParams, Void, Boolean>{
+    private class FileDownloadTask extends AsyncTask<DownloadParams, Void, Void>{
 
         @Override
-        protected Boolean doInBackground(DownloadParams... params) {
+        protected Void doInBackground(DownloadParams... params) {
             try {
                 DownloadParams param = params[0];
                 URL url = new URL(param.url);
@@ -35,27 +35,25 @@ public final class FileDownload {
                 byte[] buffer = IOUtils.toByteArray(stream);
                 FileOutputStream fos = new FileOutputStream (new File(param.name), true);
                 fos.write(buffer);
-                //fos.flush();
                 fos.close();
                 stream.close();
             } catch (IOException e) {
                 e.printStackTrace();
-                return true;
+                throw new NumberFormatException();
             }
-            return false;
+            return null;
         }
     }
 
     boolean download(String url, String name) {
-        boolean result;
         try {
-            result = new FileDownload.FileDownloadTask()
+            new FileDownload.FileDownloadTask()
                     .execute(new FileDownload.DownloadParams(url, name))
                     .get();
         } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
             return true;
         }
-        return result;
+        return false;
     }
 }

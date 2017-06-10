@@ -15,7 +15,6 @@ import android.text.Layout;
 import android.text.StaticLayout;
 import android.text.TextPaint;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
@@ -24,6 +23,7 @@ import android.widget.Toast;
 
 import com.dbkudryavtsev.childrencrosswords.models.Crossword;
 import com.dbkudryavtsev.childrencrosswords.R;
+import com.dbkudryavtsev.childrencrosswords.models.CrosswordWord;
 
 import java.util.ArrayList;
 import java.util.Locale;
@@ -98,7 +98,7 @@ public final class CrosswordView extends View {
         this.crossword = crossword;
         this.answers = new String[answers.length];
         this.answers = answers;
-        questionsRemaining = new ArrayList<>(crossword.getCwordsLength());
+        questionsRemaining = new ArrayList<>(this.crossword.getCwordsLength());
         questionsOrder = new ArrayList<>(crossword.getCwordsLength());
         for (int i = 0; i < crossword.getHorCount(); i++) {
             if (this.crossword.getCword(i).getAnswer().length() +
@@ -208,10 +208,12 @@ public final class CrosswordView extends View {
 
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
-        final int MAX_FILL = 15;//maximum slots count
-        wordHeight = getHeight() / MAX_FILL - 10;
+        getDimensions();
+        wordHeight = Math.min(getWidth() / (crosswordBotX - crosswordTopX + 1),
+                getHeight() / (crosswordBotY - crosswordTopY + 1));
         stepX = (getWidth() - maxWordLength * wordHeight) / 2;
-        stepY = getHeight() * BAR_PERCENTAGE / 100;
+        stepY = (getHeight() - (crosswordBotY - crosswordTopY) * wordHeight) / 2
+                -getHeight()*BAR_PERCENTAGE/100;
         allocateRects();
         rectsSet();
         inputBitmap = Bitmap.createBitmap(getWidth(), getHeight(), Bitmap.Config.ARGB_8888);
@@ -232,6 +234,37 @@ public final class CrosswordView extends View {
         toast.show();
     }
 
+    int crosswordTopX;
+    int crosswordTopY;
+    int crosswordBotX;
+    int crosswordBotY;
+
+    private void getDimensions(){
+        if(crossword.getCwordsLength()>0) {
+            crosswordTopX = crossword.getCword(0).getPosX();
+            crosswordTopY = crossword.getCword(0).getPosY();
+            crosswordBotX = crosswordTopX;
+            crosswordBotY = crosswordTopY;
+            for (int i = 0; i < crossword.getCwordsLength(); i++) {
+                final CrosswordWord cword = crossword.getCword(i);
+                if (cword.getPosX() <crosswordTopX) crosswordTopX = cword.getPosX();
+                if (cword.getPosY() <crosswordTopY) crosswordTopY = cword.getPosY();
+                if(i<crossword.getHorCount()) {
+                    if (cword.getPosX() + cword.getAnswer().length() > crosswordBotX)
+                        crosswordBotX = cword.getPosX() + cword.getAnswer().length();
+                    if (cword.getPosY() + 1 > crosswordBotY)
+                        crosswordBotY = cword.getPosY() + 1;
+                }
+                else {
+                    if (cword.getPosX() + 1 > crosswordBotX)
+                        crosswordBotX = cword.getPosX() + 1;
+                    if (cword.getPosY() + cword.getAnswer().length() > crosswordBotY)
+                        crosswordBotY = cword.getPosY() + cword.getAnswer().length();
+                }
+            }
+        }
+    }
+
     public void listQuestions() {
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
         builder.setTitle("Список всех вопросов:")
@@ -249,8 +282,6 @@ public final class CrosswordView extends View {
 
     private int currentRect;
 
-    private float previousX, previousY;
-    private boolean isMoving;
     int location[] = new int[2];
 
     public boolean viewTouched(MotionEvent event) {
@@ -258,52 +289,36 @@ public final class CrosswordView extends View {
         event.setLocation(event.getX()-location[0], event.getY()-location[1]);
         boolean result = false;
         switch (event.getActionMasked()) {
-            case MotionEvent.ACTION_DOWN: {
-                previousX = event.getX();
-                previousY = event.getY();
-                break;
-            }
             case MotionEvent.ACTION_UP: {
-                if (!isMoving) {
-                    if (textInputIsActive) {
-                        if (!inputWindowBounds.contains((int) event.getX(), (int) event.getY())) {
-                            textInputIsActive = false;
-                            currentAnswer = "";
-                            invalidate();
-                            ((InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE))
-                                    .hideSoftInputFromWindow(this.getWindowToken(), 0);
-                        }
-                    } else {
-                        ArrayList<Integer> checked_rects = new ArrayList<>();
-                        for (int i = 0; i < crossword.getCwordsLength(); i++) {
-                            if (rects[i].contains((int)(event.getX()),
-                                    (int)(event.getY()))) {
-                                checked_rects.add(i);
-                            }
-                        }
-                        if (checked_rects.size() == 1) {
-                            currentRect = checked_rects.get(0);
-                            if (questionsRemaining.contains(currentRect)) {
-                                textInputIsActive = true;
-                                ((InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE)).
-                                        toggleSoftInput(InputMethodManager.SHOW_FORCED, InputMethodManager.HIDE_IMPLICIT_ONLY);
-                                invalidate();
-                                result =true;
-                            }
+                if (textInputIsActive) {
+                    if (!inputWindowBounds.contains((int) event.getX(), (int) event.getY())) {
+                        textInputIsActive = false;
+                        currentAnswer = "";
+                        invalidate();
+                        ((InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE))
+                                .hideSoftInputFromWindow(this.getWindowToken(), 0);
+                    }
+                } else {
+                    ArrayList<Integer> checked_rects = new ArrayList<>();
+                    for (int i = 0; i < crossword.getCwordsLength(); i++) {
+                        if (rects[i].contains((int) (event.getX()),
+                                (int) (event.getY()))) {
+                            checked_rects.add(i);
                         }
                     }
-                } else isMoving = false;
-                break;
-            }
-            case MotionEvent.ACTION_MOVE: {
-                isMoving = true;
-                stepX += event.getX() - previousX;
-                stepY += event.getY() - previousY;
-                previousX = event.getX();
-                previousY = event.getY();
-                Log.e(Float.toString(stepX),Float.toString(stepY));
-                rectsSet();
-                invalidate();
+                    if (checked_rects.size() == 1) {
+                        currentRect = checked_rects.get(0);
+                        if (questionsRemaining.contains(currentRect)) {
+                            textInputIsActive = true;
+                            ((InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE)).
+                                    toggleSoftInput(InputMethodManager.SHOW_FORCED, InputMethodManager.HIDE_IMPLICIT_ONLY);
+                            invalidate();
+                            result = true;
+                        }
+                    } else if (checked_rects.size() == 2) Toast
+                            .makeText(getContext(), "Тыкни не на пересечении", Toast.LENGTH_SHORT)
+                            .show();
+                }
                 break;
             }
         }
@@ -408,7 +423,6 @@ public final class CrosswordView extends View {
             int constY = crossword.getCword(i).getPosY() * wordHeight + (int) stepY;
             int horizontal_step, vertical_step;
             //horizontal words
-            // TODO: выделить переменные!
             String answer = answers[i];
             final int iCwordAnswerLength = crossword.getCword(i).getAnswer().length();
             if (i < crossword.getHorCount()) {
@@ -477,9 +491,10 @@ public final class CrosswordView extends View {
     }
 
     private void drawInput(Canvas canvas) {
-        final int wordLength = crossword.getCword(currentRect).getAnswer().length();
+        final CrosswordWord cword = crossword.getCword(currentRect);
+        final int wordLength = cword.getAnswer().length();
         String textOnCanvas = String.format(getResources().getString(R.string.answer_title), currentRect + 1,
-                crossword.getCword(currentRect).getAnswer().length(), crossword.getCword(currentRect).getQuestion());
+                cword.getAnswer().length(), cword.getQuestion());
         canvas.drawRect(0,0,getWidth(), getHeight(), alphaPaint);
         inputCanvas.drawRect(inputWindowBounds, rectPaint);
         inputCanvas.drawRect(inputWindowBounds, backgroundPaint);
@@ -489,7 +504,7 @@ public final class CrosswordView extends View {
         currentWordRect.set(inputWindowBounds.left + constX, constY, inputWindowBounds.right - constX,
                 constY + wordHeight);
         inputCanvas.drawRect(currentWordRect, rectPaint);
-        for (int j = 1; j < crossword.getCword(currentRect).getAnswer().length(); j++) {
+        for (int j = 1; j < cword.getAnswer().length(); j++) {
             inputCanvas.drawLine(inputWindowBounds.left + constX + j * wordHeight, constY,
                     inputWindowBounds.left + constX + j * wordHeight, constY + wordHeight, linePaint);
         }
@@ -504,7 +519,6 @@ public final class CrosswordView extends View {
             sl = layoutBuilder.build();
         }
         else {
-            //Static Layout до API 23 не создать иначе.
             sl = new StaticLayout(textOnCanvas, questionFontPaint, textBounds.width(),
                     Layout.Alignment.ALIGN_CENTER, 1, 1, true);
         }
@@ -518,15 +532,16 @@ public final class CrosswordView extends View {
         intersectPositions.clear();
         int step=0;
         for(int k=0; k<intersects.size();k++){
-            if (answers[intersects.get(k)[0]].length()!=0){
-                int j=intersects.get(k)[1];
-                intersectPositions.add(intersects.get(k)[2]);
-                fontPaint.getTextBounds(answers[intersects.get(k)[0]], j, j + 1, letterBounds);
+            final Integer[] intersectK = intersects.get(k);
+            if (answers[intersectK[0]].length()!=0){
+                int j= intersectK[1];
+                intersectPositions.add(intersectK[2]);
+                fontPaint.getTextBounds(answers[intersectK[0]], j, j + 1, letterBounds);
                 horizontal_step = (int) (wordHeight -
-                        fontPaint.measureText(Character.toString(answers[intersects.get(k)[0]].charAt(intersects.get(k)[1])))) / 2;
+                        fontPaint.measureText(Character.toString(answers[intersectK[0]].charAt(intersectK[1])))) / 2;
                 vertical_step = wordHeight - (wordHeight - letterBounds.height()) / 2;
-                inputCanvas.drawText(Character.toString(answers[intersects.get(k)[0]].charAt(intersects.get(k)[1])),
-                        inputWindowBounds.left + constX + (intersects.get(k)[2]) * wordHeight + horizontal_step, constY + vertical_step, fontPaint);
+                inputCanvas.drawText(Character.toString(answers[intersectK[0]].charAt(intersectK[1])),
+                        inputWindowBounds.left + constX + (intersectK[2]) * wordHeight + horizontal_step, constY + vertical_step, fontPaint);
             }
         }
         for (int j = 0; j < currentAnswer.length(); j++) {

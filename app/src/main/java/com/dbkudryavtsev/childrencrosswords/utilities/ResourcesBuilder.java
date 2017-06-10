@@ -1,11 +1,18 @@
 package com.dbkudryavtsev.childrencrosswords.utilities;
 
 import android.content.Context;
+import android.support.annotation.NonNull;
 
 import com.dbkudryavtsev.childrencrosswords.R;
+import com.dbkudryavtsev.childrencrosswords.models.Crossword;
+import com.dbkudryavtsev.childrencrosswords.models.CrosswordWord;
 
 import net.lingala.zip4j.core.ZipFile;
 import net.lingala.zip4j.exception.ZipException;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -16,33 +23,36 @@ import java.io.InputStream;
 // TODO: это тоже не билдер
 public final class ResourcesBuilder {
 
-    private static final String answersFileName = "answers.json";
+    //TODO: вынести в отдельный класс, написать на него unit-теста
+    @NonNull
+    static Crossword parseCrosswordFromJson(String jsonString) {
+        JSONObject jsonObject;
+        JSONArray array = new JSONArray();
+        CrosswordWord[] cwords = new CrosswordWord[]{};
+        int horCount = 0;
+        if (jsonString!=null && jsonString.length()>0) {
+            try {
+                jsonObject = new JSONObject(jsonString);
+                array = jsonObject.getJSONArray("crosswordWord");
+                cwords = new CrosswordWord[array.length()];
+                horCount = (Integer) jsonObject.get("horCount");
+            } catch (JSONException ex) {
+                ex.printStackTrace();
+            }
+            for (int i = 0; i < cwords.length; i++)
+                try {
+                    cwords[i] = new CrosswordWord(array.getJSONObject(i).getString("question"),
+                            array.getJSONObject(i).getString("word"),
+                            array.getJSONObject(i).getInt("posX"),
+                            array.getJSONObject(i).getInt("posY"));
 
-    public static boolean writeToAnswerFile(String[] answers, int chosenRectId, Context context) {
-        FileOutputStream outputStream;
-        String answersString = context.getString(R.string.answers_json_start_string);
-        for (int i = 0; i < answers.length; i++) {
-            answersString += "{\n\"answer\": \"" + answers[i] + "\"" + "}";
-            if (i != answers.length - 1) answersString += ",\n";
+                } catch (JSONException ex) {
+                    ex.printStackTrace();
+                }
         }
-        answersString += context.getString(R.string.answers_json_finish_string);
-        try {
-            // TODO: В репозиторий (этот класс должен принимать экземляр репозитория и использовать его)
-
-            outputStream = context.openFileOutput(answersFileName.substring(0, answersFileName.length() - 5) +
-                    Integer.toString(chosenRectId) + answersFileName.substring(answersFileName.length() - 5,
-                    answersFileName.length()), Context.MODE_PRIVATE);
-            outputStream.write(answersString.getBytes());
-            outputStream.close();
-            // TODO try with resources
-        } catch (Exception e) {
-            e.printStackTrace();
-            return true;
-        }
-        return false;
+        return new Crossword(cwords, horCount);
     }
 
-    //TODO переписать логику формирования имени файла на более явную
     static String loadJSONFromFile(String fileName, Context context) {
         String json = "";
         File inputFile = new File(context.getFilesDir(), fileName + context.getString(R.string.json_extension));

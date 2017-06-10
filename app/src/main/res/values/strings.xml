@@ -16,4 +16,5 @@
     <string name="crossword_file_name">crossword</string>
     <string name="answers_file_name">answers</string>
     <string name="answers_json_finish_string">] }</string>
+    <string name="chosen_crossword_string">chosenCrossword</string>
 </resources>

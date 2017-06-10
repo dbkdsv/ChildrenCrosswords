@@ -19,7 +19,6 @@ public final class LevelFragment extends Fragment implements View.OnClickListene
 
     private static final String levelCompletionString = "levelCompletion";
     private static final String levelCountString = "levelCount";
-    public static final String chosenCrosswordString = "chosenRect";
 
     public static LevelFragment newInstance(int levelCount, int levelCompletion){
         LevelFragment levelFragment = new LevelFragment();
@@ -53,7 +52,9 @@ public final class LevelFragment extends Fragment implements View.OnClickListene
     @Override
     public void onClick(View v) {
         Intent intent = new Intent(v.getContext(), CrosswordActivity.class);
-        intent.putExtra(chosenCrosswordString, getArguments().getInt(levelCountString));
+        intent.putExtra(
+                v.getContext().getString(R.string.chosen_crossword_string),
+                getArguments().getInt(levelCountString));
         v.getContext().startActivity(intent);
     }
 }

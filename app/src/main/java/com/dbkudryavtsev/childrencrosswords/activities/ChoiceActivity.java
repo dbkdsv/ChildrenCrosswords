@@ -48,7 +48,9 @@ public final class ChoiceActivity extends Activity{
             for(int crosswordNumber=0; crosswordNumber<crosswordsCount; crosswordNumber++) {
                 fm.beginTransaction()
                         .add(R.id.choice_layout,
-                                LevelFragment.newInstance(crosswordNumber, checkCompleteness(crosswordNumber)),
+                                LevelFragment.newInstance(
+                                        crosswordNumber,
+                                        repository.getCompleteness(crosswordNumber)),
                                 Integer.toString(crosswordNumber))
                         .commit();
             }
@@ -56,13 +58,4 @@ public final class ChoiceActivity extends Activity{
         else
             noCrosswordsView.setVisibility(View.VISIBLE);
     }
-
-    private int checkCompleteness(int fileId) {
-        float completeness = 0;
-        String[] answers = repository.getAnswers(fileId, ChoiceActivity.this);
-        for (String answer : answers)
-            completeness += (answer.equals("")) ? 0 : 1 / ((float) answers.length) * 100.;
-        return (int) completeness;
-    }
-
 }

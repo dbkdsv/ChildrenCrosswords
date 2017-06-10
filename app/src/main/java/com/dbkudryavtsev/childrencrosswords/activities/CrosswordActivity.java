@@ -19,9 +19,6 @@ import com.dbkudryavtsev.childrencrosswords.utilities.LocalCrosswordsRepository;
 import com.dbkudryavtsev.childrencrosswords.utilities.LocalCrosswordsRepositoryProvider;
 import com.dbkudryavtsev.childrencrosswords.views.CrosswordView;
 
-import static com.dbkudryavtsev.childrencrosswords.utilities.ResourcesBuilder.writeToAnswerFile;
-import static com.dbkudryavtsev.childrencrosswords.views.LevelFragment.chosenCrosswordString;
-
 public final class CrosswordActivity extends AppCompatActivity {
 
     private CrosswordView crosswordView;
@@ -38,7 +35,7 @@ public final class CrosswordActivity extends AppCompatActivity {
         repository = provider.getLocalCrosswordsRepository();
 
         Bundle extras = getIntent().getExtras();
-        chosenCrosswordId = extras.getInt(chosenCrosswordString);
+        chosenCrosswordId = extras.getInt(CrosswordActivity.this.getString(R.string.chosen_crossword_string));
         Crossword chosenCrossword = repository.getCrossword(chosenCrosswordId, CrosswordActivity.this);
         String[] answers = repository.getAnswers(chosenCrosswordId, CrosswordActivity.this);
         crosswordView = (CrosswordView) findViewById(R.id.crossword_view);
@@ -77,10 +74,10 @@ public final class CrosswordActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
+    protected void onPause() {
+        super.onPause();
         String[] finalAnswers = crosswordView.getCurrentAnswers();
-        writeToAnswerFile(finalAnswers, chosenCrosswordId, CrosswordActivity.this);
+        repository.putAnswers(finalAnswers, chosenCrosswordId, CrosswordActivity.this);
     }
 
     @Override
