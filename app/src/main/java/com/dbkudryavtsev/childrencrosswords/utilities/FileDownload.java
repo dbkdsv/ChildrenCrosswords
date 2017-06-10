@@ -11,7 +11,7 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.concurrent.ExecutionException;
-
+//TODO VK плохое название класса
 final class FileDownload {
 
     private static final class DownloadParams{
@@ -37,7 +37,7 @@ final class FileDownload {
                 throw new RuntimeException("URL assignment unsuccessful.");
             }
             try(FileOutputStream fos = new FileOutputStream (new File(param.name), true)) {
-                DataInputStream stream = new DataInputStream(url.openStream());
+                DataInputStream stream = new DataInputStream(url.openStream()); //TODO VK пльлк не закрываеся
                 byte[] buffer = IOUtils.toByteArray(stream);
                 fos.write(buffer);
             } catch (IOException e) {

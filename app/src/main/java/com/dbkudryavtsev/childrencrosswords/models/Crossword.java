@@ -3,7 +3,7 @@ package com.dbkudryavtsev.childrencrosswords.models;
 import java.util.Objects;
 
 public final class Crossword {
-    private CrosswordWord[] cwords;
+    private CrosswordWord[] cwords;  //TODO VK: лучше на List<> переделать
     private int horCount;
 
     public Crossword(CrosswordWord[] cwords, int horCount) {

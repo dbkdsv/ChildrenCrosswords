@@ -35,7 +35,7 @@ public final class LocalCrosswordsRepository {
         }
         updateCompletenesses(context);
     }
-
+//TODO  VK: метод скачивания с интернета явно не "локальному хранилищу" относится
     public void downloadCrosswords(Context context) {
         File resources = new File(context.getFilesDir(), context.getString(R.string.zip_file_name));
         FileDownload downloader = new FileDownload();

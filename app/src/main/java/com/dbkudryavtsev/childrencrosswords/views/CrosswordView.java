@@ -101,7 +101,7 @@ public final class CrosswordView extends View {
         questionsRemaining = new ArrayList<>(this.crossword.getCwordsLength());
         questionsOrder = new ArrayList<>(crossword.getCwordsLength());
         for (int i = 0; i < crossword.getHorCount(); i++) {
-            if (this.crossword.getCword(i).getAnswer().length() +
+            if (this.crossword.getCword(i).getAnswer().length() + //TODO VK: this.crossword.getCword(i) стоит выделить в переменную. И в других местах похожий код поправить
                     this.crossword.getCword(i).getPosX() > maxWordLength) {
                 maxWordLength = this.crossword.getCword(i).getAnswer().length() +
                         crossword.getCword(i).getPosX();
