@@ -2,7 +2,6 @@ package com.dbkudryavtsev.childrencrosswords.utilities;
 
 import android.support.annotation.NonNull;
 
-import com.dbkudryavtsev.childrencrosswords.R;
 import com.dbkudryavtsev.childrencrosswords.models.Crossword;
 import com.dbkudryavtsev.childrencrosswords.models.CrosswordWord;
 
@@ -14,7 +13,6 @@ final class CrosswordIOJSON {
 
     private static final String answersArrayName = "answers";
 
-    //TODO: Написать на него unit-теста
     @NonNull
     static Crossword parseCrosswordFromJson(String jsonString) {
         JSONObject jsonObject;
