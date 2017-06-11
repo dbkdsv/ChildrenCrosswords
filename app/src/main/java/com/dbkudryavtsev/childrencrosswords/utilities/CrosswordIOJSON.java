@@ -13,7 +13,8 @@ import java.util.ArrayList;
 
 final class CrosswordIOJSON {
 
-    private static final String answersArrayName = "answers";
+    private static final String answersArrayName = "answers"; // TODO VK: стандарт кодирования для имен констант!
+    //TODO VK: нет тестов на разбор и запись ответов
 
     @NonNull
     static Crossword parseCrosswordFromJson(String jsonString) {
