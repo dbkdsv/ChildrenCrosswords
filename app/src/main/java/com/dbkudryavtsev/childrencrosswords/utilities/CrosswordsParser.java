@@ -11,9 +11,8 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 
-final class CrosswordIOJSON {
+final class CrosswordsParser {
 
-    private static final String answersArrayName = "answers";
 
     @NonNull
     static Crossword parseCrosswordFromJson(String jsonString) {
@@ -48,40 +47,4 @@ final class CrosswordIOJSON {
         return new Crossword(cwords, horCount);
     }
 
-    static String[] parseAnswersFromJson(String jsonString) {
-        String[] answers;
-        if (jsonString!=null && jsonString.length()>0) {
-            JSONObject jsonObject;
-            JSONArray answersJSONArray;
-            try {
-                jsonObject = new JSONObject(jsonString);
-                answersJSONArray = jsonObject.getJSONArray(answersArrayName);
-                answers = new String[answersJSONArray.length()];
-            } catch (JSONException ex) {
-                ex.printStackTrace();
-                throw new RuntimeException("Answers JSON to string unsuccessful");
-            }
-            for (int i = 0; i < answers.length; i++)
-                try {
-                    answers[i] = answersJSONArray.getJSONObject(i).getString("answer");
-                } catch (JSONException ex) {
-                    ex.printStackTrace();
-                    throw new RuntimeException("JSON answer search unsuccessful");
-                }
-            return answers;
-        }
-        else {
-            return null;
-        }
-    }
-
-    static String convertAnswersToJSON(String[] answers){
-        String answersString = "{ \"answers\": [";
-        for (int i = 0; i < answers.length; i++) {
-            answersString += "{\n\"answer\": \"" + answers[i] + "\"" + "}";
-            if (i != answers.length - 1) answersString += ",\n";
-        }
-        answersString += "] }";
-        return answersString;
-    }
 }

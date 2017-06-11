@@ -7,7 +7,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 import static org.junit.Assert.*;
 
 @RunWith(MockitoJUnitRunner.class)
-public class CrosswordIOJSONTest {
+public class AnswersParserTest {
     @Test
     public void parseAnswersFromJson(){
         String jsonString = "{ \"answers\": [" +
@@ -19,7 +19,7 @@ public class CrosswordIOJSONTest {
 
         String[] rightAnswers = new String[]{"РАСЧЁСКА", "ВОРОБЕЙ", "РОБОТ", "СОРОКА"};
 
-        String[] result = CrosswordIOJSON.parseAnswersFromJson(jsonString);
+        String[] result = AnswersParser.parseAnswersFromJson(jsonString);
 
         assertEquals(rightAnswers, result);
     }
@@ -31,7 +31,7 @@ public class CrosswordIOJSONTest {
 
         String[] emptyAnswers = new String[0];
 
-        String[] emptyResult = CrosswordIOJSON.parseAnswersFromJson(emptyJSON);
+        String[] emptyResult = AnswersParser.parseAnswersFromJson(emptyJSON);
 
         assertEquals(emptyAnswers, emptyResult);
 
@@ -44,7 +44,7 @@ public class CrosswordIOJSONTest {
 
         String[] nullAnswers = null;
 
-        String[] nullResult = CrosswordIOJSON.parseAnswersFromJson(nullJSON);
+        String[] nullResult = AnswersParser.parseAnswersFromJson(nullJSON);
 
         assertEquals(nullAnswers, nullResult);
 
@@ -62,7 +62,7 @@ public class CrosswordIOJSONTest {
         boolean isThrown = false;
 
         try {
-            CrosswordIOJSON.parseAnswersFromJson(wrongJSON);
+            AnswersParser.parseAnswersFromJson(wrongJSON);
         }
         catch (RuntimeException ex){
             isThrown = true;
@@ -71,4 +71,6 @@ public class CrosswordIOJSONTest {
             assertTrue(isThrown);
         }
     }
+
+    //TODO: Добавить тест на запись ответов
 }

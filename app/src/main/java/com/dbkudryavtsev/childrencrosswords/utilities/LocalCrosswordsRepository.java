@@ -7,10 +7,10 @@ import com.dbkudryavtsev.childrencrosswords.models.Crossword;
 
 import java.io.File;
 
-import static com.dbkudryavtsev.childrencrosswords.utilities.CrosswordIOJSON.parseAnswersFromJson;
-import static com.dbkudryavtsev.childrencrosswords.utilities.CrosswordIOJSON.parseCrosswordFromJson;
+import static com.dbkudryavtsev.childrencrosswords.utilities.AnswersParser.parseAnswersFromJson;
+import static com.dbkudryavtsev.childrencrosswords.utilities.AnswersWriter.convertAnswersToJSON;
+import static com.dbkudryavtsev.childrencrosswords.utilities.CrosswordsParser.parseCrosswordFromJson;
 
-import static com.dbkudryavtsev.childrencrosswords.utilities.CrosswordIOJSON.convertAnswersToJSON;
 import static com.dbkudryavtsev.childrencrosswords.utilities.CrosswordFromNet.downloadCrosswords;
 import static com.dbkudryavtsev.childrencrosswords.utilities.LocalRepository.loadJSONFromFile;
 import static com.dbkudryavtsev.childrencrosswords.utilities.LocalRepository.writeStringToJSONFile;
