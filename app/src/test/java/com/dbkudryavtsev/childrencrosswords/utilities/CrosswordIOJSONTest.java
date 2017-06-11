@@ -17,10 +17,41 @@ public class CrosswordIOJSONTest {
                 "{\n \"answer\": \"СОРОКА\"}" +
                 "] }";
 
+        String[] rightAnswers = new String[]{"РАСЧЁСКА", "ВОРОБЕЙ", "РОБОТ", "СОРОКА"};
+
+        String[] result = CrosswordIOJSON.parseAnswersFromJson(jsonString);
+
+        assertEquals(rightAnswers, result);
+    }
+
+    @Test
+    public void parseEmptyAnswersFromJson(){
+
         String emptyJSON = "{\"answers\": []}";
+
+        String[] emptyAnswers = new String[0];
+
+        String[] emptyResult = CrosswordIOJSON.parseAnswersFromJson(emptyJSON);
+
+        assertEquals(emptyAnswers, emptyResult);
+
+    }
+
+    @Test
+    public void parseNullAnswersFromJson(){
 
         String nullJSON = null;
 
+        String[] nullAnswers = null;
+
+        String[] nullResult = CrosswordIOJSON.parseAnswersFromJson(nullJSON);
+
+        assertEquals(nullAnswers, nullResult);
+
+    }
+
+    @Test
+    public void parseWrongAnswersFromJson(){
         String wrongJSON = "{ \"answers\": {" +
                 "{\n \"answer\": \"РАСЧЁСКА\"},\n" +
                 "{\n \"answer\": \"ВОРОБЕЙ\"},\n" +
@@ -28,25 +59,7 @@ public class CrosswordIOJSONTest {
                 "{\n \"answer\": \"СОРОКА\"}" +
                 "] }";
 
-        String[] rightAnswers = new String[]{"РАСЧЁСКА", "ВОРОБЕЙ", "РОБОТ", "СОРОКА"};
-
-        String[] emptyAnswers = new String[0];
-
-        String[] nullAnswers = null;
-
         boolean isThrown = false;
-
-        String[] result = CrosswordIOJSON.parseAnswersFromJson(jsonString);
-
-        String[] emptyResult = CrosswordIOJSON.parseAnswersFromJson(emptyJSON);
-
-        String[] nullResult = CrosswordIOJSON.parseAnswersFromJson(nullJSON);
-
-        assertEquals(rightAnswers, result);
-
-        assertEquals(emptyAnswers, emptyResult);
-
-        assertEquals(nullAnswers, nullResult);
 
         try {
             CrosswordIOJSON.parseAnswersFromJson(wrongJSON);
@@ -57,6 +70,5 @@ public class CrosswordIOJSONTest {
         finally {
             assertTrue(isThrown);
         }
-
     }
 }
