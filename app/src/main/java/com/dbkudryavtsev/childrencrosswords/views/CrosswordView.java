@@ -407,7 +407,6 @@ public final class CrosswordView extends View {
 
     ArrayList<Integer> intersectPositions=new ArrayList<>();
 
-    //TODO: разрезать на несколько
     protected void onDraw(Canvas canvas) {
         /*<--------------------BACKGROUND-------------------->*/
         canvas.drawRect(0, 0, canvas.getWidth(), canvas.getHeight(), backgroundPaint);
