@@ -13,6 +13,9 @@ import java.util.ArrayList;
 
 final class CrosswordsParser {
 
+    private static final String answersArrayName = "answers";
+    //TODO VK: нет тестов на разбор и запись ответов
+    //TODO VK: папка .idea по гитом!
 
     @NonNull
     static Crossword parseCrosswordFromJson(String jsonString) {
