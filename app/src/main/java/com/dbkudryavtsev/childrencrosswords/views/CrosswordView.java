@@ -8,6 +8,7 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Rect;
+import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
@@ -409,7 +410,12 @@ public final class CrosswordView extends View {
 
     protected void onDraw(Canvas canvas) {
         /*<--------------------BACKGROUND-------------------->*/
-        canvas.drawRect(0, 0, canvas.getWidth(), canvas.getHeight(), backgroundPaint);
+        //canvas.drawRect(0, 0, canvas.getWidth(), canvas.getHeight(), backgroundPaint);
+
+        Drawable d = getResources().getDrawable(R.drawable.romashki_cropped);
+        d.setBounds(0,0,canvas.getWidth(), canvas.getHeight());
+        d.draw(canvas);
+
         /*<--------------------CROSSWORD-------------------->*/
         //draw crossword
         for (int number = questionsOrder.size() - 1; number >= 0; number--) {
