@@ -4,11 +4,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-/**
- * Created by User on 12.06.2017.
- */
-
-public class AnswersParser {
+class AnswersParser {
     private static final String answersArrayName = "answers";
     static String[] parseAnswersFromJson(String jsonString) {
         String[] answers;

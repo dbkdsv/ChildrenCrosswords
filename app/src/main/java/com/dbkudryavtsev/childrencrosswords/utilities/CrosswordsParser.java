@@ -18,7 +18,7 @@ final class CrosswordsParser {
 
     @NonNull
     static Crossword parseCrosswordFromJson(String jsonString) {
-        ArrayList<CrosswordWord> cwords;
+        ArrayList<CrosswordWord> cwords = new ArrayList<>();
         int horCount;
         if (jsonString!=null && jsonString.length()>0) {
             JSONObject jsonObject;
@@ -26,16 +26,15 @@ final class CrosswordsParser {
             try {
                 jsonObject = new JSONObject(jsonString);
                 crosswordWordsJSONArray = jsonObject.getJSONArray("crosswordWord");
-                cwords = new ArrayList<>(crosswordWordsJSONArray.length());
                 horCount = (Integer) jsonObject.get("horCount");
             } catch (JSONException ex) {
                 ex.printStackTrace();
                 throw new RuntimeException("Crossword JSON to string unsuccessful");
             }
-            for (int i = 0; i < cwords.size(); i++)
+            for (int i = 0; i < crosswordWordsJSONArray.length(); i++)
                 try {
                     jsonObject = crosswordWordsJSONArray.getJSONObject(i);
-                    cwords.set(i, new CrosswordWord(jsonObject.getString("question"),
+                    cwords.add(i, new CrosswordWord(jsonObject.getString("question"),
                             jsonObject.getString("word"),
                             jsonObject.getInt("posX"),
                             jsonObject.getInt("posY")));

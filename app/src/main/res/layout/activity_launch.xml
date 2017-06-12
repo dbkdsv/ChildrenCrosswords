@@ -16,7 +16,7 @@
         android:id="@+id/textView"
         android:textAppearance="@style/TextAppearance.AppCompat.Large"
         android:textAlignment="center"
-        android:textSize="36sp" />
+        android:textSize="@dimen/launch_text_size" />
 
     <Button
         android:text="@string/start_button"

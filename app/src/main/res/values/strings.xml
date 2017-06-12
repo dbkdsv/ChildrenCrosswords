@@ -15,4 +15,8 @@
     <string name="crossword_file_name">crossword</string>
     <string name="answers_file_name">answers</string>
     <string name="chosen_crossword_string">chosenCrossword</string>
+    <string name="main_developer">Разработчик Кудрявцев Дмитрий</string>
+    <string name="helping_developer">При поддержке Кудрявцева Василия</string>
+    <string name="version_string">Версия 76</string>
+    <string name="about">О приложении</string>
 </resources>

@@ -99,7 +99,7 @@ public final class CrosswordView extends View {
         this.answers = new String[answers.length];
         this.answers = answers;
         questionsRemaining = new ArrayList<>(this.crossword.getCwordsLength());
-        questionsOrder = new ArrayList<>(crossword.getCwordsLength());
+        questionsOrder = new ArrayList<>(this.crossword.getCwordsLength());
         for (int i = 0; i < crossword.getHorCount(); i++) {
             final CrosswordWord cword = this.crossword.getCword(i);
             if (cword.getAnswer().length() + cword.getPosX() > maxWordLength) {
