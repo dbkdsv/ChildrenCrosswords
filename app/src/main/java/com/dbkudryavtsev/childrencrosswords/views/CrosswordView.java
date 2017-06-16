@@ -196,7 +196,8 @@ public final class CrosswordView extends View {
                         constY + wordHeight * crossword.getCword(i).getAnswer().length());
             }
         }
-        int inputBoundsWidth = (int) (getWidth() * .9), inputBoundsHeight = (int) (getHeight() * .3),
+        int inputBoundsWidth = (int) (getWidth() * .9);
+        int inputBoundsHeight = (int) (getHeight() * .4),
                 marginTop = getHeight() * BAR_PERCENTAGE / 100, innerMargin = 10;
         inputWindowBounds.set((getWidth() - inputBoundsWidth) / 2, marginTop,
                 (getWidth() + inputBoundsWidth) / 2, marginTop + inputBoundsHeight);
@@ -301,6 +302,16 @@ public final class CrosswordView extends View {
                         invalidate();
                         ((InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE))
                                 .hideSoftInputFromWindow(this.getWindowToken(), 0);
+                    }
+                    else{
+                        if(nextQuestionBounds.contains((int) event.getX(), (int) event.getY())) {
+                            if(questionsRemaining.indexOf(currentRect)<questionsRemaining.size()-1)
+                                currentRect = questionsRemaining.get(questionsRemaining.indexOf(currentRect)+1);
+                            else currentRect = questionsRemaining.get(0);
+                            invalidate();
+                        }
+                        ((InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE)).
+                                toggleSoftInput(InputMethodManager.SHOW_FORCED, InputMethodManager.HIDE_IMPLICIT_ONLY);
                     }
                 } else {
                     ArrayList<Integer> checked_rects = new ArrayList<>();
@@ -410,12 +421,9 @@ public final class CrosswordView extends View {
 
     protected void onDraw(Canvas canvas) {
         /*<--------------------BACKGROUND-------------------->*/
-        //canvas.drawRect(0, 0, canvas.getWidth(), canvas.getHeight(), backgroundPaint);
-
         Drawable d = getResources().getDrawable(R.drawable.romashki_cropped);
         d.setBounds(0,0,canvas.getWidth(), canvas.getHeight());
         d.draw(canvas);
-
         /*<--------------------CROSSWORD-------------------->*/
         //draw crossword
         for (int number = questionsOrder.size() - 1; number >= 0; number--) {
@@ -494,6 +502,8 @@ public final class CrosswordView extends View {
         }
     }
 
+    Rect nextQuestionBounds = new Rect();
+
     private void drawInput(Canvas canvas) {
         final CrosswordWord cword = crossword.getCword(currentRect);
         final int wordLength = cword.getAnswer().length();
@@ -503,8 +513,9 @@ public final class CrosswordView extends View {
         inputCanvas.drawRect(inputWindowBounds, rectPaint);
         inputCanvas.drawRect(inputWindowBounds, backgroundPaint);
         inputCanvas.drawRect(textBounds, rectPaint);
-        int constX = (inputWindowBounds.width() - wordLength * wordHeight) / 2,
-                constY = textBounds.bottom + (inputWindowBounds.height() - textBounds.height() - wordHeight) / 2;
+        int constX = (inputWindowBounds.width() - wordLength * wordHeight) / 2;
+        int margin = 30;
+        int constY = textBounds.bottom + margin;//(inputWindowBounds.height() - textBounds.height() - wordHeight) / 2;
         currentWordRect.set(inputWindowBounds.left + constX, constY, inputWindowBounds.right - constX,
                 constY + wordHeight);
         inputCanvas.drawRect(currentWordRect, rectPaint);
@@ -560,5 +571,10 @@ public final class CrosswordView extends View {
         canvas.translate(textXCoordinate, textYCoordinate);
         sl.draw(canvas);
         canvas.restore();
+        nextQuestionBounds.set(inputWindowBounds.right-wordHeight-margin,inputWindowBounds.bottom-margin-wordHeight,
+                inputWindowBounds.right-margin,inputWindowBounds.bottom-margin);
+        Drawable d = getResources().getDrawable(R.drawable.ic_forward);
+        d.setBounds(nextQuestionBounds);
+        d.draw(canvas);
     }
 }
