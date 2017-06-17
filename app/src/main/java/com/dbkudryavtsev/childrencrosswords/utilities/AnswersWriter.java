@@ -1,6 +1,5 @@
 package com.dbkudryavtsev.childrencrosswords.utilities;
 
-
 class AnswersWriter {
     static String convertAnswersToJSON(String[] answers){
         String answersString = "{ \"answers\": [";

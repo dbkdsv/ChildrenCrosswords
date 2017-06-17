@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Paint;
@@ -68,6 +69,11 @@ public final class CrosswordView extends View {
         init();
     }
 
+    private SharedPreferences preferences;
+    private static final String SETTINGS_STRING = "settings";
+    private static final String HINTS_STRING = "hints";
+    private int hintsCounter;
+
     private void init(){
         whitePaint.setColor(ContextCompat.getColor(getContext(), R.color.white));
         whitePaint.setStyle(Paint.Style.FILL);
@@ -93,7 +99,12 @@ public final class CrosswordView extends View {
         alphaPaint.setStyle(Paint.Style.FILL);
         alphaPaint.setColor(ContextCompat.getColor(getContext(), R.color.puzzle_dark));
         alphaPaint.setAlpha(150);
+
+        preferences = getContext().getSharedPreferences(SETTINGS_STRING, 0);
+        hintsCounter = preferences.getInt(HINTS_STRING, 0);
     }
+
+
 
     public void setValues (Crossword crossword, String[] answers){
         this.crossword = crossword;
@@ -144,6 +155,11 @@ public final class CrosswordView extends View {
                     questionsOrder.add(0, questionsOrder.remove(questionsOrder.indexOf(currentRect)));
                     if (questionsRemaining.contains(currentRect)) {
                         questionsRemaining.remove(questionsRemaining.indexOf(currentRect));
+                        if(questionsRemaining.size()==0) {
+                            hintsCounter += 5;
+                            Toast.makeText(getContext(), "Ты получил баллы для подсказок! Теперь их "+
+                                    Integer.toString(hintsCounter)+"!", Toast.LENGTH_LONG).show();
+                        }
                     }
                     textInputIsActive = false;
                     ((InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE))
@@ -410,6 +426,12 @@ public final class CrosswordView extends View {
 
     public String[] getCurrentAnswers() {
         return answers;
+    }
+
+    public void onDestroy(){
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.putInt(HINTS_STRING, hintsCounter);
+        editor.apply();
     }
 
     private Rect inputWindowBounds = new Rect();

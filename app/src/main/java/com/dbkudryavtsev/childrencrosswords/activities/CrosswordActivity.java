@@ -76,6 +76,7 @@ public final class CrosswordActivity extends AppCompatActivity {
     protected void onPause() {
         super.onPause();
         String[] finalAnswers = crosswordView.getCurrentAnswers();
+        crosswordView.onDestroy();
         repository.putAnswers(finalAnswers, chosenCrosswordId, CrosswordActivity.this);
     }
 
