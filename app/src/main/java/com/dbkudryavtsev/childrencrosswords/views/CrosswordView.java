@@ -316,6 +316,7 @@ public final class CrosswordView extends View {
                             if (questionsRemaining.indexOf(currentRect) < questionsRemaining.size() - 1)
                                 currentRect = questionsRemaining.get(questionsRemaining.indexOf(currentRect) + 1);
                             else currentRect = questionsRemaining.get(0);
+                            result = true;
                             invalidate();
                         } else if (hintsBounds.contains((int) event.getX(), (int) event.getY())) {
                             getHint();
