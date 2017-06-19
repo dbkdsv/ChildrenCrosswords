@@ -20,7 +20,9 @@ import android.util.AttributeSet;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.dbkudryavtsev.childrencrosswords.models.Crossword;
@@ -237,11 +239,15 @@ public final class CrosswordView extends View {
             if (!answers[i].equals(crossword.getCword(i).getAnswer()))
                 allright = false;
         }
-        if (allright)
-            toast = Toast.makeText(getContext(), "Всё правильно!", Toast.LENGTH_LONG);
-        else
+        if (allright) {
+            ViewGroup row = (ViewGroup) this.getParent().getParent();
+            RelativeLayout layout = (RelativeLayout) row.findViewById(R.id.congrats_layout);
+            layout.setVisibility(VISIBLE);
+        }
+        else {
             toast = Toast.makeText(getContext(), "Ищи ошибку!", Toast.LENGTH_LONG);
-        toast.show();
+            toast.show();
+        }
     }
 
     int crosswordTopX;

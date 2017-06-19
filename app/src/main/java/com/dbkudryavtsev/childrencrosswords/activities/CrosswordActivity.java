@@ -11,7 +11,9 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
+import android.widget.RelativeLayout;
 
 import com.dbkudryavtsev.childrencrosswords.R;
 import com.dbkudryavtsev.childrencrosswords.models.Crossword;
@@ -24,7 +26,10 @@ public final class CrosswordActivity extends AppCompatActivity {
     private CrosswordView crosswordView;
     private int chosenCrosswordId;
     private LocalCrosswordsRepository repository;
-    public EditText input;
+    private EditText input;
+    private boolean isOver = false;
+    private Button returnButton;
+    private RelativeLayout congratsLayout;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -48,6 +53,14 @@ public final class CrosswordActivity extends AppCompatActivity {
                 crosswordView.checkAnswers();
             }
         });
+        returnButton = (Button) findViewById(R.id.return_button);
+        returnButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                CrosswordActivity.this.finish();
+            }
+        });
+        congratsLayout = (RelativeLayout) findViewById(R.id.congrats_layout);
         input = (EditText) findViewById(R.id.input);
         input.setFocusableInTouchMode(true);
         input.addTextChangedListener(new TextWatcher() {
@@ -100,12 +113,18 @@ public final class CrosswordActivity extends AppCompatActivity {
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        if(crosswordView.viewTouched(event)) {
-            input.setText("");
-            input.requestFocus();
-            crosswordView.invalidate();
+        if(!isOver) {
+            if (crosswordView.viewTouched(event)) {
+                input.setText("");
+                input.requestFocus();
+                crosswordView.invalidate();
+            }
         }
         return super.onTouchEvent(event);
+    }
+
+    public void showCongrats(){
+        congratsLayout.setVisibility(View.VISIBLE);
     }
 
     @Override

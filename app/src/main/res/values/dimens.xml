@@ -4,4 +4,5 @@
     <dimen name="fragment_text_size">25sp</dimen>
     <dimen name="fragment_padding">5dp</dimen>
     <dimen name="launch_text_size">36sp</dimen>
+    <dimen name="big_margin">100dp</dimen>
 </resources>

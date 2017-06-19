@@ -19,4 +19,7 @@
     <string name="helping_developer">При поддержке Кудрявцева Василия</string>
     <string name="version_string">Версия 76</string>
     <string name="about">О приложении</string>
+    <string name="return_to_crosswords">ВЕРНУТЬСЯ К СПИСКУ КРОССВОРДОВ</string>
+    <string name="congratulations">ПОЗДРАВЛЯЮ!</string>
+    <string name="congratulations_string">Ты ответил правильно\n на все вопросы!</string>
 </resources>
