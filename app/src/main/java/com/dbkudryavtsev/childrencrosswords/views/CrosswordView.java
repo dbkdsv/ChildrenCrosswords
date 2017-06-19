@@ -350,25 +350,24 @@ public final class CrosswordView extends View {
     }
 
     private void getHint() {
-        hintsCounter = 300;
         ((InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE))
                 .hideSoftInputFromWindow(this.getWindowToken(), 0);
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
         builder.setTitle("Чем помочь? У тебя " + Integer.toString(hintsCounter) + " баллов.")
-                .setItems(new String[]{
-                                "Открыть одну букву - 1 балл",
+                .setItems(new String[]{/*
+                                "Открыть одну букву - 1 балл",*/
                                 "Открыть всё слово - 5 баллов"},
                         new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int which) {
                                 boolean hasOpened =true;
                                 switch (which) {
-                                    case 0: {
+                                    case 1: {
                                         if(hintsCounter>=1)
                                             hintsCounter -= 1;
                                         else hasOpened = false;
                                         break;
                                     }
-                                    case 1: {
+                                    case 0: {
                                         if(hintsCounter>=5) {
                                             hintsCounter -= 5;
                                             answers[currentRect] = crossword.getCword(currentRect).getAnswer();
