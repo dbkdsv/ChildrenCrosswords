@@ -5,10 +5,12 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 class AnswersParser {
+
     private static final String answersArrayName = "answers";
+
     static String[] parseAnswersFromJson(String jsonString) {
         String[] answers;
-        if (jsonString!=null && jsonString.length()>0) {
+        if (jsonString != null && jsonString.length() > 0) {
             JSONObject jsonObject;
             JSONArray answersJSONArray;
             try {

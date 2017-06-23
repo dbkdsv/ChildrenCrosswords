@@ -17,6 +17,7 @@ import java.util.concurrent.ExecutionException;
 
 import static com.dbkudryavtsev.childrencrosswords.utilities.LocalRepository.unpackFile;
 
+// TODO VK: Плохое название класса
 final class CrosswordFromNet {
 
     private static final class DownloadParams{
