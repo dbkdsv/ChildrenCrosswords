@@ -32,6 +32,7 @@ import com.dbkudryavtsev.childrencrosswords.models.CrosswordWord;
 import java.util.ArrayList;
 import java.util.Locale;
 
+import static android.graphics.Rect.intersects;
 import static java.lang.Math.max;
 import static java.lang.Math.min;
 
@@ -103,7 +104,13 @@ public final class CrosswordView extends View {
         alphaPaint.setAlpha(150);
 
         preferences = getContext().getSharedPreferences(SETTINGS_STRING, 0);
-        hintsCounter = preferences.getInt(HINTS_STRING, 0);
+        if(preferences.contains(HINTS_STRING))
+            hintsCounter = preferences.getInt(HINTS_STRING, 0);
+        else {
+            hintsCounter = 20;
+            Toast.makeText(getContext(), "За первый запуск начисляю тебе "+
+                    Integer.toString(hintsCounter)+" баллов!", Toast.LENGTH_LONG).show();
+        }
     }
 
 
@@ -392,6 +399,15 @@ public final class CrosswordView extends View {
                                 invalidate();
                             }
                         });
+        builder.setNeutralButton("Как получить?", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+                builder.setTitle("Как получить баллы?");
+                builder.setMessage("Всё просто! Заполняй болностью кроссворды и за каждый получишь 5 баллов!");
+                builder.show();
+            }
+        });
         builder.show();
     }
 
@@ -481,7 +497,7 @@ public final class CrosswordView extends View {
 
     protected void onDraw(Canvas canvas) {
         /*<--------------------BACKGROUND-------------------->*/
-        Drawable d = getResources().getDrawable(R.drawable.romashki_cropped);
+        Drawable d = getResources().getDrawable(R.drawable.house);
         d.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
         d.draw(canvas);
         /*<--------------------CROSSWORD-------------------->*/
@@ -645,20 +661,29 @@ public final class CrosswordView extends View {
         canvas.translate(textXCoordinate, textYCoordinate);
         sl.draw(canvas);
         canvas.restore();
+        double scale = 1.05;
         hintsBounds.set(inputWindowBounds.left + margin, inputWindowBounds.bottom - margin - wordHeight,
                 inputWindowBounds.left + wordHeight + margin, inputWindowBounds.bottom - margin);
         Drawable hint = getResources().getDrawable(R.drawable.ic_help);
+        while(intersects(currentWordRect, hintsBounds)) hintsBounds.set(hintsBounds.left,
+                (int) (hintsBounds.top*scale),(int) (hintsBounds.right*(2-scale)),hintsBounds.bottom);
         hint.setBounds(hintsBounds);
-        hint.draw(canvas);
         nextQuestionBounds.set(inputWindowBounds.right - 2*(wordHeight + margin), inputWindowBounds.bottom - margin - wordHeight,
                 inputWindowBounds.right - wordHeight-2*margin, inputWindowBounds.bottom - margin);
         Drawable forward = getResources().getDrawable(R.drawable.ic_forward);
+        while(intersects(currentWordRect, nextQuestionBounds)) nextQuestionBounds.set((int) (nextQuestionBounds.left*scale),
+                (int) (nextQuestionBounds.top*scale),nextQuestionBounds.right,nextQuestionBounds.bottom);
         forward.setBounds(nextQuestionBounds);
-        forward.draw(canvas);
+
         doneBounds.set(inputWindowBounds.right - wordHeight - margin, inputWindowBounds.bottom - margin - wordHeight,
                 inputWindowBounds.right - margin, inputWindowBounds.bottom - margin);
         Drawable done = getResources().getDrawable(R.drawable.ic_done_black);
+        while(intersects(currentWordRect, doneBounds)) doneBounds.set((int) (doneBounds.left*scale),
+                (int) (doneBounds.top*scale),doneBounds.right,doneBounds.bottom);
         done.setBounds(doneBounds);
+
+        hint.draw(canvas);
+        forward.draw(canvas);
         done.draw(canvas);
     }
 
