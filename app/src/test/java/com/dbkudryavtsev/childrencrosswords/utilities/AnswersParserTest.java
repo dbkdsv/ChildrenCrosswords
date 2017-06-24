@@ -71,6 +71,4 @@ public class AnswersParserTest {
             assertTrue(isThrown);
         }
     }
-
-    //TODO: Добавить тест на запись ответов
 }

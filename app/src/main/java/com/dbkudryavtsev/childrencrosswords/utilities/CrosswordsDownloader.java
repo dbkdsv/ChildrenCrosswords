@@ -17,8 +17,7 @@ import java.util.concurrent.ExecutionException;
 
 import static com.dbkudryavtsev.childrencrosswords.utilities.LocalRepository.unpackFile;
 
-// TODO VK: Плохое название класса
-final class CrosswordFromNet {
+final class CrosswordsDownloader {
 
     private static final class DownloadParams{
         final String url;
@@ -56,8 +55,8 @@ final class CrosswordFromNet {
 
     private boolean download(String url, String name) {
         try {
-            new CrosswordFromNet.FileDownloadTask()
-                    .execute(new CrosswordFromNet.DownloadParams(url, name))
+            new CrosswordsDownloader.FileDownloadTask()
+                    .execute(new CrosswordsDownloader.DownloadParams(url, name))
                     .get();
         } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
@@ -68,7 +67,7 @@ final class CrosswordFromNet {
 
     static void downloadCrosswords(Context context) {
         File resources = new File(context.getFilesDir(), context.getString(R.string.zip_file_name));
-        CrosswordFromNet downloader = new CrosswordFromNet();
+        CrosswordsDownloader downloader = new CrosswordsDownloader();
         downloader.download(context.getString(R.string.zip_download_link), resources.getPath());
         unpackFile(context, resources);
     }

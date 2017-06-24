@@ -11,7 +11,7 @@ import static com.dbkudryavtsev.childrencrosswords.utilities.AnswersParser.parse
 import static com.dbkudryavtsev.childrencrosswords.utilities.AnswersWriter.convertAnswersToJSON;
 import static com.dbkudryavtsev.childrencrosswords.utilities.CrosswordsParser.parseCrosswordFromJson;
 
-import static com.dbkudryavtsev.childrencrosswords.utilities.CrosswordFromNet.downloadCrosswords;
+import static com.dbkudryavtsev.childrencrosswords.utilities.CrosswordsDownloader.downloadCrosswords;
 import static com.dbkudryavtsev.childrencrosswords.utilities.LocalRepository.loadJSONFromFile;
 import static com.dbkudryavtsev.childrencrosswords.utilities.LocalRepository.writeStringToJSONFile;
 
