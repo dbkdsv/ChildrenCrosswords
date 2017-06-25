@@ -634,7 +634,7 @@ public final class CrosswordView extends View {
     private Rect hintsBounds = new Rect();
     private Rect doneBounds  = new Rect();
     private Rect tempRect = new Rect(inputWindowBounds);
-
+    private Paint tempPaint = new Paint();
     private void drawInput(Canvas canvas) {
         int margin = 30;
         final CrosswordWord cword = crossword.getCword(currentRect);
@@ -707,16 +707,30 @@ public final class CrosswordView extends View {
         }
         int numberOfTextLines = sl.getLineCount();
         float textHeight = getTextHeight(textOnCanvas, questionFontPaint);
-        while (textHeight>=textBounds.height()) {
+        tempPaint.set(questionFontPaint);
+        while (textHeight*numberOfTextLines*1.3f>=textBounds.height()) {
             questionFontPaint.setTextSize(questionFontPaint.getTextSize()*.9f);
+            if (Build.VERSION.SDK_INT >= 23) {
+                StaticLayout.Builder layoutBuilder = StaticLayout.Builder.obtain(textOnCanvas,
+                        0, textOnCanvas.length(), questionFontPaint, textBounds.width())
+                        .setAlignment(Layout.Alignment.ALIGN_CENTER)
+                        .setLineSpacing(1, 1)
+                        .setIncludePad(true);
+                sl = layoutBuilder.build();
+            } else {
+                sl = new StaticLayout(textOnCanvas, questionFontPaint, textBounds.width(),
+                        Layout.Alignment.ALIGN_CENTER, 1, 1, true);
+            }
+            numberOfTextLines = sl.getLineCount();
             textHeight = getTextHeight(textOnCanvas, questionFontPaint);
         }
-        float textYCoordinate = textBounds.exactCenterY() - numberOfTextLines * textHeight*1.2f / 2;
+        float textYCoordinate = textBounds.exactCenterY() - numberOfTextLines * textHeight*1.3f / 2;
         float textXCoordinate = textBounds.left;
         canvas.save();
         canvas.translate(textXCoordinate, textYCoordinate);
         sl.draw(canvas);
         canvas.restore();
+        questionFontPaint.set(tempPaint);
         double scale = 1.05;
         hintsBounds.set(inputWindowBounds.left + margin, inputWindowBounds.bottom - margin - wordHeight,
                 inputWindowBounds.left + wordHeight + margin, inputWindowBounds.bottom - margin);
