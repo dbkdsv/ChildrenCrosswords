@@ -123,12 +123,12 @@ public final class CrosswordActivity extends AppCompatActivity {
         return super.onTouchEvent(event);
     }
 
-    public void showCongrats(){
-        congratsLayout.setVisibility(View.VISIBLE);
-    }
-
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
-        return crosswordView.onKeyDown(keyCode, event);
+        if(crosswordView.getTextInputIsActive()) {
+            crosswordView.keyIsDown(event);
+            return true;
+        }
+        else return super.onKeyDown(keyCode, event);
     }
 }

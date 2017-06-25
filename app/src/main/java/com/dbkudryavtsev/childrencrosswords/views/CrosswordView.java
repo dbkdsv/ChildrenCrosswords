@@ -9,6 +9,7 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Rect;
+import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.support.annotation.Nullable;
@@ -196,7 +197,8 @@ public final class CrosswordView extends View {
     }
 
     private void rectsSet() {
-        fontPaint.setTextSize(wordHeight);
+        fontPaint.setTextSize((int)(wordHeight*.9));
+        fontPaint.setTypeface(Typeface.create(Typeface.DEFAULT, Typeface.BOLD));
         smallFontPaint.setTextSize(wordHeight / 4);
         questionFontPaint.setTextSize(wordHeight / 3);
         for (int i = 0; i < crossword.getCwordsLength(); i++) {
@@ -414,6 +416,10 @@ public final class CrosswordView extends View {
     private Rect letterBounds = new Rect();
     private boolean textInputIsActive = false;
 
+    public boolean getTextInputIsActive(){
+        return textInputIsActive;
+    }
+
     private float getTextHeight(String text, Paint paint) {
         Rect rect = new Rect();
         paint.getTextBounds(text, 0, text.length(), rect);
@@ -461,8 +467,7 @@ public final class CrosswordView extends View {
         return intersects;
     }
 
-    @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
+    public void keyIsDown(KeyEvent event) {
         if (event.getKeyCode() == KeyEvent.KEYCODE_BACK && event.getAction() == KeyEvent.ACTION_DOWN) {
             if (textInputIsActive) {
                 textInputIsActive = false;
@@ -470,12 +475,10 @@ public final class CrosswordView extends View {
                 ((InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE))
                         .hideSoftInputFromWindow(this.getWindowToken(), 0);
                 currentAnswer = "";
-                return true;
             } else {
                 ((Activity) getContext()).finish();
             }
         }
-        return super.onKeyDown(keyCode, event);
     }
 
     public String[] getCurrentAnswers() {
@@ -524,7 +527,7 @@ public final class CrosswordView extends View {
                     fontPaint.getTextBounds(answer, j, j + 1, letterBounds);
                     horizontal_step = (int) (wordHeight -
                             fontPaint.measureText(Character.toString(answer.charAt(j)))) / 2;
-                    vertical_step = wordHeight - (wordHeight - letterBounds.height()) / 2;
+                    vertical_step = wordHeight - (wordHeight - letterBounds.height()+letterBounds.bottom) / 2;
                     canvas.drawText(Character.toString(answer.charAt(j)),
                             constX + j * wordHeight + horizontal_step, constY + vertical_step, fontPaint);
                 }
@@ -541,7 +544,7 @@ public final class CrosswordView extends View {
                     fontPaint.getTextBounds(answer, j, j + 1, letterBounds);
                     horizontal_step = (int) (wordHeight -
                             fontPaint.measureText(Character.toString(answer.charAt(j)))) / 2;
-                    vertical_step = wordHeight - (wordHeight - letterBounds.height()) / 2;
+                    vertical_step = wordHeight - (wordHeight - letterBounds.height()+letterBounds.bottom) / 2;
                     canvas.drawText(Character.toString(answer.charAt(j)),
                             constX + horizontal_step, constY + j * wordHeight + vertical_step, fontPaint);
                 }
@@ -702,7 +705,7 @@ public final class CrosswordView extends View {
                 fontPaint.getTextBounds(answers[intersectedWord], positionIntersected, positionIntersected + 1, letterBounds);
                 horizontal_step = (int) (wordHeight -
                         fontPaint.measureText(Character.toString(answers[intersectedWord].charAt(positionIntersected)))) / 2;
-                vertical_step = wordHeight - (wordHeight - letterBounds.height()) / 2;
+                vertical_step = wordHeight - (wordHeight - letterBounds.height()+letterBounds.bottom) / 2;
                 if(startLetter<=positionCurrent && positionCurrent<=endLetter)
                 canvas.drawText(Character.toString(answers[intersectedWord].charAt(positionIntersected)),
                         currentWordRect.left + (positionCurrent-startLetter) * wordHeight + horizontal_step,
@@ -715,7 +718,7 @@ public final class CrosswordView extends View {
             fontPaint.getTextBounds(currentAnswer, j, j + 1, letterBounds);
             horizontal_step = (int) (wordHeight -
                     fontPaint.measureText(Character.toString(currentAnswer.charAt(j)))) / 2;
-            vertical_step = wordHeight - (wordHeight - letterBounds.height()) / 2;
+            vertical_step = wordHeight - (wordHeight - letterBounds.height()+letterBounds.bottom) / 2;
             if (startLetter-step  <= j && j <= endLetter-step) {
                 canvas.drawText(Character.toString(currentAnswer.charAt(j)),
                         currentWordRect.left + (j - startLetter + step) * wordHeight + horizontal_step,
