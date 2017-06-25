@@ -1,6 +1,7 @@
 package com.dbkudryavtsev.childrencrosswords.utilities;
 
 import android.content.Context;
+import android.util.Log;
 
 import com.dbkudryavtsev.childrencrosswords.R;
 import com.dbkudryavtsev.childrencrosswords.models.Crossword;
@@ -94,7 +95,8 @@ public final class LocalCrosswordsRepository {
         int completed = 0;
         for (String answer : answers)
             completed += (answer.equals("")) ? 0 : 1;
-        completenesses[fileId] = completed/answers.length*100;
+        completenesses[fileId] = completed*100/answers.length;
+        Log.e("Получилось?",Integer.toString(completenesses[fileId]));
     }
 
     private void updateCompletenesses(Context context) {
@@ -104,7 +106,7 @@ public final class LocalCrosswordsRepository {
             int completed = 0;
             for (String answer : answers)
                 completed += (answer.equals("")) ? 0 : 1;
-            completenesses[i] = completed/answers.length*100;
+            completenesses[i] = completed*100/answers.length;
         }
     }
 

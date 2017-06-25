@@ -5,7 +5,6 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
-import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Rect;
@@ -29,6 +28,7 @@ import android.widget.Toast;
 import com.dbkudryavtsev.childrencrosswords.models.Crossword;
 import com.dbkudryavtsev.childrencrosswords.R;
 import com.dbkudryavtsev.childrencrosswords.models.CrosswordWord;
+import com.plattysoft.leonids.ParticleSystem;
 
 import java.util.ArrayList;
 import java.util.Locale;
@@ -252,6 +252,30 @@ public final class CrosswordView extends View {
             ViewGroup row = (ViewGroup) this.getParent().getParent();
             RelativeLayout layout = (RelativeLayout) row.findViewById(R.id.congrats_layout);
             layout.setVisibility(VISIBLE);
+            int numParticles = 100;
+            long timeToLive = 3000;
+            int drawableResId = R.drawable.star_pink;
+
+            new ParticleSystem((Activity) getContext(), numParticles, drawableResId, timeToLive)
+                    .setSpeedRange(0.1f, 0.3f)
+                    .emit(getWidth()*3/4,getHeight()*3/10, 3000);
+
+            new ParticleSystem((Activity) getContext(), numParticles, drawableResId, timeToLive)
+                    .setSpeedRange(0.1f, 0.3f)
+                    .emit(getWidth()/4,getHeight()*3/10, 3000);
+
+            new ParticleSystem((Activity) getContext(), 30, R.drawable.balloon1, 10000)
+                    .setSpeedModuleAndAngleRange(0f, 0.3f, 180, 180)
+                    .setRotationSpeed(0)
+                    .setAcceleration(0.00005f, 90)
+                    .emit(getWidth(), 0, 8);
+
+
+            new ParticleSystem((Activity) getContext(), 30, R.drawable.balloon2, 10000)
+                    .setSpeedModuleAndAngleRange(0f, 0.3f, 0, 0)
+                    .setRotationSpeed(0)
+                    .setAcceleration(0.00005f, 90)
+                    .emit(0, 0, 8);
         }
         else {
             toast = Toast.makeText(getContext(), "Ищи ошибку!", Toast.LENGTH_LONG);
@@ -416,10 +440,6 @@ public final class CrosswordView extends View {
     private Rect letterBounds = new Rect();
     private boolean textInputIsActive = false;
 
-    public boolean getTextInputIsActive(){
-        return textInputIsActive;
-    }
-
     private float getTextHeight(String text, Paint paint) {
         Rect rect = new Rect();
         paint.getTextBounds(text, 0, text.length(), rect);
@@ -467,7 +487,7 @@ public final class CrosswordView extends View {
         return intersects;
     }
 
-    public void keyIsDown(KeyEvent event) {
+    public boolean keyIsDown(KeyEvent event) {
         if (event.getKeyCode() == KeyEvent.KEYCODE_BACK && event.getAction() == KeyEvent.ACTION_DOWN) {
             if (textInputIsActive) {
                 textInputIsActive = false;
@@ -478,7 +498,9 @@ public final class CrosswordView extends View {
             } else {
                 ((Activity) getContext()).finish();
             }
+            return true;
         }
+        return false;
     }
 
     public String[] getCurrentAnswers() {

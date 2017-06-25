@@ -125,8 +125,14 @@ public final class CrosswordActivity extends AppCompatActivity {
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
-        if(crosswordView.getTextInputIsActive()) {
-            crosswordView.keyIsDown(event);
+        if(crosswordView.keyIsDown(event)) {
+            return true;
+        }
+        else if(keyCode==KeyEvent.KEYCODE_DEL && event.getAction()==KeyEvent.ACTION_DOWN){
+            String text = input.getText().toString();
+            input.setText(text.substring(0, text.length() - 1));
+            input.setSelection(input.length());
+            crosswordView.invalidate();
             return true;
         }
         else return super.onKeyDown(keyCode, event);
