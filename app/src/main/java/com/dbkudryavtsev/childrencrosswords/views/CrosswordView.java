@@ -251,60 +251,63 @@ public final class CrosswordView extends View {
                 allright = false;
         }
         if (allright) {
-            ViewGroup row = (ViewGroup) this.getParent().getParent();
-            RelativeLayout layout = (RelativeLayout) row.findViewById(R.id.congrats_layout);
-            layout.setVisibility(VISIBLE);
-            int numParticles = 100;
-            long timeToLive = 3000;
-
-            int drawableResId;
-            switch(chosenLevel%4){
-                case 0:{
-                    drawableResId =R.drawable.star_pink;
-                    break;
-                }
-                case 1:{
-                    drawableResId =R.drawable.star_yellow;
-                    break;
-                }
-                case 2:{
-                    drawableResId =R.drawable.star_blue;
-                    break;
-                }
-                case 3:{
-                    drawableResId =R.drawable.star_green;
-                    break;
-                }
-                default:{
-                    drawableResId =R.drawable.star_pink;
-                    break;
-                }
-            }
-            new ParticleSystem((Activity) getContext(), numParticles, drawableResId, timeToLive)
-                    .setSpeedRange(0.1f, 0.3f)
-                    .emit(getWidth()*3/4,getHeight()*3/10, 3000);
-
-            new ParticleSystem((Activity) getContext(), numParticles, drawableResId, timeToLive)
-                    .setSpeedRange(0.1f, 0.3f)
-                    .emit(getWidth()/4,getHeight()*3/10, 3000);
-
-            new ParticleSystem((Activity) getContext(), 30, R.drawable.balloon1, 10000)
-                    .setSpeedModuleAndAngleRange(0f, 0.3f, 180, 180)
-                    .setRotationSpeed(0)
-                    .setAcceleration(0.00005f, 90)
-                    .emit(getWidth(), 0, 8);
-
-
-            new ParticleSystem((Activity) getContext(), 30, R.drawable.balloon2, 10000)
-                    .setSpeedModuleAndAngleRange(0f, 0.3f, 0, 0)
-                    .setRotationSpeed(0)
-                    .setAcceleration(0.00005f, 90)
-                    .emit(0, 0, 8);
+            showCongratulations();
         }
         else {
             toast = Toast.makeText(getContext(), "Ищи ошибку!", Toast.LENGTH_LONG);
             toast.show();
         }
+    }
+
+    private void showCongratulations() {
+        ViewGroup row = (ViewGroup) this.getParent().getParent();
+        RelativeLayout layout = (RelativeLayout) row.findViewById(R.id.congrats_layout);
+        layout.setVisibility(VISIBLE);
+        int numParticles = 100;
+        long timeToLive = 3000;
+        int drawableResId;
+        switch(chosenLevel%4){
+            case 0:{
+                drawableResId =R.drawable.star_pink;
+                break;
+            }
+            case 1:{
+                drawableResId =R.drawable.star_yellow;
+                break;
+            }
+            case 2:{
+                drawableResId =R.drawable.star_blue;
+                break;
+            }
+            case 3:{
+                drawableResId =R.drawable.star_green;
+                break;
+            }
+            default:{
+                drawableResId =R.drawable.star_pink;
+                break;
+            }
+        }
+        new ParticleSystem((Activity) getContext(), numParticles, drawableResId, timeToLive)
+                .setSpeedRange(0.1f, 0.3f)
+                .emit(getWidth()*3/4,getHeight()*3/10, 3000);
+
+        new ParticleSystem((Activity) getContext(), numParticles, drawableResId, timeToLive)
+                .setSpeedRange(0.1f, 0.3f)
+                .emit(getWidth()/4,getHeight()*3/10, 3000);
+
+        new ParticleSystem((Activity) getContext(), 30, R.drawable.balloon1, 10000)
+                .setSpeedModuleAndAngleRange(0f, 0.3f, 180, 180)
+                .setRotationSpeed(0)
+                .setAcceleration(0.00005f, 90)
+                .emit(getWidth(), 0, 8);
+
+
+        new ParticleSystem((Activity) getContext(), 30, R.drawable.balloon2, 10000)
+                .setSpeedModuleAndAngleRange(0f, 0.3f, 0, 0)
+                .setRotationSpeed(0)
+                .setAcceleration(0.00005f, 90)
+                .emit(0, 0, 8);
     }
 
     int crosswordTopX;
