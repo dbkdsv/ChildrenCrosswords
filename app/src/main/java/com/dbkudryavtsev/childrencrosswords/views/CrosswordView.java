@@ -114,11 +114,13 @@ public final class CrosswordView extends View {
         }
     }
 
+    private int chosenLevel;
 
-    public void setValues(Crossword crossword, String[] answers) {
+    public void setValues(Crossword crossword, String[] answers, int chosenLevel) {
         this.crossword = crossword;
         this.answers = new String[answers.length];
         this.answers = answers;
+        this.chosenLevel = chosenLevel;
         questionsRemaining = new ArrayList<>(this.crossword.getCwordsLength());
         questionsOrder = new ArrayList<>(this.crossword.getCwordsLength());
         for (int i = 0; i < crossword.getHorCount(); i++) {
@@ -200,7 +202,7 @@ public final class CrosswordView extends View {
         fontPaint.setTextSize((int)(wordHeight*.9));
         fontPaint.setTypeface(Typeface.create(Typeface.DEFAULT, Typeface.BOLD));
         smallFontPaint.setTextSize(wordHeight / 4);
-        questionFontPaint.setTextSize(wordHeight / 3);
+        questionFontPaint.setTextSize(wordHeight / 2);
         for (int i = 0; i < crossword.getCwordsLength(); i++) {
             //set constant margin
             int constX = crossword.getCword(i).getPosX() * wordHeight + (int) stepX;
@@ -254,8 +256,30 @@ public final class CrosswordView extends View {
             layout.setVisibility(VISIBLE);
             int numParticles = 100;
             long timeToLive = 3000;
-            int drawableResId = R.drawable.star_pink;
 
+            int drawableResId;
+            switch(chosenLevel%4){
+                case 0:{
+                    drawableResId =R.drawable.star_pink;
+                    break;
+                }
+                case 1:{
+                    drawableResId =R.drawable.star_yellow;
+                    break;
+                }
+                case 2:{
+                    drawableResId =R.drawable.star_blue;
+                    break;
+                }
+                case 3:{
+                    drawableResId =R.drawable.star_green;
+                    break;
+                }
+                default:{
+                    drawableResId =R.drawable.star_pink;
+                    break;
+                }
+            }
             new ParticleSystem((Activity) getContext(), numParticles, drawableResId, timeToLive)
                     .setSpeedRange(0.1f, 0.3f)
                     .emit(getWidth()*3/4,getHeight()*3/10, 3000);
@@ -680,7 +704,11 @@ public final class CrosswordView extends View {
         }
         int numberOfTextLines = sl.getLineCount();
         float textHeight = getTextHeight(textOnCanvas, questionFontPaint);
-        float textYCoordinate = textBounds.exactCenterY() - ((numberOfTextLines * textHeight) / 2);
+        while (textHeight>=textBounds.height()) {
+            questionFontPaint.setTextSize(questionFontPaint.getTextSize()*.9f);
+            textHeight = getTextHeight(textOnCanvas, questionFontPaint);
+        }
+        float textYCoordinate = textBounds.exactCenterY() - numberOfTextLines * textHeight*1.2f / 2;
         float textXCoordinate = textBounds.left;
         canvas.save();
         canvas.translate(textXCoordinate, textYCoordinate);
@@ -736,7 +764,7 @@ public final class CrosswordView extends View {
             }
         }
         for (int j = 0; j < currentAnswer.length(); j++) {
-            if (intersectPositions.contains(j + step)) step++;
+            while (intersectPositions.contains(j + step)) step++;
             fontPaint.getTextBounds(currentAnswer, j, j + 1, letterBounds);
             horizontal_step = (int) (wordHeight -
                     fontPaint.measureText(Character.toString(currentAnswer.charAt(j)))) / 2;

@@ -28,8 +28,6 @@ public final class CrosswordActivity extends AppCompatActivity {
     private LocalCrosswordsRepository repository;
     private EditText input;
     private boolean isOver = false;
-    private Button returnButton;
-    private RelativeLayout congratsLayout;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -44,7 +42,7 @@ public final class CrosswordActivity extends AppCompatActivity {
         Crossword chosenCrossword = repository.getCrossword(chosenCrosswordId, CrosswordActivity.this);
         String[] answers = repository.getAnswers(chosenCrosswordId, CrosswordActivity.this);
         crosswordView = (CrosswordView) findViewById(R.id.crossword_view);
-        crosswordView.setValues(chosenCrossword, answers);
+        crosswordView.setValues(chosenCrossword, answers, chosenCrosswordId);
         setTitle("Уровень "+ Integer.toString(chosenCrosswordId +1));
         FloatingActionButton checkButton = (FloatingActionButton) findViewById(R.id.check_button);
         checkButton.setOnClickListener(new View.OnClickListener() {
@@ -53,14 +51,13 @@ public final class CrosswordActivity extends AppCompatActivity {
                 crosswordView.checkAnswers();
             }
         });
-        returnButton = (Button) findViewById(R.id.return_button);
+        Button returnButton = (Button) findViewById(R.id.return_button);
         returnButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 CrosswordActivity.this.finish();
             }
         });
-        congratsLayout = (RelativeLayout) findViewById(R.id.congrats_layout);
         input = (EditText) findViewById(R.id.input);
         input.setFocusableInTouchMode(true);
         input.addTextChangedListener(new TextWatcher() {
