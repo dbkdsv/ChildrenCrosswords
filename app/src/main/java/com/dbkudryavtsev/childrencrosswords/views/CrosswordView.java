@@ -21,7 +21,6 @@ import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
@@ -39,8 +38,6 @@ import static java.lang.Math.max;
 import static java.lang.Math.min;
 
 public final class CrosswordView extends View {
-
-    private final int BAR_PERCENTAGE = 5;
 
     private int maxWordLength = -1;
 
@@ -224,8 +221,10 @@ public final class CrosswordView extends View {
             }
         }
         int inputBoundsWidth = (int) (getWidth() * .9);
-        int inputBoundsHeight = (int) (getHeight() * .4),
-                marginTop = getHeight() * BAR_PERCENTAGE / 100, innerMargin = 10;
+        int BAR_PERCENTAGE = 5;
+        int inputBoundsHeight = (int) (getHeight() * .4);
+        int marginTop = getHeight() * BAR_PERCENTAGE / 100;
+        int innerMargin = 10;
         inputWindowBounds.set((getWidth() - inputBoundsWidth) / 2, marginTop,
                 (getWidth() + inputBoundsWidth) / 2, marginTop + inputBoundsHeight);
         textBounds.set(inputWindowBounds.left + innerMargin, inputWindowBounds.top + innerMargin,
@@ -550,7 +549,7 @@ public final class CrosswordView extends View {
 
     protected void onDraw(Canvas canvas) {
         /*<--------------------BACKGROUND-------------------->*/
-        Drawable d = getResources().getDrawable(R.drawable.house);
+        Drawable d = ContextCompat.getDrawable(getContext(),R.drawable.house);
         d.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
         d.draw(canvas);
         /*<--------------------CROSSWORD-------------------->*/
@@ -735,24 +734,23 @@ public final class CrosswordView extends View {
         double scale = 1.05;
         hintsBounds.set(inputWindowBounds.left + margin, inputWindowBounds.bottom - margin - wordHeight,
                 inputWindowBounds.left + wordHeight + margin, inputWindowBounds.bottom - margin);
-        Drawable hint = getResources().getDrawable(R.drawable.ic_help);
+        Drawable hint = ContextCompat.getDrawable(getContext(),R.drawable.ic_help);
         while(intersects(currentWordRect, hintsBounds)) hintsBounds.set(hintsBounds.left,
                 (int) (hintsBounds.top*scale),(int) (hintsBounds.right*(2-scale)),hintsBounds.bottom);
         hint.setBounds(hintsBounds);
         nextQuestionBounds.set(inputWindowBounds.right - 2*(wordHeight + margin), inputWindowBounds.bottom - margin - wordHeight,
                 inputWindowBounds.right - wordHeight-2*margin, inputWindowBounds.bottom - margin);
-        Drawable forward = getResources().getDrawable(R.drawable.ic_forward);
+        Drawable forward = ContextCompat.getDrawable(getContext(),R.drawable.ic_forward);
         while(intersects(currentWordRect, nextQuestionBounds)) nextQuestionBounds.set((int) (nextQuestionBounds.left*scale),
                 (int) (nextQuestionBounds.top*scale),nextQuestionBounds.right,nextQuestionBounds.bottom);
         forward.setBounds(nextQuestionBounds);
 
         doneBounds.set(inputWindowBounds.right - wordHeight - margin, inputWindowBounds.bottom - margin - wordHeight,
                 inputWindowBounds.right - margin, inputWindowBounds.bottom - margin);
-        Drawable done = getResources().getDrawable(R.drawable.ic_done_black);
+        Drawable done = ContextCompat.getDrawable(getContext(),R.drawable.ic_done_black);
         while(intersects(currentWordRect, doneBounds)) doneBounds.set((int) (doneBounds.left*scale),
                 (int) (doneBounds.top*scale),doneBounds.right,doneBounds.bottom);
         done.setBounds(doneBounds);
-
         hint.draw(canvas);
         forward.draw(canvas);
         done.draw(canvas);

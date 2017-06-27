@@ -1,7 +1,6 @@
 package com.dbkudryavtsev.childrencrosswords.utilities;
 
 import android.content.Context;
-import android.util.Log;
 
 import com.dbkudryavtsev.childrencrosswords.R;
 import com.dbkudryavtsev.childrencrosswords.models.Crossword;

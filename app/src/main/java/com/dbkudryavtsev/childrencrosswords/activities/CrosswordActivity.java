@@ -13,7 +13,6 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.RelativeLayout;
 
 import com.dbkudryavtsev.childrencrosswords.R;
 import com.dbkudryavtsev.childrencrosswords.models.Crossword;
@@ -27,7 +26,6 @@ public final class CrosswordActivity extends AppCompatActivity {
     private int chosenCrosswordId;
     private LocalCrosswordsRepository repository;
     private EditText input;
-    private boolean isOver = false;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -110,12 +108,10 @@ public final class CrosswordActivity extends AppCompatActivity {
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        if(!isOver) {
-            if (crosswordView.viewTouched(event)) {
-                input.setText("");
-                input.requestFocus();
-                crosswordView.invalidate();
-            }
+        if (crosswordView.viewTouched(event)) {
+            input.setText("");
+            input.requestFocus();
+            crosswordView.invalidate();
         }
         return super.onTouchEvent(event);
     }
