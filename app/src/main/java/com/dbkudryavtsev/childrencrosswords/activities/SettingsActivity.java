@@ -14,7 +14,7 @@ import com.dbkudryavtsev.childrencrosswords.utilities.LocalCrosswordsRepositoryP
 
 public final class SettingsActivity extends Activity {
 
-    private static final String[] menuStrings = {"Обновить кроссворды", "Сбросить прогресс", "Фон кроссвордов"};
+    private static final String[] menuStrings = {"Обновить кроссворды", "Сбросить прогресс"};
     private LocalCrosswordsRepository repository;
 
     @Override
@@ -33,6 +33,7 @@ public final class SettingsActivity extends Activity {
                 switch ((int) id){
                     case 0: {
                         repository.updateCrosswords(SettingsActivity.this);
+                        Toast.makeText(SettingsActivity.this, "Твои кроссворды готовы!", Toast.LENGTH_LONG).show();
                         return;
                     }
                     case 1: {
@@ -43,10 +44,6 @@ public final class SettingsActivity extends Activity {
                             Toast.makeText(SettingsActivity.this,
                                     "Проблема с удалением файлов.", Toast.LENGTH_LONG).show();
                         }
-                        return;
-                    }
-                    default:{
-
                     }
                 }
             }

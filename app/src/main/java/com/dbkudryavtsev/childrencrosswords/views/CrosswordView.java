@@ -21,6 +21,7 @@ import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
@@ -189,8 +190,8 @@ public final class CrosswordView extends View {
     private int wordHeight;
     private Rect[] rects;
 
-    private float stepX = 0.f;
-    private float stepY = 0.f;
+    private float stepX;
+    private float stepY;
 
     private void allocateRects() {
         rects = new Rect[crossword.getCwordsLength()];
@@ -234,11 +235,11 @@ public final class CrosswordView extends View {
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         getDimensions();
+        this.getLocationOnScreen(location);
         wordHeight = Math.min(getWidth() / (crosswordBotX - crosswordTopX + 1),
-                getHeight() / (crosswordBotY - crosswordTopY + 1));
+                (getHeight()-location[1]) / (crosswordBotY - crosswordTopY + 1));
         stepX = (getWidth() - maxWordLength * wordHeight) / 2;
-        stepY = (getHeight() - (crosswordBotY - crosswordTopY) * wordHeight) / 2
-                - getHeight() * BAR_PERCENTAGE / 100;
+        stepY = (getHeight() - (crosswordBotY - crosswordTopY) * wordHeight) / 2;
         allocateRects();
         rectsSet();
     }

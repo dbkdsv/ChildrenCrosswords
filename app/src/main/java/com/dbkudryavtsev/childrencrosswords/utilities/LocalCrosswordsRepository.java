@@ -96,7 +96,6 @@ public final class LocalCrosswordsRepository {
         for (String answer : answers)
             completed += (answer.equals("")) ? 0 : 1;
         completenesses[fileId] = completed*100/answers.length;
-        Log.e("Получилось?",Integer.toString(completenesses[fileId]));
     }
 
     private void updateCompletenesses(Context context) {
