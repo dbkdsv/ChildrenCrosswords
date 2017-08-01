@@ -10,9 +10,8 @@ import java.util.ArrayList;
 
 class AnswersParser {
 
-    private static final String answersArrayName = "answers";
-
     static String[] parseAnswersFromJson(String jsonString) {
+        final String answersArrayName = "answers";
         String[] answers;
         if (jsonString != null && jsonString.length() > 0) {
             JSONObject jsonObject;
@@ -40,10 +39,10 @@ class AnswersParser {
     }
 
     static String[] parseAnswersFromSQL(Cursor cursor){
+        final String answerColumnString = "answer";
         ArrayList<String> answersList = new ArrayList<>();
         if (cursor.moveToFirst()){
-            int order_num = cursor.getColumnIndex("order_num");
-            int answer = cursor.getColumnIndex("answer");
+            int answer = cursor.getColumnIndex(answerColumnString);
             do{
                 answersList.add(cursor.getString(answer));
             } while(cursor.moveToNext());
