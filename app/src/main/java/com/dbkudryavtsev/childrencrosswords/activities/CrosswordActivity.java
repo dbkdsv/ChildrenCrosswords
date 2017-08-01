@@ -1,6 +1,5 @@
 package com.dbkudryavtsev.childrencrosswords.activities;
 
-import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
@@ -20,8 +19,6 @@ import com.dbkudryavtsev.childrencrosswords.models.Crossword;
 import com.dbkudryavtsev.childrencrosswords.utilities.LocalCrosswordsRepository;
 import com.dbkudryavtsev.childrencrosswords.utilities.LocalCrosswordsRepositoryProvider;
 import com.dbkudryavtsev.childrencrosswords.views.CrosswordView;
-
-import java.util.Locale;
 
 public final class CrosswordActivity extends AppCompatActivity {
 

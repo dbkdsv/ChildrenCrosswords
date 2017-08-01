@@ -1,46 +1,56 @@
 package com.dbkudryavtsev.childrencrosswords.utilities;
 
+import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 
 import com.dbkudryavtsev.childrencrosswords.R;
 import com.dbkudryavtsev.childrencrosswords.models.Crossword;
 
 import java.io.File;
 
-import static com.dbkudryavtsev.childrencrosswords.utilities.AnswersParser.parseAnswersFromJson;
-import static com.dbkudryavtsev.childrencrosswords.utilities.AnswersWriter.convertAnswersToJSON;
+import static com.dbkudryavtsev.childrencrosswords.utilities.AnswersParser.parseAnswersFromSQL;
 import static com.dbkudryavtsev.childrencrosswords.utilities.CrosswordsParser.parseCrosswordFromJson;
 
 import static com.dbkudryavtsev.childrencrosswords.utilities.CrosswordsDownloader.downloadCrosswords;
 import static com.dbkudryavtsev.childrencrosswords.utilities.LocalRepository.loadJSONFromFile;
-import static com.dbkudryavtsev.childrencrosswords.utilities.LocalRepository.writeStringToJSONFile;
 
 public final class LocalCrosswordsRepository {
 
     private int crosswordsCount;
     private int[] completenesses;
+    private SQLiteInteractor interactor;
+    private SQLiteDatabase db;
 
     public LocalCrosswordsRepository(Context context) {
+        interactor = new SQLiteInteractor(context);
+        db = interactor.getWritableDatabase();
         updateCrosswordsCount(context);
     }
 
     public void deleteAnswers(Context context){
-        File contentsDirectory = new File(context.getFilesDir().getAbsolutePath());
-        String answersFilename = context.getString(R.string.answers_file_name);
-        for (File file: contentsDirectory.listFiles()){
-            if(file.getName().substring(0,answersFilename.length()).equals(answersFilename))
-                if(!file.delete()) {
-                    throw new RuntimeException();
-                }
-        }
+        db.delete("answers", null, null);
         updateCompletenesses(context);
     }
 
+    public void putAnswers(String[] answers, int chosenCrosswordId, Context context) {
+
+        for (int i=0; i<answers.length; i++) {
+            ContentValues contentValues = new ContentValues();
+            contentValues.put("crossword_num", chosenCrosswordId);
+            contentValues.put("order_num", i);
+            contentValues.put("answer", answers[i]);
+            db.insert("answers", null, contentValues);
+        }
+        updateCompleteness(chosenCrosswordId, context);
+    }
+
     public String[] getAnswers(int chosenCrosswordId, Context context) {
-        String filename = context.getString(R.string.resource_file_name_template,
-                context.getString(R.string.answers_file_name), chosenCrosswordId);
-        String jsonString = loadJSONFromFile(filename, context);
-        String[] answers = parseAnswersFromJson(jsonString);
+        Cursor cursor = db.rawQuery("select * from answers " +
+                "where crossword_num = " + Integer.toString(chosenCrosswordId)+" order by order_num ASC", null);
+        String[] answers = parseAnswersFromSQL(cursor);
+        cursor.close();
         if(answers == null){
             answers = new String[getCrossword(chosenCrosswordId, context).getCwordsLength()];
             for(int i = 0; i<answers.length; i++)
@@ -56,12 +66,13 @@ public final class LocalCrosswordsRepository {
         return parseCrosswordFromJson(jsonString);
     }
 
-    public int getCrosswordsCount() {
-        return crosswordsCount;
+    public void updateCrosswords(Context context){
+        downloadCrosswords(context);
+        updateCrosswordsCount(context);
     }
 
-    public int getCompleteness(int crosswordId){
-        return completenesses[crosswordId];
+    public int getCrosswordsCount() {
+        return crosswordsCount;
     }
 
     private void updateCrosswordsCount(Context context){
@@ -80,21 +91,17 @@ public final class LocalCrosswordsRepository {
         updateCompletenesses(context);
     }
 
-    public void putAnswers(String[] answers, int chosenCrosswordId, Context context) {
-        writeStringToJSONFile(convertAnswersToJSON(answers),
-                context.getString(R.string.resource_file_name_template,
-                        context.getString(R.string.answers_file_name),
-                        chosenCrosswordId), context);
-        updateCompleteness(chosenCrosswordId, context);
+    public int getCompleteness(int crosswordId){
+        return completenesses[crosswordId];
     }
 
-    private void updateCompleteness(int fileId, Context context) {
-        completenesses[fileId] = 0;
-        String[] answers = getAnswers(fileId, context);
+    private void updateCompleteness(int crosswordId, Context context) {
+        completenesses[crosswordId] = 0;
+        String[] answers = getAnswers(crosswordId, context);
         int completed = 0;
         for (String answer : answers)
             completed += (answer.equals("")) ? 0 : 1;
-        completenesses[fileId] = completed*100/answers.length;
+        completenesses[crosswordId] = completed*100/answers.length;
     }
 
     private void updateCompletenesses(Context context) {
@@ -106,10 +113,5 @@ public final class LocalCrosswordsRepository {
                 completed += (answer.equals("")) ? 0 : 1;
             completenesses[i] = completed*100/answers.length;
         }
-    }
-
-    public void updateCrosswords(Context context){
-        downloadCrosswords(context);
-        updateCrosswordsCount(context);
     }
 }

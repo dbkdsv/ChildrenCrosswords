@@ -1,8 +1,12 @@
 package com.dbkudryavtsev.childrencrosswords.utilities;
 
+import android.database.Cursor;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.util.ArrayList;
 
 class AnswersParser {
 
@@ -33,5 +37,18 @@ class AnswersParser {
         else {
             return null;
         }
+    }
+
+    static String[] parseAnswersFromSQL(Cursor cursor){
+        ArrayList<String> answersList = new ArrayList<>();
+        if (cursor.moveToFirst()){
+            int order_num = cursor.getColumnIndex("order_num");
+            int answer = cursor.getColumnIndex("answer");
+            do{
+                answersList.add(cursor.getString(answer));
+            } while(cursor.moveToNext());
+        }
+        else return null;
+        return answersList.toArray(new String[0]);
     }
 }
