@@ -27,4 +27,9 @@
     <string name="crossword_num_column_name">crossword_num</string>
     <string name="order_num_column_name">order_num</string>
     <string name="answer_column_name">answer</string>
+    <string name="words_table_name">words</string>
+    <string name="question_column_name">question</string>
+    <string name="posx_column_name">posX</string>
+    <string name="posy_column_name">posY</string>
+    <string name="is_horizontal_column_name">is_horizontal</string>
 </resources>

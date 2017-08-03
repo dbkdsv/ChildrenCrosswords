@@ -9,7 +9,6 @@ import net.lingala.zip4j.exception.ZipException;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -17,7 +16,7 @@ class LocalRepository {
 
    static String loadJSONFromFile(String filename, Context context) {
        String json = "";
-       File inputFile = new File(context.getFilesDir(), filename + context.getString(R.string.json_extension));
+       File inputFile = new File(context.getFilesDir(), filename);
        if (inputFile.exists()) {
            try(InputStream inputStream = new FileInputStream(inputFile)) {
                int size = inputStream.available();
@@ -45,16 +44,4 @@ class LocalRepository {
            throw new RuntimeException("ZIP unpack unsuccessful");
        }
    }
-
-    static void writeStringToJSONFile(String JSONString, String filename, Context context) {
-        try(FileOutputStream outputStream = context.openFileOutput(
-                filename + context.getString(R.string.json_extension),
-                Context.MODE_PRIVATE)) {
-            outputStream.write(JSONString.getBytes());
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new RuntimeException("JSON output unsuccessful");
-        }
-    }
-
 }

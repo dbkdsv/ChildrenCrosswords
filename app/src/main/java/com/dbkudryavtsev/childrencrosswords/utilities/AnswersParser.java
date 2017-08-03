@@ -38,11 +38,10 @@ class AnswersParser {
         }
     }
 
-    static String[] parseAnswersFromSQL(Cursor cursor){
-        final String answerColumnString = "answer";
+    static String[] parseColumnFromSQL(Cursor cursor, String columnName){
         ArrayList<String> answersList = new ArrayList<>();
         if (cursor.moveToFirst()){
-            int answer = cursor.getColumnIndex(answerColumnString);
+            int answer = cursor.getColumnIndex(columnName);
             do{
                 answersList.add(cursor.getString(answer));
             } while(cursor.moveToNext());
