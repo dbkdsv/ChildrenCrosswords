@@ -2,8 +2,6 @@ package com.dbkudryavtsev.childrencrosswords.utilities;
 
 import android.content.Context;
 
-import com.dbkudryavtsev.childrencrosswords.R;
-
 import net.lingala.zip4j.core.ZipFile;
 import net.lingala.zip4j.exception.ZipException;
 
