@@ -8,7 +8,7 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 
-class AnswersParser {
+final class AnswersParser {
 
     static String[] parseAnswersFromJson(String jsonString) {
         final String answersArrayName = "answers";

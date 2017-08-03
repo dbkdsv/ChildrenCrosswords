@@ -17,6 +17,15 @@ import static com.dbkudryavtsev.childrencrosswords.utilities.CrosswordsParser.pa
 
 import static com.dbkudryavtsev.childrencrosswords.utilities.CrosswordsDownloader.downloadCrosswords;
 import static com.dbkudryavtsev.childrencrosswords.utilities.LocalRepository.loadJSONFromFile;
+import static com.dbkudryavtsev.childrencrosswords.utilities.SQLiteInteractor.answerColumnName;
+import static com.dbkudryavtsev.childrencrosswords.utilities.SQLiteInteractor.answersTableName;
+import static com.dbkudryavtsev.childrencrosswords.utilities.SQLiteInteractor.crosswordNumColumnName;
+import static com.dbkudryavtsev.childrencrosswords.utilities.SQLiteInteractor.isHorisontalColumnName;
+import static com.dbkudryavtsev.childrencrosswords.utilities.SQLiteInteractor.orderNumColumnName;
+import static com.dbkudryavtsev.childrencrosswords.utilities.SQLiteInteractor.posXColumnName;
+import static com.dbkudryavtsev.childrencrosswords.utilities.SQLiteInteractor.posYColumnName;
+import static com.dbkudryavtsev.childrencrosswords.utilities.SQLiteInteractor.questionColumnName;
+import static com.dbkudryavtsev.childrencrosswords.utilities.SQLiteInteractor.wordsTableName;
 
 public final class LocalCrosswordsRepository {
 
@@ -31,7 +40,7 @@ public final class LocalCrosswordsRepository {
 
     public void deleteAnswers(Context context){
         try(SQLiteDatabase db = interactor.getWritableDatabase()) {
-            db.delete(context.getString(R.string.answers_table_name), null, null);
+            db.delete(answersTableName, null, null);
         }
         updateCompletenesses(context);
     }
@@ -39,11 +48,11 @@ public final class LocalCrosswordsRepository {
     public void putAnswers(String[] answers, int chosenCrosswordId, Context context) {
         for (int i=0; i<answers.length; i++) {
             ContentValues contentValues = new ContentValues();
-            contentValues.put(context.getString(R.string.crossword_num_column_name), chosenCrosswordId);
-            contentValues.put(context.getString(R.string.order_num_column_name), i);
-            contentValues.put(context.getString(R.string.answer_column_name), answers[i]);
+            contentValues.put(crosswordNumColumnName, chosenCrosswordId);
+            contentValues.put(orderNumColumnName, i);
+            contentValues.put(answerColumnName, answers[i]);
             try(SQLiteDatabase db = interactor.getWritableDatabase()) {
-                db.insert(context.getString(R.string.answers_table_name), null, contentValues);
+                db.insert(answersTableName, null, contentValues);
             }
         }
         updateCompleteness(chosenCrosswordId, context);
@@ -51,12 +60,11 @@ public final class LocalCrosswordsRepository {
 
     public String[] getAnswers(int chosenCrosswordId, Context context) {
         String[] answers;
-        try(SQLiteDatabase db = interactor.getWritableDatabase();
-            Cursor cursor = db.query(context.getString(R.string.answers_table_name), null,
-                    context.getString(R.string.crossword_num_column_name) +" = ?",
-                new String[]{Integer.toString(chosenCrosswordId)}, null, null,
-                    context.getString(R.string.order_num_column_name)+" ASC")) {
-            answers = parseColumnFromSQL(cursor, context.getString(R.string.answer_column_name));
+        try (SQLiteDatabase db = interactor.getWritableDatabase();
+             Cursor cursor = db.query(answersTableName, null, crosswordNumColumnName + " = ?",
+                     new String[]{Integer.toString(chosenCrosswordId)}, null, null,
+                     orderNumColumnName + " ASC")) {
+            answers = parseColumnFromSQL(cursor, answerColumnName);
             if (answers == null) {
                 answers = new String[getCrossword(chosenCrosswordId, context).getCwordsLength()];
                 for (int i = 0; i < answers.length; i++)
@@ -66,36 +74,35 @@ public final class LocalCrosswordsRepository {
         return answers;
     }
 
-    private void writeCrosswordsToSQL(Context context){
-        File filesDirectory = context.getFilesDir();
-        String crosswordFilename = context.getString(R.string.crossword_file_name);
-        String jsonExtension = context.getString(R.string.json_extension);
-        if(filesDirectory.length()!=0) {
-            int i=0;
-            for (File file : filesDirectory.listFiles()) {
-                final String fileName = file.getName();
-                if (fileName.substring(0,crosswordFilename.length()).equals(crosswordFilename) &&
-                        fileName.substring(fileName.length()-jsonExtension.length(), fileName.length()).equals(jsonExtension)) {
-                    String crosswordJSONString = loadJSONFromFile(fileName, context);
-                    Crossword crossword = parseCrosswordFromJson(crosswordJSONString);
-                    for (int j=0; j<crossword.getCwordsLength();j++) {
-                        ContentValues contentValues = new ContentValues();
-                        contentValues.put(context.getString(R.string.crossword_num_column_name), i);
-                        final CrosswordWord cword = crossword.getCword(j);
-                        contentValues.put(context.getString(R.string.question_column_name), cword.getQuestion());
-                        contentValues.put(context.getString(R.string.answer_column_name), cword.getAnswer());
-                        contentValues.put(context.getString(R.string.posx_column_name), cword.getPosX());
-                        contentValues.put(context.getString(R.string.posy_column_name), cword.getPosY());
-                        contentValues.put(context.getString(R.string.is_horizontal_column_name),
-                                j<crossword.getHorCount()?1:0);
-                        try (SQLiteDatabase db = interactor.getWritableDatabase()) {
-                            db.insert(context.getString(R.string.words_table_name), null, contentValues);
+    private void writeCrosswordsToSQL(Context context) {
+        try (SQLiteDatabase db = interactor.getWritableDatabase()) {
+            File filesDirectory = context.getFilesDir();
+            String crosswordFilename = context.getString(R.string.crossword_file_name);
+            String jsonExtension = context.getString(R.string.json_extension);
+            if (filesDirectory.length() != 0) {
+                int i = 0;
+                for (File file : filesDirectory.listFiles()) {
+                    final String fileName = file.getName();
+                    if (fileName.substring(0, crosswordFilename.length()).equals(crosswordFilename) &&
+                            fileName.substring(fileName.length() - jsonExtension.length(), fileName.length()).equals(jsonExtension)) {
+                        String crosswordJSONString = loadJSONFromFile(fileName, context);
+                        Crossword crossword = parseCrosswordFromJson(crosswordJSONString);
+                        for (int j = 0; j < crossword.getCwordsLength(); j++) {
+                            ContentValues contentValues = new ContentValues();
+                            contentValues.put(crosswordNumColumnName, i);
+                            final CrosswordWord cword = crossword.getCword(j);
+                            contentValues.put(questionColumnName, cword.getQuestion());
+                            contentValues.put(answerColumnName, cword.getAnswer());
+                            contentValues.put(posXColumnName, cword.getPosX());
+                            contentValues.put(posYColumnName, cword.getPosY());
+                            contentValues.put(isHorisontalColumnName, j < crossword.getHorCount() ? 1 : 0);
+                            db.insert(wordsTableName, null, contentValues);
                         }
                     }
                     if (!file.delete())
                         throw new RuntimeException("Can't delete crossword file");
+                    i++;
                 }
-                i++;
             }
         }
     }
@@ -105,15 +112,14 @@ public final class LocalCrosswordsRepository {
         ArrayList<CrosswordWord> crosswordWords = new ArrayList<>();
         int horCount = 0;
         try(SQLiteDatabase db = interactor.getWritableDatabase();
-            Cursor cursor = db.query(context.getString(R.string.words_table_name), null,
-                    context.getString(R.string.crossword_num_column_name) +" = ?",
+            Cursor cursor = db.query(wordsTableName, null, crosswordNumColumnName +" = ?",
                     new String[]{Integer.toString(chosenCrosswordId)}, null, null, null)) {
             if (cursor.moveToFirst()){
-                int question = cursor.getColumnIndex(context.getString(R.string.question_column_name));
-                int answer = cursor.getColumnIndex(context.getString(R.string.answer_column_name));
-                int posX = cursor.getColumnIndex(context.getString(R.string.posx_column_name));
-                int posY = cursor.getColumnIndex(context.getString(R.string.posy_column_name));
-                int isHorizontal = cursor.getColumnIndex(context.getString(R.string.is_horizontal_column_name));
+                int question = cursor.getColumnIndex(questionColumnName);
+                int answer = cursor.getColumnIndex(answerColumnName);
+                int posX = cursor.getColumnIndex(posYColumnName);
+                int posY = cursor.getColumnIndex(posXColumnName);
+                int isHorizontal = cursor.getColumnIndex(isHorisontalColumnName);
                 do{
                     final CrosswordWord crosswordWord = new CrosswordWord(cursor.getString(question),
                             cursor.getString(answer), cursor.getInt(posX), cursor.getInt(posY));
@@ -130,7 +136,7 @@ public final class LocalCrosswordsRepository {
     public void updateCrosswords(Context context){
         downloadCrosswords(context);
         try(SQLiteDatabase db = interactor.getWritableDatabase()){
-            db.delete(context.getString(R.string.words_table_name), null,null);
+            db.delete(wordsTableName, null,null);
         }
         writeCrosswordsToSQL(context);
         updateCrosswordsCount(context);
@@ -143,8 +149,7 @@ public final class LocalCrosswordsRepository {
     private void updateCrosswordsCount(Context context){
         crosswordsCount = 0;
         try(SQLiteDatabase db = interactor.getWritableDatabase();
-            Cursor cursor = db.query(true, context.getString(R.string.words_table_name),
-                    new String[]{context.getString(R.string.crossword_num_column_name)},
+            Cursor cursor = db.query(wordsTableName, new String[]{crosswordNumColumnName},
                     null, null, null, null, null, null)) {
             cursor.moveToFirst();
             crosswordsCount = cursor.getCount();

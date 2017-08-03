@@ -4,53 +4,40 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
-import com.dbkudryavtsev.childrencrosswords.R;
+final class SQLiteInteractor extends SQLiteOpenHelper {
 
-class SQLiteInteractor extends SQLiteOpenHelper {
+    static final String answersTableName = "answers";
+    static final String crosswordNumColumnName = "crossword_num";
+    static final String orderNumColumnName = "order_num";
+    static final String answerColumnName = "answer";
 
-    private final String answersTableName;
-    private final String crosswordNumColumnName;
-    private final String orderNumColumnName;
-    private final String answerColumnName;
-
-    private final String wordsTableName;
-    private final String questionColumnName;
-    private final String posXColumnName;
-    private final String posYColumnName;
-    private final String isHorisontalColumnName;
+    static final String wordsTableName = "words";
+    static final String questionColumnName = "question";
+    static final String posXColumnName = "posX";
+    static final String posYColumnName = "posY";
+    static final String isHorisontalColumnName = "is_horizontal";
 
     SQLiteInteractor(Context context) {
-        super(context, context.getString(R.string.database_name), null, 1);
-
-        answersTableName = context.getString(R.string.answers_table_name);
-        crosswordNumColumnName = context.getString(R.string.crossword_num_column_name);
-        orderNumColumnName = context.getString(R.string.order_num_column_name);
-        answerColumnName = context.getString(R.string.answer_column_name);
-
-        wordsTableName = context.getString(R.string.words_table_name);
-        questionColumnName = context.getString(R.string.question_column_name);
-        posXColumnName = context.getString(R.string.posx_column_name);
-        posYColumnName = context.getString(R.string.posy_column_name);
-        isHorisontalColumnName = context.getString(R.string.is_horizontal_column_name);
+        super(context, "crosswordsAppDatabase", null, 1);
     }
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        db.execSQL("CREATE TABLE "+answersTableName+" (" +
+        db.execSQL("CREATE TABLE " + answersTableName + " (" +
                 "id integer primary key autoincrement, " +
-                crosswordNumColumnName+" integer, " +
-                orderNumColumnName +" integer, " +
-                answerColumnName+" text" +
+                crosswordNumColumnName + " integer, " +
+                orderNumColumnName + " integer, " +
+                answerColumnName + " text" +
                 ");");
 
-        db.execSQL("CREATE TABLE "+wordsTableName+" (" +
+        db.execSQL("CREATE TABLE " + wordsTableName + " (" +
                 "id integer primary key autoincrement, " +
-                crosswordNumColumnName+" integer, " +
-                questionColumnName +" text, " +
-                answerColumnName+" text, " +
-                posXColumnName+" integer, " +
-                posYColumnName+" integer, " +
-                isHorisontalColumnName +" bit"+
+                crosswordNumColumnName + " integer, " +
+                questionColumnName + " text, " +
+                answerColumnName + " text, " +
+                posXColumnName + " integer, " +
+                posYColumnName + " integer, " +
+                isHorisontalColumnName + " bit" +
                 ");");
     }
 

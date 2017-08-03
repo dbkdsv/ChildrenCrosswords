@@ -10,7 +10,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-class LocalRepository {
+final class LocalRepository {
 
    static String loadJSONFromFile(String filename, Context context) {
        String json = "";
