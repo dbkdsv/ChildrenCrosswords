@@ -17,15 +17,15 @@ import static com.dbkudryavtsev.childrencrosswords.utilities.CrosswordsParser.pa
 
 import static com.dbkudryavtsev.childrencrosswords.utilities.CrosswordsDownloader.downloadCrosswords;
 import static com.dbkudryavtsev.childrencrosswords.utilities.LocalRepository.loadJSONFromFile;
-import static com.dbkudryavtsev.childrencrosswords.utilities.SQLiteInteractor.answerColumnName;
-import static com.dbkudryavtsev.childrencrosswords.utilities.SQLiteInteractor.answersTableName;
-import static com.dbkudryavtsev.childrencrosswords.utilities.SQLiteInteractor.crosswordNumColumnName;
-import static com.dbkudryavtsev.childrencrosswords.utilities.SQLiteInteractor.isHorisontalColumnName;
-import static com.dbkudryavtsev.childrencrosswords.utilities.SQLiteInteractor.orderNumColumnName;
-import static com.dbkudryavtsev.childrencrosswords.utilities.SQLiteInteractor.posXColumnName;
-import static com.dbkudryavtsev.childrencrosswords.utilities.SQLiteInteractor.posYColumnName;
-import static com.dbkudryavtsev.childrencrosswords.utilities.SQLiteInteractor.questionColumnName;
-import static com.dbkudryavtsev.childrencrosswords.utilities.SQLiteInteractor.wordsTableName;
+import static com.dbkudryavtsev.childrencrosswords.utilities.SQLiteInteractor.ANSWER_COLUMN_NAME;
+import static com.dbkudryavtsev.childrencrosswords.utilities.SQLiteInteractor.ANSWERS_TABLE_NAME;
+import static com.dbkudryavtsev.childrencrosswords.utilities.SQLiteInteractor.CROSSWORD_NUM_COLUMN_NAME;
+import static com.dbkudryavtsev.childrencrosswords.utilities.SQLiteInteractor.IS_HORISONTAL_COLUMN_NAME;
+import static com.dbkudryavtsev.childrencrosswords.utilities.SQLiteInteractor.ORDER_NUM_COLUMN_NAME;
+import static com.dbkudryavtsev.childrencrosswords.utilities.SQLiteInteractor.POS_X_COLUMN_NAME;
+import static com.dbkudryavtsev.childrencrosswords.utilities.SQLiteInteractor.POS_Y_COLUMN_NAME;
+import static com.dbkudryavtsev.childrencrosswords.utilities.SQLiteInteractor.QUESTION_COLUMN_NAME;
+import static com.dbkudryavtsev.childrencrosswords.utilities.SQLiteInteractor.WORDS_TABLE_NAME;
 
 public final class LocalCrosswordsRepository {
 
@@ -40,7 +40,7 @@ public final class LocalCrosswordsRepository {
 
     public void deleteAnswers(Context context){
         try(SQLiteDatabase db = interactor.getWritableDatabase()) {
-            db.delete(answersTableName, null, null);
+            db.delete(ANSWERS_TABLE_NAME, null, null);
         }
         updateCompletenesses(context);
     }
@@ -48,11 +48,11 @@ public final class LocalCrosswordsRepository {
     public void putAnswers(String[] answers, int chosenCrosswordId, Context context) {
         for (int i=0; i<answers.length; i++) {
             ContentValues contentValues = new ContentValues();
-            contentValues.put(crosswordNumColumnName, chosenCrosswordId);
-            contentValues.put(orderNumColumnName, i);
-            contentValues.put(answerColumnName, answers[i]);
+            contentValues.put(CROSSWORD_NUM_COLUMN_NAME, chosenCrosswordId);
+            contentValues.put(ORDER_NUM_COLUMN_NAME, i);
+            contentValues.put(ANSWER_COLUMN_NAME, answers[i]);
             try(SQLiteDatabase db = interactor.getWritableDatabase()) {
-                db.insert(answersTableName, null, contentValues);
+                db.insert(ANSWERS_TABLE_NAME, null, contentValues);
             }
         }
         updateCompleteness(chosenCrosswordId, context);
@@ -61,10 +61,10 @@ public final class LocalCrosswordsRepository {
     public String[] getAnswers(int chosenCrosswordId, Context context) {
         String[] answers;
         try (SQLiteDatabase db = interactor.getWritableDatabase();
-             Cursor cursor = db.query(answersTableName, null, crosswordNumColumnName + " = ?",
+             Cursor cursor = db.query(ANSWERS_TABLE_NAME, null, CROSSWORD_NUM_COLUMN_NAME + " = ?",
                      new String[]{Integer.toString(chosenCrosswordId)}, null, null,
-                     orderNumColumnName + " ASC")) {
-            answers = parseColumnFromSQL(cursor, answerColumnName);
+                     ORDER_NUM_COLUMN_NAME + " ASC")) {
+            answers = parseColumnFromSQL(cursor, ANSWER_COLUMN_NAME);
             if (answers == null) {
                 answers = new String[getCrossword(chosenCrosswordId, context).getCwordsLength()];
                 for (int i = 0; i < answers.length; i++)
@@ -89,14 +89,14 @@ public final class LocalCrosswordsRepository {
                         Crossword crossword = parseCrosswordFromJson(crosswordJSONString);
                         for (int j = 0; j < crossword.getCwordsLength(); j++) {
                             ContentValues contentValues = new ContentValues();
-                            contentValues.put(crosswordNumColumnName, i);
+                            contentValues.put(CROSSWORD_NUM_COLUMN_NAME, i);
                             final CrosswordWord cword = crossword.getCword(j);
-                            contentValues.put(questionColumnName, cword.getQuestion());
-                            contentValues.put(answerColumnName, cword.getAnswer());
-                            contentValues.put(posXColumnName, cword.getPosX());
-                            contentValues.put(posYColumnName, cword.getPosY());
-                            contentValues.put(isHorisontalColumnName, j < crossword.getHorCount() ? 1 : 0);
-                            db.insert(wordsTableName, null, contentValues);
+                            contentValues.put(QUESTION_COLUMN_NAME, cword.getQuestion());
+                            contentValues.put(ANSWER_COLUMN_NAME, cword.getAnswer());
+                            contentValues.put(POS_X_COLUMN_NAME, cword.getPosX());
+                            contentValues.put(POS_Y_COLUMN_NAME, cword.getPosY());
+                            contentValues.put(IS_HORISONTAL_COLUMN_NAME, j < crossword.getHorCount() ? 1 : 0);
+                            db.insert(WORDS_TABLE_NAME, null, contentValues);
                         }
                     }
                     if (!file.delete())
@@ -112,14 +112,14 @@ public final class LocalCrosswordsRepository {
         ArrayList<CrosswordWord> crosswordWords = new ArrayList<>();
         int horCount = 0;
         try(SQLiteDatabase db = interactor.getWritableDatabase();
-            Cursor cursor = db.query(wordsTableName, null, crosswordNumColumnName +" = ?",
+            Cursor cursor = db.query(WORDS_TABLE_NAME, null, CROSSWORD_NUM_COLUMN_NAME +" = ?",
                     new String[]{Integer.toString(chosenCrosswordId)}, null, null, null)) {
             if (cursor.moveToFirst()){
-                int question = cursor.getColumnIndex(questionColumnName);
-                int answer = cursor.getColumnIndex(answerColumnName);
-                int posX = cursor.getColumnIndex(posYColumnName);
-                int posY = cursor.getColumnIndex(posXColumnName);
-                int isHorizontal = cursor.getColumnIndex(isHorisontalColumnName);
+                int question = cursor.getColumnIndex(QUESTION_COLUMN_NAME);
+                int answer = cursor.getColumnIndex(ANSWER_COLUMN_NAME);
+                int posX = cursor.getColumnIndex(POS_Y_COLUMN_NAME);
+                int posY = cursor.getColumnIndex(POS_X_COLUMN_NAME);
+                int isHorizontal = cursor.getColumnIndex(IS_HORISONTAL_COLUMN_NAME);
                 do{
                     final CrosswordWord crosswordWord = new CrosswordWord(cursor.getString(question),
                             cursor.getString(answer), cursor.getInt(posX), cursor.getInt(posY));
@@ -136,7 +136,7 @@ public final class LocalCrosswordsRepository {
     public void updateCrosswords(Context context){
         downloadCrosswords(context);
         try(SQLiteDatabase db = interactor.getWritableDatabase()){
-            db.delete(wordsTableName, null,null);
+            db.delete(WORDS_TABLE_NAME, null,null);
         }
         writeCrosswordsToSQL(context);
         updateCrosswordsCount(context);
@@ -149,7 +149,7 @@ public final class LocalCrosswordsRepository {
     private void updateCrosswordsCount(Context context){
         crosswordsCount = 0;
         try(SQLiteDatabase db = interactor.getWritableDatabase();
-            Cursor cursor = db.query(wordsTableName, new String[]{crosswordNumColumnName},
+            Cursor cursor = db.query(WORDS_TABLE_NAME, new String[]{CROSSWORD_NUM_COLUMN_NAME},
                     null, null, null, null, null, null)) {
             cursor.moveToFirst();
             crosswordsCount = cursor.getCount();

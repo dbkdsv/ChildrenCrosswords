@@ -6,16 +6,16 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 final class SQLiteInteractor extends SQLiteOpenHelper {
 
-    static final String answersTableName = "answers";
-    static final String crosswordNumColumnName = "crossword_num";
-    static final String orderNumColumnName = "order_num";
-    static final String answerColumnName = "answer";
+    static final String ANSWERS_TABLE_NAME = "answers";
+    static final String CROSSWORD_NUM_COLUMN_NAME = "crossword_num";
+    static final String ORDER_NUM_COLUMN_NAME = "order_num";
+    static final String ANSWER_COLUMN_NAME = "answer";
 
-    static final String wordsTableName = "words";
-    static final String questionColumnName = "question";
-    static final String posXColumnName = "posX";
-    static final String posYColumnName = "posY";
-    static final String isHorisontalColumnName = "is_horizontal";
+    static final String WORDS_TABLE_NAME = "words";
+    static final String QUESTION_COLUMN_NAME = "question";
+    static final String POS_X_COLUMN_NAME = "posX";
+    static final String POS_Y_COLUMN_NAME = "posY";
+    static final String IS_HORISONTAL_COLUMN_NAME = "is_horizontal";
 
     SQLiteInteractor(Context context) {
         super(context, "crosswordsAppDatabase", null, 1);
@@ -23,21 +23,21 @@ final class SQLiteInteractor extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        db.execSQL("CREATE TABLE " + answersTableName + " (" +
+        db.execSQL("CREATE TABLE " + ANSWERS_TABLE_NAME + " (" +
                 "id integer primary key autoincrement, " +
-                crosswordNumColumnName + " integer, " +
-                orderNumColumnName + " integer, " +
-                answerColumnName + " text" +
+                CROSSWORD_NUM_COLUMN_NAME + " integer, " +
+                ORDER_NUM_COLUMN_NAME + " integer, " +
+                ANSWER_COLUMN_NAME + " text" +
                 ");");
 
-        db.execSQL("CREATE TABLE " + wordsTableName + " (" +
+        db.execSQL("CREATE TABLE " + WORDS_TABLE_NAME + " (" +
                 "id integer primary key autoincrement, " +
-                crosswordNumColumnName + " integer, " +
-                questionColumnName + " text, " +
-                answerColumnName + " text, " +
-                posXColumnName + " integer, " +
-                posYColumnName + " integer, " +
-                isHorisontalColumnName + " bit" +
+                CROSSWORD_NUM_COLUMN_NAME + " integer, " +
+                QUESTION_COLUMN_NAME + " text, " +
+                ANSWER_COLUMN_NAME + " text, " +
+                POS_X_COLUMN_NAME + " integer, " +
+                POS_Y_COLUMN_NAME + " integer, " +
+                IS_HORISONTAL_COLUMN_NAME + " bit" +
                 ");");
     }
 
